@@ -73,7 +73,7 @@ if (isset($_GET["success"])) {
 </form>
 
 <br>
-<a href="dashboard.php">← Volver al panel</a>
+<a href="panel.php">← Volver al panel</a>
 
 </body>
 </html>

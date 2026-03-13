@@ -51,15 +51,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $mensaje = "Contraseña inválida.";
     } else {
 
-
         // ------------------------------------------------------
         // BUSCAR USUARIO POR EMAIL
         // ------------------------------------------------------
         // Usamos consulta preparada para evitar SQL Injection.
 
-        $sql = "SELECT id, nombre, password, rol, activo 
-                FROM usuarios 
-                WHERE email = ?";
+        $sql = "SELECT id, nombre, password, rol, activo, foto FROM usuarios WHERE email = ?";
 
         $stmt = mysqli_prepare($conexion, $sql);
         mysqli_stmt_bind_param($stmt, "s", $email);
@@ -96,6 +93,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $_SESSION["usuario_id"] = $usuario["id"];
                 $_SESSION["nombre"] = $usuario["nombre"];
                 $_SESSION["rol"] = $usuario["rol"];
+                $_SESSION["foto"] = $usuario["foto"];
 
                 // Redirigir a la página principal
                 header("Location: index.php");
@@ -126,22 +124,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login - WebDev Academy</title>
+    <title>Login - WebDev Academy</title>
 </head>
 
 <body>
 
-<h2>Login</h2>
+    <h2>Login</h2>
 
-<?php if ($mensaje != ""): ?>
-    <p><?php echo $mensaje; ?></p>
-<?php endif; ?>
+    <?php if ($mensaje != ""): ?>
+        <p><?php echo $mensaje; ?></p>
+    <?php endif; ?>
 
-<form method="POST">
-    <input type="email" name="email" placeholder="Email" required><br><br>
-    <input type="password" name="password" placeholder="Contraseña" required><br><br>
-    <button type="submit">Entrar</button>
-</form>
+    <form method="POST">
+        <input type="email" name="email" placeholder="Email" required><br><br>
+        <input type="password" name="password" placeholder="Contraseña" required><br><br>
+        <button type="submit">Entrar</button>
+    </form>
 
 </body>
+
 </html>
