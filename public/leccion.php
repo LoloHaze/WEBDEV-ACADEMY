@@ -70,8 +70,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !$completada) {
 
 <!-- Vídeo -->
 <iframe width="560" height="315"
-    src="<?php echo htmlspecialchars($leccion["video_url"]); ?>"
+    src="<?php echo htmlspecialchars($leccion['video_url']); ?>"
     frameborder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
     allowfullscreen>
 </iframe>
 
