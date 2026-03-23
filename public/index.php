@@ -68,6 +68,19 @@ $foto = (!empty($_SESSION["foto"]) &&
             $precio = ($curso["precio"] > 0)
                 ? number_format($curso["precio"], 2) . " €"
                 : "Gratis";
+
+            // Calcular media valoraciones
+            $sql_media = "SELECT AVG(puntuacion) as media, COUNT(*) as total
+              FROM valoraciones
+              WHERE curso_id = ?";
+            $stmt_media = mysqli_prepare($conexion, $sql_media);
+            mysqli_stmt_bind_param($stmt_media, "i", $curso["id"]);
+            mysqli_stmt_execute($stmt_media);
+            $res_media = mysqli_stmt_get_result($stmt_media);
+            $datos_media = mysqli_fetch_assoc($res_media);
+
+            $media = round($datos_media["media"], 1);
+            $total_val = $datos_media["total"];
             ?>
 
             <div style="
@@ -91,6 +104,32 @@ $foto = (!empty($_SESSION["foto"]) &&
 
                 <p style="font-weight:bold;">
                     💰 <?php echo $precio; ?>
+                </p>
+                <p style="font-weight:bold;">
+
+                    <?php if ($total_val > 0): ?>
+
+                        <?php
+                        $estrellas_llenas = floor($media);
+                        $media_redondeada = round($media);
+                        ?>
+
+                        <?php for ($i = 1; $i <= 5; $i++): ?>
+                            <?php if ($i <= $media_redondeada): ?>
+                                <span style="color:gold;">★</span>
+                            <?php else: ?>
+                                <span style="color:#ccc;">★</span>
+                            <?php endif; ?>
+                        <?php endfor; ?>
+
+                        (<?php echo $total_val; ?> valoraciones)
+
+                    <?php else: ?>
+
+                        ⭐ Sin valoraciones
+
+                    <?php endif; ?>
+
                 </p>
                 <?php // Comprobar estado inscripción
                         $sql_ins = "SELECT estado FROM inscripciones

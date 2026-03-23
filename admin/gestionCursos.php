@@ -74,7 +74,9 @@ $resultado = mysqli_query($conexion, $sql);
             <?php else: ?>
                 <a href="?activar=<?php echo $curso["id"]; ?>">✅ Activar</a> |
             <?php endif; ?>
-
+            <a href="valoracionesCurso.php?id=<?php echo $curso["id"]; ?>">
+                💬 Ver valoraciones
+            </a>
             <a href="eliminarCurso.php?id=<?php echo $curso["id"]; ?>"
                 onclick="return confirm('¿Seguro que quieres eliminar este curso?');">
                 🗑 Eliminar
