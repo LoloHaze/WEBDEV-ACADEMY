@@ -9,7 +9,50 @@ if (!isset($_SESSION["usuario_id"])) {
 }
 
 // Obtener cursos
-$sqlCursos = "SELECT * FROM cursos";
+$buscar = trim($_GET["buscar"] ?? "");
+$filtroPrecio = $_GET["precio"] ?? "";
+$orden = $_GET["orden"] ?? "";
+
+$sqlCursos = "
+    SELECT c.*, 
+           COUNT(DISTINCT i.id) as total_inscritos,
+           AVG(v.puntuacion) as media_rating
+    FROM cursos c
+    LEFT JOIN inscripciones i ON c.id = i.curso_id
+    LEFT JOIN valoraciones v ON c.id = v.curso_id
+    WHERE c.activo = 1
+";
+
+/* FILTRO BUSCADOR */
+if (!empty($buscar)) {
+    $buscarSeguro = mysqli_real_escape_string($conexion, $buscar);
+    $sqlCursos .= " AND c.titulo LIKE '%$buscarSeguro%'";
+}
+
+/* FILTRO PRECIO */
+if ($filtroPrecio === "gratis") {
+    $sqlCursos .= " AND c.precio = 0";
+}
+
+if ($filtroPrecio === "pago") {
+    $sqlCursos .= " AND c.precio > 0";
+}
+
+$sqlCursos .= " GROUP BY c.id";
+
+/* ORDEN */
+if ($orden === "rating") {
+    $sqlCursos .= " ORDER BY media_rating DESC";
+}
+
+elseif ($orden === "inscritos") {
+    $sqlCursos .= " ORDER BY total_inscritos DESC";
+}
+
+elseif ($orden === "recientes") {
+    $sqlCursos .= " ORDER BY c.id DESC";
+}
+
 $resultadoCursos = mysqli_query($conexion, $sqlCursos);
 
 // Preparar foto desde sesión (seguro)
@@ -50,6 +93,41 @@ $foto = (!empty($_SESSION["foto"]) &&
     </div>
 
     <h2>Academia</h2>
+    <!-- BUSCADOR DE CURSOS -->
+     
+    <form method="GET" style="margin-bottom:20px;">
+
+    <input type="text" name="buscar"
+           placeholder="Buscar curso..."
+           value="<?php echo $_GET['buscar'] ?? ''; ?>">
+
+    <select name="precio">
+        <option value="">Todos</option>
+        <option value="gratis" <?php if (($_GET['precio'] ?? '') == 'gratis') echo 'selected'; ?>>
+            Gratis
+        </option>
+        <option value="pago" <?php if (($_GET['precio'] ?? '') == 'pago') echo 'selected'; ?>>
+            De pago
+        </option>
+    </select>
+    <select name="orden">
+    <option value="">Ordenar por</option>
+
+    <option value="rating" <?php if (($_GET['orden'] ?? '') == 'rating') echo 'selected'; ?>>
+        ⭐ Mejor valorados
+    </option>
+
+    <option value="inscritos" <?php if (($_GET['orden'] ?? '') == 'inscritos') echo 'selected'; ?>>
+        🔥 Más inscritos
+    </option>
+
+    <option value="recientes" <?php if (($_GET['orden'] ?? '') == 'recientes') echo 'selected'; ?>>
+        🆕 Más recientes
+    </option>
+</select>
+
+    <button type="submit">Filtrar</button>
+</form>
 
     <h3>Cursos disponibles</h3>
 
