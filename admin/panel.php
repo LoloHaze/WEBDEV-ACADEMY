@@ -20,13 +20,19 @@ $foto = isset($_SESSION["foto"]) && $_SESSION["foto"]
     : "https://placekitten.com/640/360";
 
 
-// NUMERO DE INSCRIPCIONES
-$sql_count = "SELECT COUNT(*) as total 
-              FROM inscripciones 
-              WHERE estado = 'pendiente'";
+// =============================
+// CONTADOR USUARIOS PENDIENTES
+// =============================
+$sql_users = "SELECT COUNT(*) as total FROM usuarios WHERE activo = 0";
+$result_users = mysqli_query($conexion, $sql_users);
+$total_users_pendientes = mysqli_fetch_assoc($result_users)["total"];
 
-$resultado = mysqli_query($conexion, $sql_count);
-$total_pendientes = mysqli_fetch_assoc($resultado)["total"];
+// =============================
+// CONTADOR INSCRIPCIONES PENDIENTES
+// =============================
+$sql_ins = "SELECT COUNT(*) as total FROM inscripciones WHERE estado = 'pendiente'";
+$result_ins = mysqli_query($conexion, $sql_ins);
+$total_ins_pendientes = mysqli_fetch_assoc($result_ins)["total"];
 ?>
 
 
@@ -61,21 +67,24 @@ $total_pendientes = mysqli_fetch_assoc($resultado)["total"];
     <h2>Panel de Administración</h2>
 
     <ul>
-        <li><a href="crearCurso.php">Crear curso</a></li>
-        <li><a href="crearLeccion.php">Crear lección</a></li>
-        <li><a href="gestionUsuarios.php">Gestionar usuarios
-             <?php if ($usuarios_pendientes > 0): ?>
+        <li><a href="gestionCursos.php">📚 Gestión de cursos</a></li>
+        <li>
+            <a href="gestionUsuarios.php">
+               👥 Gestión de usuarioss
+                <?php if ($total_users_pendientes > 0): ?>
                     <span style="color:red;">
-                        (<?php echo $usuarios_pendientes; ?>)
+                        (<?php echo $total_users_pendientes; ?>)
                     </span>
                 <?php endif; ?>
-        </a></li>
+            </a>
+        </li>
+
         <li>
             <a href="gestionInscripciones.php">
-                Gestionar inscripciones
-                <?php if ($total_pendientes > 0): ?>
+                📩 Gestión de inscripciones
+                <?php if ($total_ins_pendientes > 0): ?>
                     <span style="color:red;">
-                        (<?php echo $total_pendientes; ?>)
+                        (<?php echo $total_ins_pendientes; ?>)
                     </span>
                 <?php endif; ?>
             </a>

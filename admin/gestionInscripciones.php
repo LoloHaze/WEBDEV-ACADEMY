@@ -10,7 +10,8 @@ if (!isset($_SESSION["usuario_id"]) || $_SESSION["rol"] !== "admin") {
 
 /* =========================
    ACCIONES (APROBAR / RECHAZAR)
-========================= */
+========================= 
+*/
 
 if (isset($_GET["aprobar"])) {
     $id = intval($_GET["aprobar"]);
@@ -28,6 +29,20 @@ if (isset($_GET["rechazar"])) {
     $id = intval($_GET["rechazar"]);
 
     $sql = "UPDATE inscripciones SET estado = 'rechazado' WHERE id = ?";
+    $stmt = mysqli_prepare($conexion, $sql);
+    mysqli_stmt_bind_param($stmt, "i", $id);
+    mysqli_stmt_execute($stmt);
+
+    header("Location: gestionInscripciones.php");
+    exit;
+}
+// =========================
+// CANCELAR INSCRIPCIÓN
+// =========================
+if (isset($_GET["cancelar"])) {
+    $id = intval($_GET["cancelar"]);
+
+    $sql = "DELETE FROM inscripciones WHERE id = ?";
     $stmt = mysqli_prepare($conexion, $sql);
     mysqli_stmt_bind_param($stmt, "i", $id);
     mysqli_stmt_execute($stmt);
@@ -98,7 +113,10 @@ $aprobadas = mysqli_query($conexion, $sql_aprobadas);
 
             <div>
                 <a href="?aprobar=<?php echo $row["id"]; ?>">✅ Aprobar</a> |
-                <a href="?rechazar=<?php echo $row["id"]; ?>">❌ Rechazar</a>
+                <a href="?rechazar=<?php echo $row["id"]; ?>">❌ Rechazar</a> |
+                <a href="?cancelar=<?php echo $row["id"]; ?>" onclick="return confirm('¿Cancelar inscripción?');">
+                    🗑 Cancelar
+                </a>
             </div>
 
         </div>
@@ -129,15 +147,19 @@ $aprobadas = mysqli_query($conexion, $sql_aprobadas);
             </div>
 
             <div>
-                <span style="color:green;">✔ Aprobado</span>
+                <span style="color:green;">✔ Aprobado</span> |
+                <a href="?cancelar=<?php echo $row["id"]; ?>" onclick="return confirm('¿Quitar inscripción al usuario?');">
+                    ⛔ Cancelar inscripción
+                </a>
             </div>
 
         </div>
 
     <?php endwhile; ?>
-
-    <br>
+    <br><br>
     <a href="panel.php">← Volver al panel</a>
+    <br>
+
 
 </body>
 

@@ -93,9 +93,10 @@ $count_activos = mysqli_num_rows($activos);
         <?php while ($usuario = mysqli_fetch_assoc($pendientes)): ?>
 
             <?php
-            $foto = $usuario["foto"]
+            $foto = (!empty($usuario["foto"]) &&
+                file_exists("../public/uploads/perfiles/" . $usuario["foto"]))
                 ? "../public/uploads/perfiles/" . $usuario["foto"]
-                : "https://loremflickr.com/320/240";
+                : "https://ui-avatars.com/api/?name=" . urlencode($usuario["nombre"])."&background=random&color=fff";
             ?>
 
             <div style="display:flex; align-items:center; gap:15px; border:1px solid #ccc; padding:10px; margin:10px 0;">
@@ -133,9 +134,10 @@ $count_activos = mysqli_num_rows($activos);
         <?php while ($usuario = mysqli_fetch_assoc($activos)): ?>
 
             <?php
-            $foto = $usuario["foto"]
+            $foto = (!empty($usuario["foto"]) &&
+                file_exists("../public/uploads/perfiles/" . $usuario["foto"]))
                 ? "../public/uploads/perfiles/" . $usuario["foto"]
-                : "https://loremflickr.com/320/240";
+                : "https://ui-avatars.com/api/?name=" . urlencode($usuario["nombre"]) . "&background=random&color=fff";
             ?>
 
             <div style="display:flex; align-items:center; gap:15px; border:1px solid #ccc; padding:10px; margin:10px 0;">

@@ -15,6 +15,16 @@ if (!isset($_GET["id"]) || !is_numeric($_GET["id"])) {
 $curso_id = intval($_GET["id"]);
 $usuario_id = $_SESSION["usuario_id"];
 
+if (isset($_POST["cancelar_inscripcion"])) {
+    $sql = "DELETE FROM inscripciones WHERE usuario_id = ? AND curso_id = ?";
+    $stmt = mysqli_prepare($conexion, $sql);
+    mysqli_stmt_bind_param($stmt, "ii", $usuario_id, $curso_id);
+    mysqli_stmt_execute($stmt);
+
+    header("Location: curso.php?id=" . $curso_id);
+    exit;
+}
+
 /* ================================
    OBTENER CURSO
 ================================ */
@@ -94,78 +104,92 @@ if ($inscripcion && $inscripcion["estado"] === "aprobado") {
 
 <!DOCTYPE html>
 <html>
+
 <head>
     <title><?php echo htmlspecialchars($curso["titulo"]); ?></title>
 </head>
+
 <body>
 
-<a href="index.php">← Volver a cursos</a>
+    <a href="index.php">← Volver a cursos</a>
 
-<h2><?php echo htmlspecialchars($curso["titulo"]); ?></h2>
-<p><?php echo htmlspecialchars($curso["descripcion"]); ?></p>
+    <h2><?php echo htmlspecialchars($curso["titulo"]); ?></h2>
+    <p><?php echo htmlspecialchars($curso["descripcion"]); ?></p>
 
-<?php if (!$inscripcion): ?>
+    <?php if (!$inscripcion): ?>
 
-    <p>No estás inscrito en este curso.</p>
+        <p>No estás inscrito en este curso.</p>
 
-    <form method="POST">
-        <button type="submit" name="solicitar_inscripcion">
-            Solicitar inscripción
-        </button>
-    </form>
+        <form method="POST">
+            <button type="submit" name="solicitar_inscripcion">
+                Solicitar inscripción
+            </button>
+        </form>
 
-<?php elseif ($inscripcion["estado"] === "pendiente"): ?>
+    <?php elseif ($inscripcion["estado"] === "pendiente"): ?>
 
-    <p>Tu solicitud está pendiente de aprobación por el administrador.</p>
+        <p>Tu solicitud está pendiente de aprobación por el administrador.</p>
+        <form method="POST">
+            <button type="submit" name="cancelar_inscripcion">
+                Cancelar solicitud
+            </button>
+        </form>
 
-<?php elseif ($inscripcion["estado"] === "aprobado"): ?>
+    <?php elseif ($inscripcion["estado"] === "aprobado"): ?>
+        <form method="POST">
+            <button type="submit" name="cancelar_inscripcion">
+                Darse de baja del curso
+            </button>
+        </form>
+        <br>
 
-    <h4>Progreso: <?php echo $completadas; ?> / <?php echo $total; ?>
-        (<?php echo $porcentaje; ?>%)</h4>
+        <h4>Progreso: <?php echo $completadas; ?> / <?php echo $total; ?>
+            (<?php echo $porcentaje; ?>%)</h4>
 
-    <div style="width:400px; height:20px; background:#ddd; border-radius:10px;">
-        <div style="
+        <div style="width:400px; height:20px; background:#ddd; border-radius:10px;">
+            <div style="
             width: <?php echo $porcentaje; ?>%;
             height:100%;
             background:green;
             border-radius:10px;
             transition: width 0.3s;">
+            </div>
         </div>
-    </div>
 
-    <br>
+        <br>
 
-    <h3>Lecciones</h3>
+        <h3>Lecciones</h3>
 
-    <?php while ($leccion = mysqli_fetch_assoc($resultado_lecciones)): 
+        <?php while ($leccion = mysqli_fetch_assoc($resultado_lecciones)):
 
-        $sql_check = "SELECT id FROM progreso
+            $sql_check = "SELECT id FROM progreso
                       WHERE usuario_id = ? AND leccion_id = ?";
-        $stmt_check = mysqli_prepare($conexion, $sql_check);
-        mysqli_stmt_bind_param($stmt_check, "ii", $usuario_id, $leccion["id"]);
-        mysqli_stmt_execute($stmt_check);
-        mysqli_stmt_store_result($stmt_check);
+            $stmt_check = mysqli_prepare($conexion, $sql_check);
+            mysqli_stmt_bind_param($stmt_check, "ii", $usuario_id, $leccion["id"]);
+            mysqli_stmt_execute($stmt_check);
+            mysqli_stmt_store_result($stmt_check);
 
-        $esta_completada = mysqli_stmt_num_rows($stmt_check) > 0;
-    ?>
+            $esta_completada = mysqli_stmt_num_rows($stmt_check) > 0;
+            ?>
 
-        <div style="border:1px solid #ccc; padding:10px; margin:10px 0;">
-            <h4>
-                <?php echo $leccion["orden"]; ?>.
-                <?php echo htmlspecialchars($leccion["titulo"]); ?>
-                <?php if ($esta_completada): ?>
-                    <span style="color:green;">✔</span>
-                <?php endif; ?>
-            </h4>
-            <p><?php echo htmlspecialchars($leccion["descripcion"]); ?></p>
-            <a href="leccion.php?id=<?php echo $leccion["id"]; ?>">
-                Ver lección
-            </a>
-        </div>
+            <div style="border:1px solid #ccc; padding:10px; margin:10px 0;">
+                <h4>
+                    <?php echo $leccion["orden"]; ?>.
+                    <?php echo htmlspecialchars($leccion["titulo"]); ?>
+                    <?php if ($esta_completada): ?>
+                        <span style="color:green;">✔</span>
+                    <?php endif; ?>
+                </h4>
+                <p><?php echo htmlspecialchars($leccion["descripcion"]); ?></p>
+                <a href="leccion.php?id=<?php echo $leccion["id"]; ?>">
+                    Ver lección
+                </a>
+            </div>
 
-    <?php endwhile; ?>
+        <?php endwhile; ?>
 
-<?php endif; ?>
+    <?php endif; ?>
 
 </body>
+
 </html>
