@@ -45,11 +45,34 @@ if (!$curso) {
 ================================ */
 if (isset($_POST["solicitar_inscripcion"])) {
 
-    $sql_insert = "INSERT INTO inscripciones (usuario_id, curso_id)
-                   VALUES (?, ?)";
-    $stmt = mysqli_prepare($conexion, $sql_insert);
-    mysqli_stmt_bind_param($stmt, "ii", $usuario_id, $curso_id);
-    mysqli_stmt_execute($stmt);
+    // Comprobar si ya existe inscripción
+    $sqlCheck = "SELECT estado FROM inscripciones 
+                 WHERE usuario_id = ? AND curso_id = ?";
+    $stmtCheck = mysqli_prepare($conexion, $sqlCheck);
+    mysqli_stmt_bind_param($stmtCheck, "ii", $usuario_id, $curso_id);
+    mysqli_stmt_execute($stmtCheck);
+    $resCheck = mysqli_stmt_get_result($stmtCheck);
+    $inscExistente = mysqli_fetch_assoc($resCheck);
+
+    if (!$inscExistente) {
+
+        // No existe → INSERT
+        $sqlInsert = "INSERT INTO inscripciones (usuario_id, curso_id, estado)
+                      VALUES (?, ?, 'pendiente')";
+        $stmtInsert = mysqli_prepare($conexion, $sqlInsert);
+        mysqli_stmt_bind_param($stmtInsert, "ii", $usuario_id, $curso_id);
+        mysqli_stmt_execute($stmtInsert);
+
+    } elseif ($inscExistente["estado"] === "rechazado") {
+
+        // Existe pero estaba rechazada → UPDATE a pendiente
+        $sqlUpdate = "UPDATE inscripciones 
+                      SET estado = 'pendiente'
+                      WHERE usuario_id = ? AND curso_id = ?";
+        $stmtUpdate = mysqli_prepare($conexion, $sqlUpdate);
+        mysqli_stmt_bind_param($stmtUpdate, "ii", $usuario_id, $curso_id);
+        mysqli_stmt_execute($stmtUpdate);
+    }
 
     header("Location: curso.php?id=" . $curso_id);
     exit;
@@ -70,6 +93,8 @@ $inscripcion = mysqli_fetch_assoc($resultado_inscripcion);
    SI APROBADO → CALCULAR PROGRESO
 ================================ */
 if ($inscripcion && $inscripcion["estado"] === "aprobado") {
+
+
 
     $sql_total = "SELECT COUNT(*) as total
                   FROM lecciones
@@ -188,6 +213,7 @@ if (isset($_POST["valorar"]) && $inscripcion && $inscripcion["estado"] === "apro
         exit;
     }
 }
+
 $sql_val = "SELECT * FROM valoraciones 
     WHERE usuario_id = ? AND curso_id = ?";
 $stmt_val = mysqli_prepare($conexion, $sql_val);
@@ -251,7 +277,7 @@ $valoracion_existente = mysqli_fetch_assoc($res_val);
     </p>
     <p><?php echo htmlspecialchars($curso["descripcion"]); ?></p>
 
-    <?php if (!$inscripcion): ?>
+    <?php if (!$inscripcion || $inscripcion["estado"] === "rechazado"): ?>
 
         <p>No estás inscrito en este curso.</p>
 
@@ -270,12 +296,23 @@ $valoracion_existente = mysqli_fetch_assoc($res_val);
             </button>
         </form>
 
-  <?php elseif ($inscripcion["estado"] === "aprobado"): ?>
+    <?php elseif ($inscripcion["estado"] === "aprobado"): ?>
+        
+
+
         <form method="POST">
             <button type="submit" name="cancelar_inscripcion">
                 Darse de baja del curso
             </button>
         </form>
+
+        <?php if ($porcentaje >= 100): ?>
+            <br>
+            <a href="certificado.php?id=<?php echo $curso_id; ?>">
+                🎓 Descargar certificado
+            </a>
+            <hr>
+        <?php endif; ?>
         <br>
 
         <h4>Progreso: <?php echo $completadas; ?> / <?php echo $total; ?>
@@ -322,43 +359,43 @@ $valoracion_existente = mysqli_fetch_assoc($res_val);
             </div>
 
         <?php endwhile; ?>
-       <hr>
-<h3>Valorar curso</h3>
+        <hr>
+        <h3>Valorar curso</h3>
 
-<?php if (!$valoracion_existente || $valoracion_editar): ?>
+        <?php if (!$valoracion_existente || $valoracion_editar): ?>
 
-    <form method="POST">
+            <form method="POST">
 
-        <label>Puntuación:</label><br>
-        <select name="puntuacion" required>
-            <option value="">Seleccionar</option>
-            <?php for ($i = 5; $i >= 1; $i--): ?>
-                <option value="<?php echo $i; ?>"
-                    <?php
-                    if (
-                        ($valoracion_editar && $valoracion_editar["puntuacion"] == $i) ||
-                        ($valoracion_existente && $valoracion_existente["puntuacion"] == $i)
-                    ) echo "selected";
-                    ?>>
-                    <?php echo str_repeat("⭐", $i); ?>
-                </option>
-            <?php endfor; ?>
-        </select><br><br>
+                <label>Puntuación:</label><br>
+                <select name="puntuacion" required>
+                    <option value="">Seleccionar</option>
+                    <?php for ($i = 5; $i >= 1; $i--): ?>
+                        <option value="<?php echo $i; ?>" <?php
+                           if (
+                               ($valoracion_editar && $valoracion_editar["puntuacion"] == $i) ||
+                               ($valoracion_existente && $valoracion_existente["puntuacion"] == $i)
+                           )
+                               echo "selected";
+                           ?>>
+                            <?php echo str_repeat("⭐", $i); ?>
+                        </option>
+                    <?php endfor; ?>
+                </select><br><br>
 
-        <textarea name="comentario" placeholder="Comentario (opcional)"><?php
-            echo $valoracion_editar["comentario"]
-                ?? $valoracion_existente["comentario"]
-                ?? "";
-        ?></textarea><br><br>
+                <textarea name="comentario" placeholder="Comentario (opcional)"><?php
+                echo $valoracion_editar["comentario"]
+                    ?? $valoracion_existente["comentario"]
+                    ?? "";
+                ?></textarea><br><br>
 
-        <button type="submit" name="valorar">
-            <?php echo $valoracion_editar ? "Actualizar valoración" : "Enviar valoración"; ?>
-        </button>
-    </form>
+                <button type="submit" name="valorar">
+                    <?php echo $valoracion_editar ? "Actualizar valoración" : "Enviar valoración"; ?>
+                </button>
+            </form>
 
 
-<?php endif; ?>
-       
+        <?php endif; ?>
+
 
         <h3>💬 Comentarios</h3>
 

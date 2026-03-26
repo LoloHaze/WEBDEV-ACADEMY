@@ -36,13 +36,10 @@ if (isset($_GET["rechazar"])) {
     header("Location: gestionInscripciones.php");
     exit;
 }
-// =========================
-// CANCELAR INSCRIPCIÓN
-// =========================
-if (isset($_GET["cancelar"])) {
-    $id = intval($_GET["cancelar"]);
+if (isset($_GET["pendiente"])) {
+    $id = intval($_GET["pendiente"]);
 
-    $sql = "DELETE FROM inscripciones WHERE id = ?";
+    $sql = "UPDATE inscripciones SET estado = 'pendiente' WHERE id = ?";
     $stmt = mysqli_prepare($conexion, $sql);
     mysqli_stmt_bind_param($stmt, "i", $id);
     mysqli_stmt_execute($stmt);
@@ -50,6 +47,20 @@ if (isset($_GET["cancelar"])) {
     header("Location: gestionInscripciones.php");
     exit;
 }
+// // =========================
+// // CANCELAR INSCRIPCIÓN
+// // =========================
+// if (isset($_GET["cancelar"])) {
+//     $id = intval($_GET["cancelar"]);
+
+//     $sql = "DELETE FROM inscripciones WHERE id = ?";
+//     $stmt = mysqli_prepare($conexion, $sql);
+//     mysqli_stmt_bind_param($stmt, "i", $id);
+//     mysqli_stmt_execute($stmt);
+
+//     header("Location: gestionInscripciones.php");
+//     exit;
+// }
 
 /* =========================
    OBTENER INSCRIPCIONES
@@ -76,6 +87,18 @@ WHERE i.estado = 'aprobado'
 ORDER BY i.fecha_solicitud DESC
 ";
 $aprobadas = mysqli_query($conexion, $sql_aprobadas);
+
+
+// Rechazadas
+$sql_rechazadas = "
+SELECT i.id, u.nombre, u.email, u.foto, c.titulo
+FROM inscripciones i
+JOIN usuarios u ON i.usuario_id = u.id
+JOIN cursos c ON i.curso_id = c.id
+WHERE i.estado = 'rechazado'
+ORDER BY i.fecha_solicitud DESC
+";
+$rechazadas = mysqli_query($conexion, $sql_rechazadas);
 ?>
 
 <!DOCTYPE html>
@@ -114,9 +137,7 @@ $aprobadas = mysqli_query($conexion, $sql_aprobadas);
             <div>
                 <a href="?aprobar=<?php echo $row["id"]; ?>">✅ Aprobar</a> |
                 <a href="?rechazar=<?php echo $row["id"]; ?>">❌ Rechazar</a> |
-                <a href="?cancelar=<?php echo $row["id"]; ?>" onclick="return confirm('¿Cancelar inscripción?');">
-                    🗑 Cancelar
-                </a>
+
             </div>
 
         </div>
@@ -148,14 +169,45 @@ $aprobadas = mysqli_query($conexion, $sql_aprobadas);
 
             <div>
                 <span style="color:green;">✔ Aprobado</span> |
-                <a href="?cancelar=<?php echo $row["id"]; ?>" onclick="return confirm('¿Quitar inscripción al usuario?');">
-                    ⛔ Cancelar inscripción
+                <a href="?rechazar=<?php echo $row["id"]; ?>" onclick="return confirm('¿Quitar acceso al curso?');">
+                    ⛔ Quitar acceso
                 </a>
+            </div>
+
+        </div>
+    <?php endwhile; ?>
+    <!-- =================RECHAZAADAS ================= -->
+
+    <h3>❌ Rechazadas</h3>
+
+    <?php while ($row = mysqli_fetch_assoc($rechazadas)): ?>
+
+        <?php
+        $foto = $row["foto"]
+            ? "../public/uploads/perfiles/" . $row["foto"]
+            : "https://ui-avatars.com/api/?name=" . urlencode($row["nombre"]);
+        ?>
+
+        <div style="display:flex; align-items:center; gap:15px; border:1px solid #ccc; padding:10px; margin:10px 0;">
+
+            <img src="<?php echo $foto; ?>" width="50" height="50" style="border-radius:50%; object-fit:cover;">
+
+            <div style="flex:1;">
+                <strong><?php echo htmlspecialchars($row["nombre"]); ?></strong><br>
+                <small><?php echo htmlspecialchars($row["email"]); ?></small><br>
+                Curso: <strong><?php echo htmlspecialchars($row["titulo"]); ?></strong>
+            </div>
+
+            <div>
+                <a href="?aprobar=<?php echo $row["id"]; ?>">✅ Aprobar</a> |
+                <a href="?pendiente=<?php echo $row["id"]; ?>">🔄 Poner pendiente</a>
             </div>
 
         </div>
 
     <?php endwhile; ?>
+
+
     <br><br>
     <a href="panel.php">← Volver al panel</a>
     <br>
