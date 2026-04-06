@@ -55,7 +55,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     if ($archivo["size"] <= 3 * 1024 * 1024) {
 
                         $extension = pathinfo($archivo["name"], PATHINFO_EXTENSION);
-                        $imagenNombre = "curso_" .$id . "." . $extension;
+                        $imagenNombre = "curso_" . $id . "." . $extension;
                         $rutaDestino = "../public/uploads/cursos/" . $imagenNombre;
 
                         move_uploaded_file($archivo["tmp_name"], $rutaDestino);
@@ -94,7 +94,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
         }
     }
-} // ← ESTA LLAVE FALTABA
+} 
 ?>
 
 <!DOCTYPE html>
@@ -106,45 +106,44 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <body>
 
-<h2>Editar Curso</h2>
+    <h2>Editar Curso</h2>
 
-<?php
-$imagenActual = (!empty($curso["imagen_portada"]) &&
-    file_exists("../public/uploads/cursos/" . $curso["imagen_portada"]))
-    ? "../public/uploads/cursos/" . $curso["imagen_portada"]
-    : "https://via.placeholder.com/400x200?text=Sin+imagen";
-?>
+    <?php
+    $imagenActual = (!empty($curso["imagen_portada"]) &&
+        file_exists("../public/uploads/cursos/" . $curso["imagen_portada"]))
+        ? "../public/uploads/cursos/" . $curso["imagen_portada"]
+        : "https://via.placeholder.com/400x200?text=Sin+imagen";
+    ?>
 
-<img src="<?php echo $imagenActual; ?>"
-     style="width:300px; height:150px; object-fit:cover; border-radius:8px;">
-<br><br>
+    <img src="<?php echo $imagenActual; ?>" style="width:300px; height:150px; object-fit:cover; border-radius:8px;">
+    <br><br>
 
-<?php if ($mensaje): ?>
-    <p><?php echo $mensaje; ?></p>
-<?php endif; ?>
+    <?php if ($mensaje): ?>
+        <p><?php echo htmlspecialchars($mensaje); ?></p>
+    <?php endif; ?>
 
-<form method="POST" enctype="multipart/form-data">
+    <form method="POST" enctype="multipart/form-data">
 
-    <input type="text" name="titulo"
-        value="<?php echo htmlspecialchars($curso["titulo"]); ?>" required><br><br>
+        <input type="text" name="titulo" value="<?php echo htmlspecialchars($curso["titulo"]); ?>" required><br><br>
 
-    <textarea name="descripcion"><?php
+        <textarea name="descripcion"><?php
         echo htmlspecialchars($curso["descripcion"]);
-    ?></textarea><br><br>
+        ?></textarea><br><br>
 
-    <input type="number" step="0.01" name="precio"
-        value="<?php echo $curso["precio"]; ?>"><br><br>
+        <input type="number" step="0.01" name="precio"
+            value="<?php echo htmlspecialchars($curso["precio"]); ?>"><br><br>
 
-    <label>Nueva imagen
-    </label><br>
-    <input type="file" name="imagen_portada" accept="image/*"><br><br>
+        <label>Nueva imagen
+        </label><br>
+        <input type="file" name="imagen_portada" accept="image/*"><br><br>
 
-    <button type="submit">Guardar cambios</button>
+        <button type="submit">Guardar cambios</button>
 
-</form>
+    </form>
 
-<br>
-<a href="gestionCursos.php">← Volver</a>
+    <br>
+    <a href="gestionCursos.php">← Volver</a>
 
 </body>
+
 </html>

@@ -39,6 +39,11 @@ if (!$curso) {
     header("Location: index.php");
     exit;
 }
+// 🔒 Bloquear acceso a cursos desactivados
+if ($curso["activo"] != 1) {
+    header("Location: index.php");
+    exit;
+}
 
 /* ================================
    PROCESAR SOLICITUD INSCRIPCIÓN
@@ -297,7 +302,7 @@ $valoracion_existente = mysqli_fetch_assoc($res_val);
         </form>
 
     <?php elseif ($inscripcion["estado"] === "aprobado"): ?>
-        
+
 
 
         <form method="POST">
@@ -306,7 +311,29 @@ $valoracion_existente = mysqli_fetch_assoc($res_val);
             </button>
         </form>
 
-        <?php if ($porcentaje >= 100): ?>
+        <?php
+
+
+
+        /* ==============================
+         COMPROBAR SI EXAMEN APROBADO
+        ============================== */
+
+        $examen_aprobado = false;
+
+        $sql_ex = "SELECT aprobado FROM resultados_examen
+           WHERE usuario_id = ? AND curso_id = ?";
+        $stmt_ex = mysqli_prepare($conexion, $sql_ex);
+        mysqli_stmt_bind_param($stmt_ex, "ii", $usuario_id, $curso_id);
+        mysqli_stmt_execute($stmt_ex);
+        $res_ex = mysqli_stmt_get_result($stmt_ex);
+        $datos_ex = mysqli_fetch_assoc($res_ex);
+
+        if ($datos_ex && $datos_ex["aprobado"] == 1) {
+            $examen_aprobado = true;
+        }
+
+        if ($porcentaje >= 100 && $examen_aprobado): ?>
             <br>
             <a href="certificado.php?id=<?php echo $curso_id; ?>">
                 🎓 Descargar certificado
@@ -327,6 +354,11 @@ $valoracion_existente = mysqli_fetch_assoc($res_val);
             transition: width 0.3s;">
             </div>
         </div>
+        <?php if ($porcentaje >= 100 && !$examen_aprobado): ?>
+            <a href="examen.php?id=<?php echo $curso_id; ?>">
+                📝 Realizar examen final
+            </a>
+        <?php endif; ?>
 
         <br>
 

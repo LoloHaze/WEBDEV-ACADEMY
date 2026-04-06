@@ -31,6 +31,37 @@ if (!$leccion) {
     header("Location: index.php");
     exit;
 }
+
+/* ==========================================
+   COMPROBAR ACCESO A LA LECCIÓN
+========================================== */
+
+// 1️⃣ Comprobar que el curso esté activo
+$sql_activo = "SELECT activo FROM cursos WHERE id = ?";
+$stmt_activo = mysqli_prepare($conexion, $sql_activo);
+mysqli_stmt_bind_param($stmt_activo, "i", $leccion["curso_id"]);
+mysqli_stmt_execute($stmt_activo);
+$res_activo = mysqli_stmt_get_result($stmt_activo);
+$curso_activo = mysqli_fetch_assoc($res_activo);
+
+if (!$curso_activo || $curso_activo["activo"] != 1) {
+    header("Location: index.php");
+    exit;
+}
+
+// 2️⃣ Comprobar inscripción aprobada
+$sql_ins = "SELECT estado FROM inscripciones
+            WHERE usuario_id = ? AND curso_id = ?";
+$stmt_ins = mysqli_prepare($conexion, $sql_ins);
+mysqli_stmt_bind_param($stmt_ins, "ii", $usuario_id, $leccion["curso_id"]);
+mysqli_stmt_execute($stmt_ins);
+$res_ins = mysqli_stmt_get_result($stmt_ins);
+$inscripcion = mysqli_fetch_assoc($res_ins);
+
+if (!$inscripcion || $inscripcion["estado"] !== "aprobado") {
+    header("Location: curso.php?id=" . $leccion["curso_id"]);
+    exit;
+}
 // Obtener todas las lecciones del curso
 $sql_lista = "SELECT * FROM lecciones 
               WHERE curso_id = ?
