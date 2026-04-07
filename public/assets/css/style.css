@@ -1,0 +1,226 @@
+/* =========================
+   RESET BÁSICO
+========================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background-color: #1f1f1fc5;
+    color: #333;
+    line-height: 1.6;
+}
+
+/* =========================
+   CONTAINER
+========================= */
+
+.container {
+    width: 90%;
+    max-width: 1100px;
+    margin: 40px auto;
+}
+
+/* =========================
+   TITULOS
+========================= */
+
+h1, h2, h3, h4 {
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+
+/* =========================
+   BOTONES
+========================= */
+
+.btn {
+    display: inline-block;
+    padding: 10px 16px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 14px;
+    cursor: pointer;
+    border: none;
+    transition: 0.2s ease-in-out;
+}
+
+.btn-primary {
+    background-color: #2563eb;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #1e40af;
+}
+
+.btn-success {
+    background-color: #16a34a;
+    color: white;
+}
+
+.btn-success:hover {
+    background-color: #166534;
+}
+
+.btn-danger {
+    background-color: #dc2626;
+    color: white;
+}
+
+.btn-danger:hover {
+    background-color: #991b1b;
+}
+
+/* =========================
+   TARJETAS
+========================= */
+
+.card {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    margin-bottom: 20px;
+}
+
+/* =========================
+   INPUTS
+========================= */
+
+
+
+/* =========================
+   BARRA PROGRESO
+========================= */
+
+.progress {
+    width: 100%;
+    background: #ddd;
+    border-radius: 10px;
+    overflow: hidden;
+    height: 18px;
+}
+
+.progress-bar {
+    height: 100%;
+    background: #16a34a;
+    transition: width 0.3s ease;
+}
+
+
+/* =========================
+   NAVBAR
+========================= */
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 40px; 
+    background: #0d0d0d;
+    color: white;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+/* LOGO */
+.logo {
+    font-weight: bold;
+    font-size: 18px;
+    color: white;
+    text-decoration: none;
+}
+
+/* BUSCADOR CENTRO*/
+.nav-search {
+    display: flex;
+    align-items: center;  
+    justify-content: center;
+    gap: 8px;
+    background: #1a1a1a;
+    padding: 6px 10px;
+    border-radius: 999px;
+    height: 40px;
+}
+
+/* INPUT */
+.nav-search input {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: white;
+    width: 160px;
+    font-size: 13px;
+}
+
+/* SELECT */
+.nav-search select {
+    background: #2a2a2a;
+    border: none;
+    color: #ddd;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 12px;
+    height: 28px;
+    cursor: pointer;
+}
+
+/* BOTÓN */
+.nav-search button {
+    background: #ea4c89;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 999px;
+    color: white;
+    font-size: 13px;
+    cursor: pointer;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* HOVER */
+.nav-search button:hover {
+    background: #ff6aa3;
+}
+
+/* DERECHA */
+.navbar-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+/* LINKS */
+.nav-link {
+    color: #ccc;
+    text-decoration: none;
+    font-size: 14px;
+    transition: 0.3s;
+}
+
+.nav-link:hover {
+    color: #ff6aa3;
+}
+
+/* BOTÓN LOGOUT */
+.btn-logout {
+    background: #ea4c89;
+    padding: 3px 10px;
+    border-radius: 999px;
+    color: white;
+    text-decoration: none;
+    font-size: 13px;
+}
+
+.btn-logout:hover {
+    background: #ff6aa3;
+}
