@@ -227,275 +227,325 @@ mysqli_stmt_execute($stmt_val);
 $res_val = mysqli_stmt_get_result($stmt_val);
 $valoracion_existente = mysqli_fetch_assoc($res_val);
 ?>
+<?php
+/* ==============================
+   MEDIA VALORACIONES
+============================== */
+$sql_media = "SELECT AVG(puntuacion) as media, COUNT(*) as total
+FROM valoraciones
+WHERE curso_id = ?";
+$stmt_media = mysqli_prepare($conexion, $sql_media);
+mysqli_stmt_bind_param($stmt_media, "i", $curso_id);
+mysqli_stmt_execute($stmt_media);
+$res_media = mysqli_stmt_get_result($stmt_media);
+$datos_media = mysqli_fetch_assoc($res_media);
 
+$media = round($datos_media["media"], 1);
+$total_val = $datos_media["total"];
+
+
+/* ==============================
+   EXAMEN APROBADO
+============================== */
+$examen_aprobado = false;
+
+$sql_ex = "SELECT aprobado FROM resultados_examen
+WHERE usuario_id = ? AND curso_id = ?";
+$stmt_ex = mysqli_prepare($conexion, $sql_ex);
+mysqli_stmt_bind_param($stmt_ex, "ii", $usuario_id, $curso_id);
+mysqli_stmt_execute($stmt_ex);
+$res_ex = mysqli_stmt_get_result($stmt_ex);
+$datos_ex = mysqli_fetch_assoc($res_ex);
+
+if ($datos_ex && $datos_ex["aprobado"] == 1) {
+    $examen_aprobado = true;
+}
+
+
+/* ==============================
+   LISTAR COMENTARIOS
+============================== */
+$sql_listar = "SELECT v.id, v.usuario_id, v.puntuacion, v.comentario, v.fecha, u.nombre
+FROM valoraciones v
+JOIN usuarios u ON v.usuario_id = u.id
+WHERE v.curso_id = ?
+ORDER BY v.fecha DESC";
+
+$stmt_listar = mysqli_prepare($conexion, $sql_listar);
+mysqli_stmt_bind_param($stmt_listar, "i", $curso_id);
+mysqli_stmt_execute($stmt_listar);
+$resultado_listar = mysqli_stmt_get_result($stmt_listar);
+?>
 <!DOCTYPE html>
 
 <html>
 
 <head>
+    <link rel="stylesheet" href="assets/css/index.css">
+    <link rel="stylesheet" href="assets/css/cursos.css">
+    <link rel="stylesheet" href="assets/css/components.css">
     <title><?php echo htmlspecialchars($curso["titulo"]); ?></title>
 </head>
 
 <body>
+     <?php require_once "../includes/header.php"; ?>
+    
+     <div class="main">
+       
 
-    <a href="index.php">← Volver a cursos</a>
+        <div class="container">
 
-    <h2><?php echo htmlspecialchars($curso["titulo"]); ?></h2>
-    <?php
-    $sql_media = "SELECT AVG(puntuacion) as media, COUNT(*) as total
-              FROM valoraciones
-              WHERE curso_id = ?";
-    $stmt_media = mysqli_prepare($conexion, $sql_media);
-    mysqli_stmt_bind_param($stmt_media, "i", $curso_id);
-    mysqli_stmt_execute($stmt_media);
-    $res_media = mysqli_stmt_get_result($stmt_media);
-    $datos_media = mysqli_fetch_assoc($res_media);
+            <a href="index.php" class="back-link">← Volver a cursos</a>
 
-    $media = round($datos_media["media"], 1);
-    $total_val = $datos_media["total"];
-    ?>
+            <!-- =========================
+     CURSO INFO
+========================= -->
 
-    <p style="font-weight:bold;">
+            <div class="course-hero">
 
-        <?php if ($total_val > 0): ?>
+                <div class="hero-left">
 
-            <?php
-            $media_redondeada = round($media);
-            ?>
+                    <h1 class="section-title"><?php echo htmlspecialchars($curso["titulo"]); ?></h1>
 
-            <?php for ($i = 1; $i <= 5; $i++): ?>
-                <?php if ($i <= $media_redondeada): ?>
-                    <span style="color:gold;">★</span>
-                <?php else: ?>
-                    <span style="color:#ccc;">★</span>
-                <?php endif; ?>
-            <?php endfor; ?>
+                    <div class="hero-rating">
+                        <?php if ($total_val > 0): ?>
+                            <?php $media_redondeada = round($media); ?>
 
-            (<?php echo $total_val; ?> valoraciones)
+                            <?php for ($i = 1; $i <= 5; $i++): ?>
+                                <?php if ($i <= $media_redondeada): ?>
+                                    <span class="star filled">★</span>
+                                <?php else: ?>
+                                    <span class="star">★</span>
+                                <?php endif; ?>
+                            <?php endfor; ?>
 
-        <?php else: ?>
-
-            ⭐ Sin valoraciones
-
-        <?php endif; ?>
-
-    </p>
-    <p><?php echo htmlspecialchars($curso["descripcion"]); ?></p>
-
-    <?php if (!$inscripcion || $inscripcion["estado"] === "rechazado"): ?>
-
-        <p>No estás inscrito en este curso.</p>
-
-        <form method="POST">
-            <button type="submit" name="solicitar_inscripcion">
-                Solicitar inscripción
-            </button>
-        </form>
-
-    <?php elseif ($inscripcion["estado"] === "pendiente"): ?>
-
-        <p>Tu solicitud está pendiente de aprobación por el administrador.</p>
-        <form method="POST">
-            <button type="submit" name="cancelar_inscripcion">
-                Cancelar solicitud
-            </button>
-        </form>
-
-    <?php elseif ($inscripcion["estado"] === "aprobado"): ?>
-
-
-
-        <form method="POST">
-            <button type="submit" name="cancelar_inscripcion">
-                Darse de baja del curso
-            </button>
-        </form>
-
-        <?php
-
-
-
-        /* ==============================
-         COMPROBAR SI EXAMEN APROBADO
-        ============================== */
-
-        $examen_aprobado = false;
-
-        $sql_ex = "SELECT aprobado FROM resultados_examen
-           WHERE usuario_id = ? AND curso_id = ?";
-        $stmt_ex = mysqli_prepare($conexion, $sql_ex);
-        mysqli_stmt_bind_param($stmt_ex, "ii", $usuario_id, $curso_id);
-        mysqli_stmt_execute($stmt_ex);
-        $res_ex = mysqli_stmt_get_result($stmt_ex);
-        $datos_ex = mysqli_fetch_assoc($res_ex);
-
-        if ($datos_ex && $datos_ex["aprobado"] == 1) {
-            $examen_aprobado = true;
-        }
-
-        if ($porcentaje >= 100 && $examen_aprobado): ?>
-            <br>
-            <a href="certificado.php?id=<?php echo $curso_id; ?>">
-                🎓 Descargar certificado
-            </a>
-            <hr>
-        <?php endif; ?>
-        <br>
-
-        <h4>Progreso: <?php echo $completadas; ?> / <?php echo $total; ?>
-            (<?php echo $porcentaje; ?>%)</h4>
-
-        <div style="width:400px; height:20px; background:#ddd; border-radius:10px;">
-            <div style="
-            width: <?php echo $porcentaje; ?>%;
-            height:100%;
-            background:green;
-            border-radius:10px;
-            transition: width 0.3s;">
-            </div>
-        </div>
-        <?php if ($porcentaje >= 100 && !$examen_aprobado): ?>
-            <a href="examen.php?id=<?php echo $curso_id; ?>">
-                📝 Realizar examen final
-            </a>
-        <?php endif; ?>
-
-        <br>
-
-        <h3>Lecciones</h3>
-
-        <?php while ($leccion = mysqli_fetch_assoc($resultado_lecciones)):
-
-            $sql_check = "SELECT id FROM progreso
-                      WHERE usuario_id = ? AND leccion_id = ?";
-            $stmt_check = mysqli_prepare($conexion, $sql_check);
-            mysqli_stmt_bind_param($stmt_check, "ii", $usuario_id, $leccion["id"]);
-            mysqli_stmt_execute($stmt_check);
-            mysqli_stmt_store_result($stmt_check);
-
-            $esta_completada = mysqli_stmt_num_rows($stmt_check) > 0;
-            ?>
-
-            <div style="border:1px solid #ccc; padding:10px; margin:10px 0;">
-                <h4>
-                    <?php echo $leccion["orden"]; ?>.
-                    <?php echo htmlspecialchars($leccion["titulo"]); ?>
-                    <?php if ($esta_completada): ?>
-                        <span style="color:green;">✔</span>
-                    <?php endif; ?>
-                </h4>
-                <p><?php echo htmlspecialchars($leccion["descripcion"]); ?></p>
-                <a href="leccion.php?id=<?php echo $leccion["id"]; ?>">
-                    Ver lección
-                </a>
-            </div>
-
-        <?php endwhile; ?>
-        <hr>
-        <h3>Valorar curso</h3>
-
-        <?php if (!$valoracion_existente || $valoracion_editar): ?>
-
-            <form method="POST">
-
-                <label>Puntuación:</label><br>
-                <select name="puntuacion" required>
-                    <option value="">Seleccionar</option>
-                    <?php for ($i = 5; $i >= 1; $i--): ?>
-                        <option value="<?php echo $i; ?>" <?php
-                           if (
-                               ($valoracion_editar && $valoracion_editar["puntuacion"] == $i) ||
-                               ($valoracion_existente && $valoracion_existente["puntuacion"] == $i)
-                           )
-                               echo "selected";
-                           ?>>
-                            <?php echo str_repeat("⭐", $i); ?>
-                        </option>
-                    <?php endfor; ?>
-                </select><br><br>
-
-                <textarea name="comentario" placeholder="Comentario (opcional)"><?php
-                echo $valoracion_editar["comentario"]
-                    ?? $valoracion_existente["comentario"]
-                    ?? "";
-                ?></textarea><br><br>
-
-                <button type="submit" name="valorar">
-                    <?php echo $valoracion_editar ? "Actualizar valoración" : "Enviar valoración"; ?>
-                </button>
-            </form>
-
-
-        <?php endif; ?>
-
-
-        <h3>💬 Comentarios</h3>
-
-        <?php
-        $sql_listar = "SELECT v.id, v.usuario_id, v.puntuacion, v.comentario, v.fecha, u.nombre
-               FROM valoraciones v
-               JOIN usuarios u ON v.usuario_id = u.id
-               WHERE v.curso_id = ?
-               ORDER BY v.fecha DESC";
-
-        $stmt_listar = mysqli_prepare($conexion, $sql_listar);
-        mysqli_stmt_bind_param($stmt_listar, "i", $curso_id);
-        mysqli_stmt_execute($stmt_listar);
-        $resultado_listar = mysqli_stmt_get_result($stmt_listar);
-        ?>
-
-        <?php if (mysqli_num_rows($resultado_listar) > 0): ?>
-
-            <?php while ($val = mysqli_fetch_assoc($resultado_listar)): ?>
-
-                <div style="border:1px solid #ddd; padding:10px; margin:10px 0; border-radius:6px;">
-
-                    <?php for ($i = 1; $i <= 5; $i++): ?>
-                        <?php if ($i <= $val["puntuacion"]): ?>
-                            <span style="color:gold;">★</span>
+                            <span class="rating-count">(<?php echo $total_val; ?>)</span>
                         <?php else: ?>
-                            <span style="color:#ccc;">★</span>
+                            <span class="no-rating">Sin valoraciones</span>
                         <?php endif; ?>
-                    <?php endfor; ?>
+                    </div>
 
-                    <strong>
-                        <?php echo htmlspecialchars($val["nombre"]); ?>
-                    </strong>
+                    <p class="card-desc"><?php echo htmlspecialchars($curso["descripcion"]); ?></p>
 
-                    <small style="color:#777;">
-                        (<?php echo date("d/m/Y", strtotime($val["fecha"])); ?>)
-                    </small>
+                    <!-- 🔥 PROGRESO -->
+                    <?php if ($inscripcion && $inscripcion["estado"] === "aprobado"): ?>
 
-                    <p>
-                        <?php echo nl2br(htmlspecialchars($val["comentario"])); ?>
-                    </p>
-                    <?php if ($val["usuario_id"] == $usuario_id): ?>
+                        <div class="hero-progress-row">
 
-                        <form method="POST" style="display:inline;">
-                            <input type="hidden" name="editar_id" value="<?php echo $val["id"]; ?>">
-                            <button type="submit">Editar</button>
-                        </form>
+                            <div class="hero-progress">
 
-                        <form method="POST" style="display:inline;">
-                            <input type="hidden" name="eliminar_id" value="<?php echo $val["id"]; ?>">
-                            <button type="submit" onclick="return confirm('¿Eliminar tu comentario?');">
-                                Eliminar
+                                <div class="progress-text">
+                                    <?php echo $completadas; ?> / <?php echo $total; ?> completadas
+                                </div>
+
+                                <div class="progress">
+                                    <div class="progress-bar" style="width: <?php echo $porcentaje; ?>%">
+                                        <span class="progress-percent"><?php echo $porcentaje; ?>%</span>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </div>
+                    <?php endif; ?>
+
+                </div>
+
+                <div class="hero-right">
+
+                    <?php if (!$inscripcion || $inscripcion["estado"] === "rechazado"): ?>
+
+                        <form method="POST">
+                            <button class="btn btn-primary" type="submit" name="solicitar_inscripcion">
+                                🚀 Inscribirme
                             </button>
                         </form>
+
+                    <?php elseif ($inscripcion["estado"] === "pendiente"): ?>
+
+                        <form method="POST">
+                            <button class="btn btn-danger" type="submit" name="cancelar_inscripcion">
+                                Cancelar solicitud
+                            </button>
+                        </form>
+
+                    <?php elseif ($inscripcion["estado"] === "aprobado"): ?>
+                        <form method="POST">
+                            <button class="btn btn-danger" type="submit" name="cancelar_inscripcion">
+                                Darse de baja
+                            </button>
+                        </form>
+                        <?php if ($porcentaje >= 100 && !$examen_aprobado): ?>
+                            <button href="examen.php?id=<?php echo $curso_id; ?>" class="btn btn-primary">
+                                📝 Examen
+                            </button>
+                        <?php endif; ?>
+
+                        <?php if ($porcentaje >= 100 && $examen_aprobado): ?>
+                            <a href="certificado.php?id=<?php echo $curso_id; ?>" class="btn btn-success">
+                                🎓 Certificado
+                            </a>
+                        <?php endif; ?>
+
+
 
                     <?php endif; ?>
 
                 </div>
 
-            <?php endwhile; ?>
+            </div>
 
-        <?php else: ?>
 
-            <p>Este curso aún no tiene valoraciones.</p>
+            <!-- =========================
+     CONTENIDO CURSO
+========================= -->
 
-        <?php endif; ?>
-    <?php endif; ?>
+            <?php if ($inscripcion && $inscripcion["estado"] === "aprobado"): ?>
 
+                <!-- =========================
+         LECCIONES
+    ========================= -->
+
+                <div class="lessons-section">
+
+                    <h3>📚 Lecciones</h3>
+
+                    <?php while ($leccion = mysqli_fetch_assoc($resultado_lecciones)): ?>
+
+                        <?php
+                        $sql_check = "SELECT id FROM progreso
+        WHERE usuario_id = ? AND leccion_id = ?";
+                        $stmt_check = mysqli_prepare($conexion, $sql_check);
+                        mysqli_stmt_bind_param($stmt_check, "ii", $usuario_id, $leccion["id"]);
+                        mysqli_stmt_execute($stmt_check);
+                        mysqli_stmt_store_result($stmt_check);
+
+                        $esta_completada = mysqli_stmt_num_rows($stmt_check) > 0;
+                        ?>
+
+                        <div class="lesson-item">
+                            <div class="lesson-info">
+                                <h4>
+                                    <?php echo $leccion["orden"]; ?>.
+                                    <?php echo htmlspecialchars($leccion["titulo"]); ?>
+
+                                    <?php if ($esta_completada): ?>
+                                        <span style="color:#16a34a;">✔</span>
+                                    <?php endif; ?>
+                                </h4>
+
+                                <p><?php echo htmlspecialchars($leccion["descripcion"]); ?></p>
+                            </div>
+                            <a href="leccion.php?id=<?php echo $leccion["id"]; ?>" class="btn btn-primary">
+                                Ver lección
+                            </a>
+
+                        </div>
+
+                    <?php endwhile; ?>
+
+                </div>
+
+                <!-- =========================
+     VALORACIÓN
+========================= -->
+
+
+
+                <?php if (!$valoracion_existente || $valoracion_editar): ?>
+                    <div class="card rating-card">
+
+                        <h3>Valorar curso</h3>
+
+                        <form method="POST" class="rating-form">
+
+                            <!-- ⭐ ESTRELLAS -->
+                            <div class="stars-input">
+                                <?php for ($i = 5; $i >= 1; $i--): ?>
+                                    <input type="radio" name="puntuacion" value="<?php echo $i; ?>" id="star<?php echo $i; ?>">
+                                    <label for="star<?php echo $i; ?>">★</label>
+                                <?php endfor; ?>
+                            </div>
+
+                            <!-- 📝 COMENTARIO -->
+                            <textarea name="comentario" placeholder="Escribe tu opinión..."></textarea>
+
+                            <!-- 🚀 BOTÓN -->
+                            <button class="btn btn-primary" type="submit" name="valorar">
+                                Enviar valoración
+                            </button>
+
+                        </form>
+
+                    </div>
+                <?php endif; ?>
+
+
+
+                <!-- =========================
+     COMENTARIOS
+========================= -->
+
+                <div class="comments-section">
+
+                    <h3>💬 Comentarios</h3>
+
+                    <?php if (mysqli_num_rows($resultado_listar) > 0): ?>
+
+                        <?php while ($val = mysqli_fetch_assoc($resultado_listar)): ?>
+
+                            <div class="comment-item">
+                                <div class="comment-content">
+                                    <?php for ($i = 1; $i <= 5; $i++): ?>
+                                        <?php if ($i <= $val["puntuacion"]): ?>
+                                            <span style="color:gold;">★</span>
+                                        <?php else: ?>
+                                            <span style="color:#ccc;">★</span>
+                                        <?php endif; ?>
+                                    <?php endfor; ?>
+
+                                    <strong><?php echo htmlspecialchars($val["nombre"]); ?></strong>
+
+                                    <small style="color:#777;">
+                                        (<?php echo date("d/m/Y", strtotime($val["fecha"])); ?>)
+                                    </small>
+
+                                    <p><?php echo nl2br(htmlspecialchars($val["comentario"])); ?></p>
+                                </div>
+                                <div class="comment-actions">
+                                    <?php if ($val["usuario_id"] == $usuario_id): ?>
+
+                                        <form method="POST" style="display:inline;">
+                                            <input type="hidden" name="editar_id" value="<?php echo $val["id"]; ?>">
+                                            <button class="btn btn-primary">Editar</button>
+                                        </form>
+
+                                        <form method="POST" style="display:inline;">
+                                            <input type="hidden" name="eliminar_id" value="<?php echo $val["id"]; ?>">
+                                            <button class="btn btn-danger" onclick="return confirm('¿Eliminar?');">
+                                                Eliminar
+                                            </button>
+                                        </form>
+
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+
+                        <?php endwhile; ?>
+
+                    <?php else: ?>
+
+                        <p>Este curso aún no tiene valoraciones.</p>
+
+                    <?php endif; ?>
+
+                </div>
+
+            <?php endif; ?>
+
+        </div>
+    </div>
+    <?php require_once "../includes/footer.php"; ?>
 </body>
 
 </html>

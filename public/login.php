@@ -129,17 +129,43 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <body>
 
-    <h2>Login</h2>
+    <link rel="stylesheet" href="assets/css/login.css">
+    <link rel="stylesheet" href="assets/css/components.css">
 
-    <?php if ($mensaje != ""): ?>
-        <p><?php echo $mensaje; ?></p>
-    <?php endif; ?>
+    <div class="auth-container">
 
-    <form method="POST">
-        <input type="email" name="email" placeholder="Email" required><br><br>
-        <input type="password" name="password" placeholder="Contraseña" required><br><br>
-        <button type="submit">Entrar</button>
-    </form>
+        <div class="auth-card">
+
+    <div class="auth-header">
+        <div class="auth-logo">🚀 WebDevAcademy</div>
+<h2>Iniciar sesión</h2>
+    </div>
+            <?php if ($mensaje != ""): ?>
+                <div class="auth-error">
+                    <?php echo $mensaje; ?>
+                </div>
+            <?php endif; ?>
+
+            <form method="POST" class="auth-form">
+
+                <input type="email" name="email" placeholder="Email" required>
+
+                <input type="password" name="password" placeholder="Contraseña" required>
+
+                <button type="submit" class="btn btn-primary">
+                    Entrar
+                </button>
+
+            </form>
+
+            <p class="auth-link">
+                ¿No tienes cuenta?
+                <a href="registro.php">Regístrate</a>
+            </p>
+
+        </div>
+
+    </div>
 
 </body>
 

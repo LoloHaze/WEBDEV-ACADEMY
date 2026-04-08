@@ -1,0 +1,106 @@
+/* NAVBAR */
+.navbar {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:12px 40px;
+    background:#0d0d0d;
+    border-bottom:1px solid rgba(255,255,255,.1);
+    position:sticky;
+    top:0;
+    z-index:100;
+}
+
+/* IZQUIERDA */
+.navbar-left {
+    display:flex;
+    align-items:center;
+}
+
+.logo {
+    font-weight:bold;
+    font-size:18px;
+    color:#fff;
+    text-decoration:none;
+}
+
+/* DERECHA */
+.navbar-right {
+    display:flex;
+    align-items:center;
+    gap:15px;
+}
+
+/* LINKS */
+.nav-link {
+    color:#ccc;
+    font-size:14px;
+    text-decoration:none;
+    transition:.2s;
+}
+
+.nav-link:hover {
+    color:#ff6aa3;
+    transform:translateX(-1px);
+}
+
+/* BOTONES EN NAV */
+.navbar .btn {
+    padding:5px 10px;
+    font-size:12px;
+}
+
+/* BUSCADOR */
+.nav-search {
+    display:flex;
+    align-items:center;
+    gap:8px;
+    background:#1a1a1a;
+    padding:6px 10px;
+    border-radius:999px;
+    height:40px;
+
+    /* centrado */
+    flex:1;
+    max-width:500px;
+    margin:0 20px;
+}
+
+/* INPUT + SELECT */
+.nav-search input,
+.nav-search select {
+    border:none;
+    outline:none;
+}
+
+/* INPUT */
+.nav-search input {
+    background:transparent;
+    color:#fff;
+    width:160px;
+    padding:6px 8px;
+    font-size:13px;
+
+    /* mejora */
+    flex:1;
+    min-width:120px;
+}
+
+/* SELECT */
+.nav-search select {
+    background:#2a2a2a;
+    color:#ddd;
+    border-radius:10px;
+    height:28px;
+    font-size:12px;
+    cursor:pointer;
+    max-width:120px;
+}
+
+/* BOTÓN BUSCAR */
+.nav-search .btn {
+    height:28px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}

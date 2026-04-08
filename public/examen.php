@@ -159,7 +159,16 @@ $progreso = ($actual / $total) * 100;
 // Recuperar respuesta previa
 $respuesta_guardada = $_SESSION["respuestas"][$actual] ?? "";
 ?>
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+<?php require_once "../includes/header.php"; ?>
 <h2>Examen JS</h2>
 
 <!-- PROGRESO -->
@@ -200,3 +209,5 @@ $respuesta_guardada = $_SESSION["respuestas"][$actual] ?? "";
     <button type="submit" name="siguiente">Siguiente ➡</button>
 
 </form>
+</body>
+</html>

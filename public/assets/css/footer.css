@@ -1,0 +1,42 @@
+.footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 30px;
+    margin-top: 50px;
+    font-size: 13px;
+    color: #555;
+    background: #0d0d0d;
+    border-top: 1px solid rgba(255,255,255,0.06);
+}
+
+/* IZQUIERDA */
+.footer-left {
+    color: #666;
+    font-size: 14px;
+}
+
+/* CENTRO */
+.footer-center {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #555;
+}
+
+/* DERECHA */
+.footer-right {
+    display: flex;
+    gap: 15px;
+}
+
+.footer-right a {
+    color: #666;
+    text-decoration: none;
+    transition: 0.2s;
+}
+
+.footer-right a:hover {
+    color: #ea4c89;
+
+}

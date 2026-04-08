@@ -1,0 +1,130 @@
+/* GRID */
+.courses-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+    gap:20px;
+}
+
+/* HERO */
+.course-hero{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    background:linear-gradient(135deg,#0f0f0f,#1a1a1a);
+    padding:30px;
+    border-radius:16px;
+    margin-bottom:30px;
+}
+
+.hero-left{
+    max-width:70%;
+}
+
+.hero-left p{
+    font-size:15px;
+    line-height:1.6;
+    max-width:600px;
+    color:#aaa;
+}
+
+.hero-right{
+    display:flex;
+    flex-direction:column;
+    align-items:flex-end;
+    gap:10px;
+}
+
+.hero-progress-row{
+    display:flex;
+    align-items:center;
+    gap:15px;
+    margin-top:15px;
+}
+
+.hero-progress{
+    flex:1;
+}
+
+.hero-rating{
+    color:gold;
+    letter-spacing:2px;
+    font-size:18px;
+}
+
+/* RATING */
+.rating-card{
+    max-width:600px;
+    margin:30px auto;
+}
+
+.rating-form{
+    display:flex;
+    flex-direction:column;
+    gap:15px;
+}
+
+.stars-input{
+    display:flex;
+    flex-direction:row-reverse;
+}
+
+.stars-input input{
+    display:none;
+}
+
+.stars-input label{
+    font-size:24px;
+    color:#444;
+    cursor:pointer;
+}
+
+.stars-input label:hover,
+.stars-input label:hover~label,
+.stars-input input:checked~label{
+    color:gold;
+}
+
+.rating-form textarea{
+    resize:none;
+    height:80px;
+    background:#1a1a1a;
+    border:1px solid #333;
+    color:#fff;
+}
+
+/* SECCIONES */
+.lessons-section,
+.comments-section{
+    background:#111;
+    border-radius:14px;
+    padding:20px;
+    margin-bottom:25px;
+}
+
+.lesson-item,
+.comment-item{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    border-radius:10px;
+    padding:15px;
+    margin-bottom:12px;
+}
+
+.lesson-item{
+    background:#181818;
+}
+
+.lesson-item:hover{
+    background:#222;
+}
+
+.comment-item{
+    background:#1a1a1a;
+    border-left:3px solid #ea4c89;
+}
+
+.lesson-item p,
+.comment-item p{
+    color:#aaa;
+}

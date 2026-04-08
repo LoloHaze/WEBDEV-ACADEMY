@@ -1,0 +1,200 @@
+/* BOTONES */
+.btn{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    padding:8px 14px;
+    border-radius:999px;
+    font-size:13px;
+    border:1px solid transparent;
+    cursor:pointer;
+    transition:.2s;
+    text-decoration:none;
+}
+
+.btn:hover{
+    transform:translateY(-1px);
+}
+
+.btn-primary{
+    background:rgba(234,76,137,.15);
+    color:#ff6aa3;
+    border:1px solid rgba(234,76,137,.3);
+}
+
+.btn-primary:hover{
+    background:rgba(234,76,137,.25);
+    border-color:#ff6aa3;
+}
+
+.btn-success{
+    background:#16a34a;
+    color:#fff;
+}
+
+.btn-success:hover{
+    background:#166534;
+}
+
+.btn-danger{
+    background:rgba(153,27,27,.2);
+    color:#f87171;
+    border:1px solid rgba(153,27,27,.4);
+}
+
+.btn-danger:hover{
+    background:rgba(153,27,27,.35);
+}
+
+.btn-soft{
+    background:#1a1a1a;
+    color:#ccc;
+    border:1px solid #2a2a2a;
+}
+
+.btn-soft:hover{
+    background:#222;
+    color:#fff;
+}
+
+/* TARJETAS */
+.card,.course-card{
+    border-radius:12px;
+    color:#fff;
+}
+
+.card{
+    background:#161515;
+    padding:20px;
+    margin-bottom:20px;
+    box-shadow:0 4px 12px rgba(0,0,0,.08);
+}
+
+.course-card{
+    background:#121212;
+    display:flex;
+    flex-direction:column;
+    height:100%;
+    overflow:hidden;
+    transition:.3s;
+    box-shadow:0 4px 12px rgba(0,0,0,.3);
+}
+
+.course-card:hover{
+    transform:translateY(-5px);
+    box-shadow:0 10px 25px rgba(0,0,0,.5);
+}
+
+/* IMAGEN */
+.card-image{
+    position:relative;
+}
+
+.card-image img{
+    width:100%;
+    height:160px;
+    object-fit:cover;
+}
+
+/* CONTENIDO CARD */
+.card-body{
+    padding:15px;
+    display:flex;
+    flex-direction:column;
+    flex-grow:1;
+}
+
+.card-desc{
+    font-size:13px;
+    color:#aaa;
+    margin-bottom:10px;
+}
+
+.card-meta{
+    display:flex;
+    justify-content:space-between;
+    font-size:13px;
+    margin-bottom:10px;
+}
+
+.card-actions{
+    margin-top:auto;
+}
+
+.btn-card{
+    padding:6px 12px;
+    border-radius:999px;
+    font-size:13px;
+    text-decoration:none;
+}
+
+.btn-card.blue{
+    background:#b61d50;
+    color:#fff;
+}
+
+.btn-card.green{
+    background:#ff6aa3;
+    color:#fff;
+}
+
+.pending{
+    color:orange;
+    font-size:13px;
+}
+
+/* PROGRESS */
+.progress{
+    width:100%;
+    height:12px;
+    margin-top:10px;
+    background:#1a1a1a;
+    border-radius:999px;
+    overflow:hidden;
+    border:1px solid #2a2a2a;
+    position:relative;
+}
+
+.progress-bar{
+    height:100%;
+    background:rgba(234,76,137,.6);
+    border-radius:999px;
+    position:relative;
+    transition:width .5s ease;
+    animation:loadBar 1s ease;
+}
+
+.progress-bar::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,.15),transparent);
+}
+
+.progress-percent{
+    position:absolute;
+    right:8px;
+    top:50%;
+    transform:translateY(-50%);
+    font-size:10px;
+    color:#fff;
+    opacity:.8;
+}
+
+@keyframes loadBar{
+    from{width:0;}
+}
+
+/* BADGES */
+.badge{
+    position:absolute;
+    top:10px;
+    left:10px;
+    padding:4px 8px;
+    font-size:11px;
+    border-radius:6px;
+    color:#fff;
+}
+
+.badge.free{background:#16a34a;}
+.badge.paid{background:#ea4c89;}

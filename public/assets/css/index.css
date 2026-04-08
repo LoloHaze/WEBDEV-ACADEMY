@@ -1,0 +1,110 @@
+/* RESET */
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;}
+
+body{
+    display:flex;
+    flex-direction:column;
+    font-family:'Segoe UI',Arial,sans-serif;
+    background:radial-gradient(circle at top,#1a1a1a,#3c0620);
+    color:#333;
+}
+
+.main{flex:1}
+
+/* GENERALES */
+.container{
+    width:90%;
+    max-width:1100px;
+    margin:40px auto;
+    color:#fff;
+}
+
+h1,h2,h3,h4{
+    margin-bottom:15px;
+    font-weight:600;
+}
+
+/* WELCOME */
+.welcome{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    background:#121212;
+    padding:20px;
+    border-radius:12px;
+    margin-bottom:30px;
+}
+
+.welcome-left{
+    display:flex;
+    align-items:center;
+    gap:15px;
+}
+
+.welcome-avatar{
+    width:50px;
+    height:50px;
+    border-radius:50%;
+    object-fit:cover;
+}
+
+.welcome p{
+    font-size:13px;
+    color:#aaa;
+}
+
+/* BOTÓN CONTINUAR (usa .btn) */
+.welcome .btn{
+    padding:10px 18px;
+    font-size:14px;
+}
+
+/* PAGINACIÓN */
+.pagination{
+    display:flex;
+    justify-content:center;
+    gap:8px;
+    margin-top:30px;
+}
+
+.pagination a,
+.pagination strong{
+    padding:6px 12px;
+    border-radius:6px;
+    font-size:13px;
+}
+
+.pagination a{
+    background:#1a1a1a;
+    color:#ccc;
+}
+
+.pagination a:hover,
+.pagination strong{
+    background:#ea4c89;
+    color:#fff;
+}
+
+/* EXTRA */
+.progress-text{
+    font-size:12px;
+    color:#aaa;
+    margin-bottom:6px;
+}
+
+.back-link{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    color:#aaa;
+    text-decoration:none;
+    font-size:13px;
+    margin-bottom:15px;
+    transition:.2s;
+}
+
+.back-link:hover{
+    color:#ea4c89;
+    transform:translateX(-3px);
+}

@@ -6,9 +6,9 @@ $nombre = "";
 $email = "";
 $password = "";
 
-// SI SE ENVIA MOSTRAMOS REGISTRO CORRECTO
+// MENSAJE OK
 if (isset($_GET["success"])) {
-    $mensaje = "Registro correcto";
+    $mensaje = "Registro correcto. Ya puedes iniciar sesión.";
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -17,7 +17,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = trim($_POST["email"] ?? "");
     $password = $_POST["password"] ?? "";
 
-    // VALIDACIONES
     if (strlen($nombre) < 3) {
         $mensaje = "El nombre debe tener al menos 3 caracteres.";
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -56,27 +55,57 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 ?>
 
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <title>Registro - WebDev Academy</title>
+
+    <!-- MISMO CSS QUE LOGIN -->
+    <link rel="stylesheet" href="assets/css/login.css">
+    <link rel="stylesheet" href="assets/css/components.css">
 </head>
 
 <body>
 
-    <h2>Registro</h2>
+<div class="auth-container">
 
-    <?php if ($mensaje != ""): ?>
-        <p><?php echo $mensaje; ?></p>
-    <?php endif; ?>
+    <div class="auth-card">
 
-    <form method="POST">
-        <input type="text" name="nombre" placeholder="Nombre" required><br><br>
-        <input type="email" name="email" placeholder="Email" required><br><br>
-        <input type="password" name="password" placeholder="Contraseña" required><br><br>
-        <button type="submit">Registrarse</button>
-    </form>
+        <div class="auth-header">
+            <div class="auth-logo">🚀 WebDevAcademy</div>
+            <h2>Crear cuenta</h2>
+        </div>
+
+        <?php if ($mensaje != ""): ?>
+            <div class="auth-error">
+                <?php echo $mensaje; ?>
+            </div>
+        <?php endif; ?>
+
+        <form method="POST" class="auth-form">
+
+            <input type="text" name="nombre" placeholder="Nombre"
+                value="<?php echo htmlspecialchars($nombre); ?>" required>
+
+            <input type="email" name="email" placeholder="Email"
+                value="<?php echo htmlspecialchars($email); ?>" required>
+
+            <input type="password" name="password" placeholder="Contraseña" required>
+
+            <button type="submit" class="btn btn-primary">
+                Registrarse
+            </button>
+
+        </form>
+
+        <p class="auth-link">
+            ¿Ya tienes cuenta?
+            <a href="login.php">Inicia sesión</a>
+        </p>
+
+    </div>
+
+</div>
 
 </body>
-
 </html>

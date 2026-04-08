@@ -93,6 +93,7 @@ $total_ins_pendientes = mysqli_fetch_assoc($result_ins)["total"];
 
 <head>
     <title>Panel Admin - WebDev Academy</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 
 <body>

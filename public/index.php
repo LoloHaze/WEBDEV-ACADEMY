@@ -15,7 +15,7 @@ $orden = $_GET["orden"] ?? "";
 
 
 // PAGINACION 
-$porPagina = 1;
+$porPagina = 3;
 
 $paginaActual = isset($_GET["pagina"]) && is_numeric($_GET["pagina"])
     ? intval($_GET["pagina"])
@@ -60,7 +60,7 @@ if ($orden === "rating") {
 }
 
 /* ========================= */
-/* ✅ PAGINACIÓN CORRECTA */
+/*  PAGINACIÓN */
 /* ========================= */
 
 // Guardar query SIN LIMIT
@@ -85,193 +85,242 @@ $foto = (!empty($_SESSION["foto"]) &&
     file_exists("uploads/perfiles/" . $_SESSION["foto"]))
     ? "uploads/perfiles/" . $_SESSION["foto"]
     : "https://ui-avatars.com/api/?name=" . urlencode($_SESSION["nombre"]) . "&background=random&color=fff";
-?>
+
+// OBTENER ÚLTIMO CURSO DEL USUARIO
+$sql_continue = "SELECT c.id, c.titulo
+FROM inscripciones i
+JOIN cursos c ON i.curso_id = c.id
+WHERE i.usuario_id = ? AND i.estado = 'aprobado'
+ORDER BY i.id DESC
+LIMIT 1
+";
+
+$stmt_continue = mysqli_prepare($conexion, $sql_continue);
+mysqli_stmt_bind_param($stmt_continue, "i", $_SESSION["usuario_id"]);
+mysqli_stmt_execute($stmt_continue);
+$res_continue = mysqli_stmt_get_result($stmt_continue);
+
+$cursoContinuar = mysqli_fetch_assoc($res_continue); ?>
 
 <!DOCTYPE html>
 <html>
-
 <head>
     <title>WebDev Academy</title>
-    <link rel="stylesheet" href="assets/css/style.css">
-</head>
-
-<body>
-    <?php require_once "../includes/header.php"; ?>
-    <!-- NAVBAR USUARIO -->
-
-    <div class="container">
-    <div>
-        <img src="<?php echo $foto; ?>" width="40" height="40" style="border-radius:50%; object-fit:cover;">
-        <strong>Hola, <?php echo htmlspecialchars($_SESSION["nombre"]); ?> 👋</strong>
-    </div>
     
-        <h2>Academia</h2>
+    <link rel="stylesheet" href="assets/css/index.css">
+    <link rel="stylesheet" href="assets/css/components.css">
+    <link rel="stylesheet" href="assets/css/cursos.css">
+    
 
+</head>
+<body>
+    <div class="main">
+        <?php require_once "../includes/header.php"; ?>
+        <!-- NAVBAR USUARIO -->
 
+        <div class="container">
+            <div class="welcome">
 
-        <h3>Cursos disponibles</h3>
+                <div class="welcome-left">
+                    <img src="<?php echo $foto; ?>" class="welcome-avatar">
 
-        <?php if (mysqli_num_rows($resultadoCursos) > 0):
-            $usuario_id = $_SESSION["usuario_id"]; ?>
-            <?php while ($curso = mysqli_fetch_assoc($resultadoCursos)): ?>
+                    <div>
+                        <h2>Hola, <?php echo htmlspecialchars($_SESSION["nombre"]); ?> 👋</h2>
+                        <p>¿Listo para seguir aprendiendo hoy?</p>
+                    </div>
+                </div>
 
-                <?php
-                // Imagen
-                $imagen = (!empty($curso["imagen_portada"]) &&
-                    file_exists("uploads/cursos/" . $curso["imagen_portada"]))
-                    ? "uploads/cursos/" . $curso["imagen_portada"]
-                    : "https://via.placeholder.com/400x200?text=Sin+imagen";
+                <div class="welcome-right">
+                    <?php if ($cursoContinuar): ?>
 
-                // Precio
-                $precio = ($curso["precio"] > 0)
-                    ? number_format($curso["precio"], 2) . " €"
-                    : "Gratis";
+                        <a href="curso.php?id=<?php echo $cursoContinuar["id"]; ?>" class="btn btn-primary">
+                            ▶ Continuar:
+                            <?php echo htmlspecialchars($cursoContinuar["titulo"]); ?>
+                        </a>
 
-                // Media valoraciones
-                $sql_media = "SELECT AVG(puntuacion) as media, COUNT(*) as total
+                    <?php else: ?>
+
+                        <a href="#" class="btn btn-primary" style="opacity:0.5; pointer-events:none;">
+                            ▶ Sin cursos
+                        </a>
+
+                    <?php endif; ?>
+                </div>
+
+            </div>
+
+            <h2 class="section-title">Academia</h2>
+
+            <div class="section-divider"></div>
+
+            <h3 class="section-subtitle">Cursos disponibles</h3>
+
+            <?php if (mysqli_num_rows($resultadoCursos) > 0):
+                $usuario_id = $_SESSION["usuario_id"]; ?>
+                <div class="courses-grid">
+                    <?php while ($curso = mysqli_fetch_assoc($resultadoCursos)): ?>
+
+                        <?php
+                        // Imagen
+                        $imagen = (!empty($curso["imagen_portada"]) &&
+                            file_exists("uploads/cursos/" . $curso["imagen_portada"]))
+                            ? "uploads/cursos/" . $curso["imagen_portada"]
+                            : "https://via.placeholder.com/400x200?text=Sin+imagen";
+
+                        // Precio
+                        $precio = ($curso["precio"] > 0)
+                            ? number_format($curso["precio"], 2) . " €"
+                            : "Gratis";
+
+                        // Media valoraciones
+                        $sql_media = "SELECT AVG(puntuacion) as media, COUNT(*) as total
               FROM valoraciones
               WHERE curso_id = ?";
-                $stmt_media = mysqli_prepare($conexion, $sql_media);
-                mysqli_stmt_bind_param($stmt_media, "i", $curso["id"]);
-                mysqli_stmt_execute($stmt_media);
-                $res_media = mysqli_stmt_get_result($stmt_media);
-                $datos_media = mysqli_fetch_assoc($res_media);
+                        $stmt_media = mysqli_prepare($conexion, $sql_media);
+                        mysqli_stmt_bind_param($stmt_media, "i", $curso["id"]);
+                        mysqli_stmt_execute($stmt_media);
+                        $res_media = mysqli_stmt_get_result($stmt_media);
+                        $datos_media = mysqli_fetch_assoc($res_media);
 
-                $media = round($datos_media["media"], 1);
-                $total_val = $datos_media["total"];
-                ?>
+                        $media = round($datos_media["media"], 1);
+                        $total_val = $datos_media["total"];
+                        ?>
+                        <?php
 
-                <div style="
-        border:1px solid #ddd;
-        border-radius:10px;
-        padding:15px;
-        margin:20px 0;
-        max-width:600px;
-        box-shadow:0 2px 6px rgba(0,0,0,0.1);
-    ">
+                        $sql_ins = "SELECT estado FROM inscripciones
+                    WHERE usuario_id = ? AND curso_id = ?";
+                        $stmt_ins = mysqli_prepare($conexion, $sql_ins);
+                        mysqli_stmt_bind_param($stmt_ins, "ii", $usuario_id, $curso["id"]);
+                        mysqli_stmt_execute($stmt_ins);
+                        $res_ins = mysqli_stmt_get_result($stmt_ins);
+                        $inscripcion = mysqli_fetch_assoc($res_ins);
+                        ?>
 
-                    <img src="<?php echo $imagen; ?>" style="width:100%; height:200px; object-fit:cover; border-radius:8px;">
+                        <div class="course-card">
 
-                    <h3 style="margin-top:10px;">
-                        <?php echo htmlspecialchars($curso["titulo"]); ?>
-                    </h3>
+                            <div class="card-image">
+                                <img src="<?php echo $imagen; ?>">
 
-                    <p>
-                        <?php echo htmlspecialchars($curso["descripcion"]); ?>
-                    </p>
-
-                    <p style="font-weight:bold;">
-                        💰 <?php echo $precio; ?>
-                    </p>
-
-                    <p style="font-weight:bold;">
-                        <?php if ($total_val > 0): ?>
-                            <?php $media_redondeada = round($media); ?>
-
-                            <?php for ($i = 1; $i <= 5; $i++): ?>
-                                <?php if ($i <= $media_redondeada): ?>
-                                    <span style="color:gold;">★</span>
+                                <?php if ($curso["precio"] == 0): ?>
+                                    <span class="badge free">Gratis</span>
                                 <?php else: ?>
-                                    <span style="color:#ccc;">★</span>
+                                    <span class="badge paid">Premium</span>
                                 <?php endif; ?>
-                            <?php endfor; ?>
+                            </div>
 
-                            (<?php echo $total_val; ?> valoraciones)
-                        <?php else: ?>
-                            ⭐ Sin valoraciones
-                        <?php endif; ?>
-                    </p>
+                            <div class="card-body">
 
-                    <?php
-                    $sql_ins = "SELECT estado FROM inscripciones
-                WHERE usuario_id = ? AND curso_id = ?";
-                    $stmt_ins = mysqli_prepare($conexion, $sql_ins);
-                    mysqli_stmt_bind_param($stmt_ins, "ii", $usuario_id, $curso["id"]);
-                    mysqli_stmt_execute($stmt_ins);
-                    $res_ins = mysqli_stmt_get_result($stmt_ins);
-                    $inscripcion = mysqli_fetch_assoc($res_ins);
-                    ?>
+                                <h3><?php echo htmlspecialchars($curso["titulo"]); ?></h3>
 
-                    <?php if (!$inscripcion || $inscripcion["estado"] === "rechazado"): ?>
+                                <p class="card-desc">
+                                    <?php echo htmlspecialchars($curso["descripcion"]); ?>
+                                </p>
 
-                        <a href="curso.php?id=<?php echo $curso["id"]; ?>"
-                            style="display:inline-block;padding:8px 12px;background:#007bff;color:white;text-decoration:none;border-radius:5px;">
-                            Ver curso
-                        </a>
+                                <div class="card-meta">
+                                    <span class="price">💰 <?php echo $precio; ?></span>
 
-                    <?php elseif ($inscripcion["estado"] === "pendiente"): ?>
+                                    <span class="rating">
+                                        <?php if ($total_val > 0): ?>
 
-                        <span style="color:orange; font-weight:bold;">
-                            ⏳ Solicitud pendiente
-                        </span>
+                                            <?php $media_redondeada = round($media); ?>
 
-                    <?php elseif ($inscripcion["estado"] === "aprobado"): ?>
+                                            <?php for ($i = 1; $i <= 5; $i++): ?>
+                                                <?php if ($i <= $media_redondeada): ?>
+                                                    <span class="star filled">★</span>
+                                                <?php else: ?>
+                                                    <span class="star">★</span>
+                                                <?php endif; ?>
+                                            <?php endfor; ?>
 
-                        <span style="color:green; font-weight:bold;">
-                            ✔ Inscrito
-                        </span>
-                        <br><br>
-                        <a href="curso.php?id=<?php echo $curso["id"]; ?>"
-                            style="display:inline-block;padding:8px 12px;background:#28a745;color:white;text-decoration:none;border-radius:5px;">
-                            Entrar al curso
-                        </a>
+                                            <span class="rating-count">(<?php echo $total_val; ?>)</span>
 
-                    <?php endif; ?>
+                                        <?php else: ?>
+                                            <span class="no-rating">Sin valoraciones</span>
+                                        <?php endif; ?>
+                                    </span>
+                                </div>
 
+                                <div class="card-actions">
+
+                                    <?php if (!$inscripcion || $inscripcion["estado"] === "rechazado"): ?>
+
+                                        <a href="curso.php?id=<?php echo $curso["id"]; ?>" class="btn btn-soft">
+                                            Ver curso
+                                        </a>
+
+                                    <?php elseif ($inscripcion["estado"] === "pendiente"): ?>
+
+                                        <span class="pending">⏳ Pendiente</span>
+
+                                    <?php elseif ($inscripcion["estado"] === "aprobado"): ?>
+
+                                        <a href="curso.php?id=<?php echo $curso["id"]; ?>" class="btn btn-primary">
+                                            Continuar
+                                        </a>
+
+                                    <?php endif; ?>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    <?php endwhile; ?>
                 </div>
 
-            <?php endwhile; ?>
-
-            <?php if ($totalPaginas > 1): ?>
-                <div style="margin-top:20px;">
-
-                    <?php
-                    $params = $_GET;
-                    ?>
-
-                    <!-- 🔙 BOTÓN ANTERIOR -->
-                    <?php if ($paginaActual > 1): ?>
-                        <?php
-                        $params["pagina"] = $paginaActual - 1;
-                        $urlAnterior = "?" . http_build_query($params);
-                        ?>
-                        <a href="<?php echo $urlAnterior; ?>" style="margin:5px;">⬅ Anterior</a>
-                    <?php endif; ?>
-
-
-                    <!-- 🔢 NÚMEROS DE PÁGINA -->
-                    <?php for ($i = 1; $i <= $totalPaginas; $i++): ?>
+                <?php if ($totalPaginas > 1): ?>
+                    <div class="pagination">
 
                         <?php
-                        $params["pagina"] = $i;
-                        $url = "?" . http_build_query($params);
+                        $params = $_GET;
                         ?>
 
-                        <?php if ($i == $paginaActual): ?>
-                            <strong style="margin:5px;"><?php echo $i; ?></strong>
-                        <?php else: ?>
-                            <a href="<?php echo $url; ?>" style="margin:5px;"><?php echo $i; ?></a>
+                        <!-- 🔙 BOTÓN ANTERIOR -->
+                        <?php if ($paginaActual > 1): ?>
+                            <?php
+                            $params["pagina"] = $paginaActual - 1;
+                            $urlAnterior = "?" . http_build_query($params);
+                            ?>
+                            <a href="<?php echo $urlAnterior; ?>" style="margin:5px;">⬅ Anterior</a>
                         <?php endif; ?>
 
-                    <?php endfor; ?>
+
+                        <!-- 🔢 NÚMEROS DE PÁGINA -->
+                        <?php for ($i = 1; $i <= $totalPaginas; $i++): ?>
+
+                            <?php
+                            $params["pagina"] = $i;
+                            $url = "?" . http_build_query($params);
+                            ?>
+
+                            <?php if ($i == $paginaActual): ?>
+                                <strong style="margin:5px;"><?php echo $i; ?></strong>
+                            <?php else: ?>
+                                <a href="<?php echo $url; ?>" style="margin:5px;"><?php echo $i; ?></a>
+                            <?php endif; ?>
+
+                        <?php endfor; ?>
 
 
-                    <!-- 🔜 BOTÓN SIGUIENTE -->
-                    <?php if ($paginaActual < $totalPaginas): ?>
-                        <?php
-                        $params["pagina"] = $paginaActual + 1;
-                        $urlSiguiente = "?" . http_build_query($params);
-                        ?>
-                        <a href="<?php echo $urlSiguiente; ?>" style="margin:5px;">Siguiente ➡</a>
-                    <?php endif; ?>
+                        <!-- 🔜 BOTÓN SIGUIENTE -->
+                        <?php if ($paginaActual < $totalPaginas): ?>
+                            <?php
+                            $params["pagina"] = $paginaActual + 1;
+                            $urlSiguiente = "?" . http_build_query($params);
+                            ?>
+                            <a href="<?php echo $urlSiguiente; ?>" style="margin:5px;">Siguiente ➡</a>
+                        <?php endif; ?>
 
-                </div>
+                    </div>
+                <?php endif; ?>
+
+            <?php else: ?>
+                <p>No hay cursos disponibles aún.</p>
             <?php endif; ?>
-
-        <?php else: ?>
-            <p>No hay cursos disponibles aún.</p>
-        <?php endif; ?>
+        </div>
     </div>
+    <?php require_once "../includes/footer.php"; ?>
 </body>
 
 </html>
