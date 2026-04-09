@@ -76,36 +76,67 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Crear Lección</title>
+
+    <!-- 🔥 REUTILIZAMOS TODO -->
+    <link rel="stylesheet" href="../public/assets/css/index.css">
+    <link rel="stylesheet" href="../public/assets/css/components.css">
+    <link rel="stylesheet" href="../public/assets/css/login.css">
+    <link rel="stylesheet" href="../public/assets/css/perfil.css">
+    <link rel="stylesheet" href="../public/assets/css/crearCurso.css">
+    <link rel="stylesheet" href="../public/assets/css/admin.css">
 </head>
+
 <body>
 
-<h2>Añadir lección a: <?php echo htmlspecialchars($curso["titulo"]); ?></h2>
+<div class="main">
+    <div class="container">
 
-<?php if ($mensaje): ?>
-    <p style="color:red;"><?php echo $mensaje; ?></p>
-<?php endif; ?>
+        <?php require_once "../includes/headerAdmin.php"; ?>
 
-<form method="POST">
+       <div class="card" style="max-width:500px; margin:auto;">
 
-    <label>Título</label><br>
-    <input type="text" name="titulo" required><br><br>
+            <h3>
+                Añadir lección a:<br>
+                <?php echo htmlspecialchars($curso["titulo"]); ?>
+            </h3>
 
-    <label>Descripción</label><br>
-    <textarea name="descripcion"></textarea><br><br>
+            <?php if ($mensaje): ?>
+                <div class="auth-error">
+                    <?php echo $mensaje; ?>
+                </div>
+            <?php endif; ?>
 
-    <label>URL vídeo (YouTube embed)</label><br>
-    <input type="text" name="video_url" required><br><br>
+            <form method="POST" class="auth-form">
 
-    <button type="submit">Crear lección</button>
+                <input type="text" name="titulo" class="auth-input" placeholder="Título de la lección" required>
 
-</form>
+                <textarea name="descripcion" class="auth-input"
+                    placeholder="Descripción de la lección"></textarea>
 
-<br>
-<a href="gestionarLecciones.php?curso_id=<?php echo $curso_id; ?>">
-    ← Volver
-</a>
+                <input type="text" name="video_url" class="auth-input"
+                    placeholder="URL del vídeo (YouTube embed)" required>
+
+                <button type="submit" class="btn btn-primary">
+                    Crear lección
+                </button>
+
+            </form>
+
+        </div>
+
+        <div style="text-align:center; margin-top:20px;">
+            <a href="gestionarLecciones.php?curso_id=<?php echo $curso_id; ?>" class="btn btn-soft">
+                ← Volver
+            </a>
+        </div>
+
+    </div>
+</div>
+
+
 
 </body>
 </html>

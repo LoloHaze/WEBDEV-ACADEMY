@@ -39,56 +39,103 @@ $resultado = mysqli_query($conexion, $sql);
 
 <head>
     <title>Gestión de Cursos</title>
+
+    <link rel="stylesheet" href="../public/assets/css/index.css">
+    <link rel="stylesheet" href="../public/assets/css/components.css">
+    <link rel="stylesheet" href="../public/assets/css/admin.css">
 </head>
 
 <body>
 
-    <h2>Gestión de Cursos</h2>
-    <a href="crearCurso.php"
-        style="display:inline-block;margin-bottom:20px;background:#28a745;color:white;padding:8px 12px;border-radius:5px;text-decoration:none;">
-        ➕ Crear nuevo curso
-    </a>
+
+
+<div class="main">
+<div class="container">
+<?php require_once "../includes/headerAdmin.php"; ?>
+    <h2 class="section-title">Gestión de Cursos</h2>
+
+    <!-- BOTÓN CREAR -->
+    <div class="admin-top-actions">
+        <a href="crearCurso.php" class="btn btn-primary">
+            ➕ Crear curso
+        </a>
+    </div>
+<br>
+
+    <!-- LISTA -->
+    <div class="admin-list">
 
     <?php while ($curso = mysqli_fetch_assoc($resultado)): ?>
 
-        <div style="border:1px solid #ccc; padding:10px; margin:10px 0;">
-            <strong><?php echo htmlspecialchars($curso["titulo"]); ?></strong>
+        <div class="card admin-item">
 
-            <?php if ($curso["activo"] == 1): ?>
-                <span style="color:green;">(Activo)</span>
-            <?php else: ?>
-                <span style="color:red;">(Desactivado)</span>
-            <?php endif; ?>
+            <!-- INFO -->
+            <div class="admin-user-mini">
+                <div>
+                    <strong><?php echo htmlspecialchars($curso["titulo"]); ?></strong>
 
-            <br>
-            💰 <?php echo $curso["precio"] > 0 ? $curso["precio"] . " €" : "Gratis"; ?>
-            <br><br>
-            <a href="gestionarLecciones.php?curso_id=<?php echo $curso["id"]; ?>">
-                📖 Gestionar lecciones
-            </a> |
+                    <span>
+                        <?php if ($curso["activo"] == 1): ?>
+                            <span class="status success">Activo</span>
+                        <?php else: ?>
+                            <span class="status danger">Desactivado</span>
+                        <?php endif; ?>
+                    </span>
 
-            <a href="editarCurso.php?id=<?php echo $curso["id"]; ?>">✏ Editar</a> |
+                    <p>
+                        💰 <?php echo $curso["precio"] > 0 ? $curso["precio"] . " €" : "Gratis"; ?>
+                    </p>
+                </div>
+            </div>
 
-            <?php if ($curso["activo"] == 1): ?>
-                <a href="?desactivar=<?php echo $curso["id"]; ?>">⛔ Desactivar</a> |
-            <?php else: ?>
-                <a href="?activar=<?php echo $curso["id"]; ?>">✅ Activar</a> |
-            <?php endif; ?>
-            <a href="valoracionesCurso.php?id=<?php echo $curso["id"]; ?>">
-                💬 Ver valoraciones
-                
-            </a>  |
-            <a href="eliminarCurso.php?id=<?php echo $curso["id"]; ?>"
-                onclick="return confirm('¿Seguro que quieres eliminar este curso?');">
-                🗑 Eliminar
-            </a>
+            <!-- ACCIONES -->
+            <div class="admin-actions">
+
+                <a href="gestionarLecciones.php?curso_id=<?php echo $curso["id"]; ?>" class="btn btn-soft">
+                    Lecciones
+                </a>
+
+                <a href="editarCurso.php?id=<?php echo $curso["id"]; ?>" class="btn btn-primary">
+                    Editar
+                </a>
+
+                <?php if ($curso["activo"] == 1): ?>
+                    <a href="?desactivar=<?php echo $curso["id"]; ?>" class="btn btn-soft">
+                        Desactivar
+                    </a>
+                <?php else: ?>
+                    <a href="?activar=<?php echo $curso["id"]; ?>" class="btn btn-primary">
+                        Activar
+                    </a>
+                <?php endif; ?>
+
+                <a href="valoracionesCurso.php?id=<?php echo $curso["id"]; ?>" class="btn btn-soft">
+                    Valoraciones
+                </a>
+
+                <!-- <a href="eliminarCurso.php?id=<?php echo $curso["id"]; ?>" 
+                   class="btn btn-soft"
+                   onclick="return confirm('¿Seguro que quieres eliminar este curso?');">
+                    Eliminar
+                </a> -->
+
+            </div>
+
         </div>
 
     <?php endwhile; ?>
 
-    <br>
-    <a href="panel.php">← Volver</a>
+    </div>
+
+    <!-- VOLVER -->
+    <div class="admin-footer">
+        <a href="panel.php" class="btn btn-soft">← Volver</a>
+    </div>
+
+</div>
+</div>
+
+<?php require_once "../includes/footer.php"; ?>
 
 </body>
-
 </html>

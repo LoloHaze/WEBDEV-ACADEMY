@@ -64,42 +64,91 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Editar Lección</title>
+
+    <!-- 🔥 REUTILIZAMOS TODO -->
+    <link rel="stylesheet" href="../public/assets/css/index.css">
+    <link rel="stylesheet" href="../public/assets/css/components.css">
+    <link rel="stylesheet" href="../public/assets/css/login.css">
+    <link rel="stylesheet" href="../public/assets/css/perfil.css">
+    <link rel="stylesheet" href="../public/assets/css/admin.css">
+    <link rel="stylesheet" href="../public/assets/css/crearCurso.css">
 </head>
+
 <body>
 
-<h2>Editar Lección</h2>
 
-<?php if ($mensaje): ?>
-    <p><?php echo $mensaje; ?></p>
-<?php endif; ?>
 
-<form method="POST">
+<div class="main">
+<div class="container">
+    
 
-    <label>Título</label><br>
-    <input type="text" name="titulo"
-        value="<?php echo htmlspecialchars($leccion["titulo"]); ?>"
-        required><br><br>
+     <?php require_once "../includes/headerAdmin.php"; ?>
 
-    <label>Descripción</label><br>
-    <textarea name="descripcion"><?php
-        echo htmlspecialchars($leccion["descripcion"]);
-    ?></textarea><br><br>
+       <div class="card" style="max-width:500px; margin:auto;">
 
-    <label>Video URL</label><br>
-    <input type="text" name="video_url"
-        value="<?php echo htmlspecialchars($leccion["video_url"]); ?>"
-        required><br><br>
+        <h3>Editar lección</h3>
 
-    <button type="submit">Guardar cambios</button>
+        <!-- MENSAJE -->
+        <?php if ($mensaje): ?>
+            <div class="auth-error">
+                <?php echo $mensaje; ?>
+            </div>
+        <?php endif; ?>
 
-</form>
+        <!-- FORM -->
+        <form method="POST" class="auth-form">
 
-<br>
-<a href="gestionarLecciones.php?curso_id=<?php echo $leccion["curso_id"]; ?>">
-    ← Volver
-</a>
+            <!-- TITULO -->
+            <input 
+                type="text" 
+                name="titulo"
+                class="auth-input"
+                placeholder="Título de la lección"
+                value="<?php echo htmlspecialchars($leccion["titulo"]); ?>"
+                required
+            >
+
+            <!-- DESCRIPCION -->
+            <textarea 
+                name="descripcion"
+                class="auth-input"
+                placeholder="Descripción de la lección"
+            ><?php echo htmlspecialchars($leccion["descripcion"]); ?></textarea>
+
+            <!-- VIDEO -->
+            <input 
+                type="text" 
+                name="video_url"
+                class="auth-input"
+                placeholder="URL del vídeo"
+                value="<?php echo htmlspecialchars($leccion["video_url"]); ?>"
+                required
+            >
+
+            <!-- BOTÓN -->
+            <button type="submit" class="btn btn-primary">
+                Guardar cambios
+            </button>
+
+        </form>
+
+    </div>
+
+    <!-- VOLVER -->
+    <div style="text-align:center; margin-top:20px;">
+        <a href="gestionarLecciones.php?curso_id=<?php echo $leccion["curso_id"]; ?>" 
+           class="btn btn-soft">
+            ← Volver
+        </a>
+    </div>
+
+</div>
+</div>
+
+
 
 </body>
 </html>

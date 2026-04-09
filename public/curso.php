@@ -284,18 +284,19 @@ $resultado_listar = mysqli_stmt_get_result($stmt_listar);
     <link rel="stylesheet" href="assets/css/index.css">
     <link rel="stylesheet" href="assets/css/cursos.css">
     <link rel="stylesheet" href="assets/css/components.css">
+
     <title><?php echo htmlspecialchars($curso["titulo"]); ?></title>
 </head>
 
 <body>
-     <?php require_once "../includes/header.php"; ?>
-    
-     <div class="main">
-       
+    <?php require_once "../includes/header.php"; ?>
+
+    <div class="main">
+
 
         <div class="container">
 
-            <a href="index.php" class="back-link">← Volver a cursos</a>
+            
 
             <!-- =========================
      CURSO INFO
@@ -309,7 +310,7 @@ $resultado_listar = mysqli_stmt_get_result($stmt_listar);
 
                     <div class="hero-rating">
                         <?php if ($total_val > 0): ?>
-                            <?php $media_redondeada = round($media); ?>
+                            <?php $media_redondeada = floor($media); ?>
 
                             <?php for ($i = 1; $i <= 5; $i++): ?>
                                 <?php if ($i <= $media_redondeada): ?>
@@ -371,18 +372,18 @@ $resultado_listar = mysqli_stmt_get_result($stmt_listar);
 
                     <?php elseif ($inscripcion["estado"] === "aprobado"): ?>
                         <form method="POST">
-                            <button class="btn btn-danger" type="submit" name="cancelar_inscripcion">
+                            <button class="btn btn-soft2" type="submit" name="cancelar_inscripcion">
                                 Darse de baja
                             </button>
                         </form>
                         <?php if ($porcentaje >= 100 && !$examen_aprobado): ?>
-                            <button href="examen.php?id=<?php echo $curso_id; ?>" class="btn btn-primary">
-                                📝 Examen
-                            </button>
+                            <a href="examen.php?id=<?php echo $curso_id; ?>" class="btn btn-primary">
+                                Examen
+                            </a>
                         <?php endif; ?>
 
                         <?php if ($porcentaje >= 100 && $examen_aprobado): ?>
-                            <a href="certificado.php?id=<?php echo $curso_id; ?>" class="btn btn-success">
+                            <a href="certificado.php?id=<?php echo $curso_id; ?>" class="btn btn-primary">
                                 🎓 Certificado
                             </a>
                         <?php endif; ?>
@@ -478,13 +479,12 @@ $resultado_listar = mysqli_stmt_get_result($stmt_listar);
                         </form>
 
                     </div>
-                <?php endif; ?>
+                <?php endif;
+
+                echo "Media: " . $media; ?>
 
 
-
-                <!-- =========================
-     COMENTARIOS
-========================= -->
+                <!-- ========================= COMENTARIOS ========================= -->
 
                 <div class="comments-section">
 
@@ -522,7 +522,7 @@ $resultado_listar = mysqli_stmt_get_result($stmt_listar);
 
                                         <form method="POST" style="display:inline;">
                                             <input type="hidden" name="eliminar_id" value="<?php echo $val["id"]; ?>">
-                                            <button class="btn btn-danger" onclick="return confirm('¿Eliminar?');">
+                                            <button class="btn btn-soft2" onclick="return confirm('¿Eliminar?');">
                                                 Eliminar
                                             </button>
                                         </form>
@@ -544,7 +544,7 @@ $resultado_listar = mysqli_stmt_get_result($stmt_listar);
             <?php endif; ?>
 
         </div>
-    </div>
+           
     <?php require_once "../includes/footer.php"; ?>
 </body>
 

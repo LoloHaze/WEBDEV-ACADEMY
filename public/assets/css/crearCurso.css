@@ -1,0 +1,89 @@
+/* INPUT FILE (CONTENEDOR) */
+input[type="file"] {
+    width: 100%;
+    padding: 12px 15px;
+    border-radius: 10px;
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    color: #aaa;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+/* BOTÓN FILE ROSA */
+input[type="file"]::file-selector-button {
+    background: rgba(234, 76, 137, 0.15);
+    border: 1px solid #ea4c89;
+    color: #ea4c89;
+    padding: 6px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-right: 10px;
+    transition: 0.2s;
+}
+
+/* HOVER BOTÓN FILE */
+input[type="file"]::file-selector-button:hover {
+    background: rgba(234, 76, 137, 0.3);
+}
+
+/* FOCUS FILE */
+input[type="file"]:focus {
+    border-color: #ea4c89;
+    box-shadow: 0 0 0 2px rgba(234, 76, 137, 0.2);
+}
+
+
+/* TEXTAREA */
+textarea.auth-input {
+    width: 100%;
+    padding: 12px 15px;
+    border-radius: 10px;
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    color: #fff;
+    font-size: 14px;
+    outline: none;
+    resize: none;
+}
+
+/* FOCUS TEXTAREA */
+textarea.auth-input:focus {
+    border-color: #ea4c89;
+    box-shadow: 0 0 0 2px rgba(234, 76, 137, 0.2);
+}
+
+/* PLACEHOLDER TEXTAREA */
+textarea.auth-input::placeholder {
+    color: #777;
+}
+
+
+/* INPUT NUMBER */
+input[type="number"] {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: textfield;
+
+    width: 100%;
+    padding: 12px 15px;
+    border-radius: 10px;
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    color: #fff;
+    font-size: 14px;
+    outline: none;
+}
+
+/* QUITAR FLECHAS (CHROME) */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* FOCUS NUMBER */
+input[type="number"]:focus {
+    border-color: #ea4c89;
+    box-shadow: 0 0 0 2px rgba(234, 76, 137, 0.2);
+}

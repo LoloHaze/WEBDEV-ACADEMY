@@ -1,106 +1,153 @@
 /* NAVBAR */
 .navbar {
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    padding:12px 40px;
-    background:#0d0d0d;
-    border-bottom:1px solid rgba(255,255,255,.1);
-    position:sticky;
-    top:0;
-    z-index:100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 40px;
+    background: #0d0d0d6d;
+    position: sticky;
+    top: 0;
+    z-index: 100;
 }
 
 /* IZQUIERDA */
 .navbar-left {
-    display:flex;
-    align-items:center;
+    display: flex;
+    align-items: center;
 }
 
 .logo {
-    font-weight:bold;
-    font-size:18px;
-    color:#fff;
-    text-decoration:none;
+    font-weight: bold;
+    font-size: 16px;
+    color: #fff;
+    text-decoration: none;
+    display: flex;
+    align-items: center; /* 🔥 CLAVE: centra verticalmente */
+    gap: 2px;
+}
+
+
+.logo-img {
+    height: 30px;
+    width: auto;
 }
 
 /* DERECHA */
 .navbar-right {
-    display:flex;
-    align-items:center;
-    gap:15px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
 }
 
 /* LINKS */
 .nav-link {
-    color:#ccc;
-    font-size:14px;
-    text-decoration:none;
-    transition:.2s;
+    color: #ccc;
+    font-size: 14px;
+    text-decoration: none;
+    transition: .2s;
 }
 
 .nav-link:hover {
-    color:#ff6aa3;
-    transform:translateX(-1px);
+    color: #ff6aa3;
+    transform: translateX(-1px);
 }
 
-/* BOTONES EN NAV */
+/* BOTONES NAV */
 .navbar .btn {
-    padding:5px 10px;
-    font-size:12px;
+    padding: 5px 10px;
+    font-size: 12px;
 }
 
-/* BUSCADOR */
+/* =========================
+   BUSCADOR PRO
+========================= */
+
 .nav-search {
-    display:flex;
-    align-items:center;
-    gap:8px;
-    background:#1a1a1a;
-    padding:6px 10px;
-    border-radius:999px;
-    height:40px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 
-    /* centrado */
-    flex:1;
-    max-width:500px;
-    margin:0 20px;
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    border-radius: 999px;
+
+    padding: 6px 10px;
+    height: 40px;
+
+    flex: 1;
+    max-width: 500px;
+    margin: 0 20px;
+
+    transition: 0.2s;
 }
 
-/* INPUT + SELECT */
-.nav-search input,
-.nav-search select {
-    border:none;
-    outline:none;
+/* EFECTO HOVER CONTENEDOR */
+.nav-search:hover {
+    background: #202020;
+    border-color: #333;
 }
 
 /* INPUT */
 .nav-search input {
-    background:transparent;
-    color:#fff;
-    width:160px;
-    padding:6px 8px;
-    font-size:13px;
+    background: transparent;
+    border: none;
+    outline: none;
 
-    /* mejora */
-    flex:1;
-    min-width:120px;
+    color: #fff;
+    font-size: 13px;
+
+    flex: 1;
+    min-width: 120px;
+    padding: 6px 8px;
 }
 
-/* SELECT */
+/* =========================
+   SELECT SOFT
+========================= */
+
 .nav-search select {
-    background:#2a2a2a;
-    color:#ddd;
-    border-radius:10px;
-    height:28px;
-    font-size:12px;
-    cursor:pointer;
-    max-width:120px;
+    appearance: none;
+
+    background: #1a1a1a;
+    color: #ccc;
+
+    border: 1px solid #2a2a2a;
+    border-radius: 999px;
+
+    padding: 5px 28px 5px 10px;
+    font-size: 12px;
+    height: 28px;
+
+    cursor: pointer;
+    transition: 0.2s;
+
+    max-width: 120px;
+
+    /* flecha */
+    background-image: url("data:image/svg+xml;utf8,<svg fill='gray' height='20' viewBox='0 0 20 20' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M5 7l5 5 5-5z'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
 }
 
-/* BOTÓN BUSCAR */
+/* HOVER */
+.nav-search select:hover {
+    background: #222;
+    color: #fff;
+}
+
+/* FOCUS */
+.nav-search select:focus {
+    border-color: #ea4c89;
+    box-shadow: 0 0 0 2px rgba(234, 76, 137, 0.2);
+}
+
+/* =========================
+   BOTÓN BUSCAR
+========================= */
+
 .nav-search .btn {
-    height:28px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }

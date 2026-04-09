@@ -1,0 +1,190 @@
+/* =========================
+   EXAMEN PRO
+========================= */
+
+/* CARD */
+.exam-card {
+    background: #111;
+    border-radius: 16px;
+    padding: 25px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+    border: 1px solid #1f1f1f;
+    animation: fadeIn 0.4s ease;
+    text-align: center;
+}
+
+/* PREGUNTA */
+.exam-card h3 {
+    font-size: 18px;
+    margin-bottom: 15px;
+    color: #fff;
+}
+
+/* OPCIONES */
+.exam-option {
+    display: block;
+    padding: 12px 15px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    cursor: pointer;
+    transition: 0.2s;
+    font-size: 14px;
+    color: #ddd;
+}
+
+.exam-option:hover {
+    background: #222;
+    border-color: #ea4c89;
+    transform: translateY(-1px);
+}
+
+.exam-option input {
+    display: none;
+}
+
+.exam-option.selected {
+    border-color: #ea4c89;
+    background: rgba(234, 76, 137, 0.1);
+    color: #fff;
+}
+
+/* PROGRESO */
+.progress-text {
+    font-size: 13px;
+    color: #aaa;
+    margin-bottom: 10px;
+}
+
+/* BOTONES */
+.exam-actions {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+/* INPUT */
+.exam-input {
+    width: 100%;
+    max-width: 300px;
+    padding: 12px 15px;
+    border-radius: 10px;
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    color: #fff;
+    font-size: 14px;
+    outline: none;
+    transition: 0.2s;
+}
+
+.exam-input:hover {
+    background: #222;
+}
+
+.exam-input:focus {
+    border-color: #ea4c89;
+    box-shadow: 0 0 0 2px rgba(234, 76, 137, 0.2);
+}
+
+.exam-input::placeholder {
+    color: #777;
+}
+
+.exam-input-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+/* TEXTO CÓDIGO */
+.code-text {
+    font-family: monospace;
+    background: #1a1a1a;
+    padding: 3px 6px;
+    border-radius: 6px;
+    color: #ff6aa3;
+}
+
+/* =========================
+   RESULTADO FINAL PRO
+========================= */
+
+.result-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 40px 25px;
+    border-radius: 20px;
+    background: rgba(18,18,18,0.8);
+    border: 1px solid rgba(255,255,255,0.05);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+    animation: fadeInUp 0.6s ease;
+}
+
+/* CÍRCULO NOTA*/
+.result-score {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 3px solid #ea4c89;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 20px 0;
+    font-size: 22px;
+    font-weight: bold;
+    color: #fff;
+}
+
+/* TEXTO */
+.result-success {
+    color: #22c55e;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+.result-fail {
+    color: #f87171;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+/* BOTONES */
+.result-card .btn {
+    margin: 6px;
+}
+
+/* SEPARACIÓN */
+.result-actions {
+    margin-top: 25px;
+}
+
+/* =========================
+   ANIMACIONES
+========================= */
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}

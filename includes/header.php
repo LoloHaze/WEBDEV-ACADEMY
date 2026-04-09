@@ -7,6 +7,7 @@
     <title>Document</title>
     <link rel="stylesheet" href="../public/assets/css/nav.css">
 
+
 </head>
 
 <body>
@@ -19,10 +20,11 @@
 
         <!-- IZQUIERDA -->
         <div class="navbar-left">
-            <a href="../public/index.php" class="logo">
-                🚀 WebDevAcademy
-            </a>
-        </div>
+    <a href="../public/index.php" class="logo">
+        <img src="../public/assets/logowebdev.png" alt="WebDevAcademy logo" class="logo-img">
+        <span>WebDevAcademy</span>
+    </a>
+</div>
 
         <!-- CENTRO -->
         <form method="GET" class="nav-search">

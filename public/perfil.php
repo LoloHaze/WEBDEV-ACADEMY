@@ -21,6 +21,13 @@ mysqli_stmt_execute($stmt);
 $resultado = mysqli_stmt_get_result($stmt);
 $usuario = mysqli_fetch_assoc($resultado);
 
+
+$foto = (!empty($_SESSION["foto"]) &&
+    file_exists("uploads/perfiles/" . $_SESSION["foto"]))
+    ? "uploads/perfiles/" . $_SESSION["foto"]
+    : "https://ui-avatars.com/api/?name=" . urlencode($_SESSION["nombre"]) . "&background=random&color=fff";
+
+
 /* ==========================================
    CAMBIAR CONTRASEÑA
 ========================================== */
@@ -99,58 +106,104 @@ if (isset($_POST["subir_foto"]) && isset($_FILES["foto"])) {
 
 <head>
     <title>Mi Perfil</title>
+    <link rel="stylesheet" href="assets/css/index.css">
+    <link rel="stylesheet" href="assets/css/components.css">
+    <link rel="stylesheet" href="assets/css/perfil.css">
+   
 </head>
 
 <body>
 
-<h2>Mi Perfil</h2>
+    <?php require_once "../includes/header.php"; ?>
+    <div class="main">
+        <div class="container">
+            <div class="profile-main-card">
 
-<?php
-$foto = (!empty($_SESSION["foto"]) &&
-    file_exists("uploads/perfiles/" . $_SESSION["foto"]))
-    ? "uploads/perfiles/" . $_SESSION["foto"]
-    : "https://ui-avatars.com/api/?name=" . urlencode($_SESSION["nombre"]) . "&background=random&color=fff";
-?>
+                <!-- HEADER -->
+                <div class="profile-header">
 
-<img src="<?php echo $foto; ?>" 
-     width="120" height="120"
-     style="border-radius:50%; object-fit:cover;"><br><br>
+                    <div class="profile-avatar">
+                        <img src="<?php echo $foto; ?>">
+                    </div>
 
-<p><strong>Nombre:</strong> <?php echo htmlspecialchars($usuario["nombre"]); ?></p>
-<p><strong>Email:</strong> <?php echo htmlspecialchars($usuario["email"]); ?></p>
+                    <div class="profile-info">
+                        <h3><?php echo htmlspecialchars($usuario["nombre"]); ?></h3>
+                        <span><?php echo htmlspecialchars($usuario["email"]); ?></span>
+                    </div>
 
-<?php if ($mensaje != ""): ?>
-    <p style="color:green;"><?php echo $mensaje; ?></p>
-<?php endif; ?>
+                </div>
 
-<hr>
+                <?php if ($mensaje != ""): ?>
+                    <div class="auth-error">
+                        <?php echo $mensaje; ?>
+                    </div>
+                <?php endif; ?>
 
-<h3>Cambiar contraseña</h3>
+                <!-- PASSWORD -->
+                <div class="profile-block">
 
-<form method="POST">
-    <input type="password" name="password_actual" placeholder="Contraseña actual" required><br><br>
-    <input type="password" name="password_nueva" placeholder="Nueva contraseña" required><br><br>
-    <input type="password" name="password_confirmar" placeholder="Confirmar nueva contraseña" required><br><br>
+                    <h4>Cambiar contraseña</h4>
 
-    <button type="submit" name="actualizar_password">
-        Actualizar contraseña
-    </button>
-</form>
+                    <form method="POST" class="auth-form">
 
-<hr>
+                        <input class="file-upload" type="password" name="password_actual" placeholder="Contraseña actual"
+                            required>
 
-<h3>Imagen de perfil</h3>
+                        <input class="file-upload" type="password" name="password_nueva" placeholder="Nueva contraseña"
+                            required>
 
-<form method="POST" enctype="multipart/form-data">
-    <input type="file" name="foto" accept="image/*" required><br><br>
+                        <input class="file-upload" type="password" name="password_confirmar"
+                            placeholder="Confirmar contraseña" required>
 
-    <button type="submit" name="subir_foto">
-        Subir imagen
-    </button>
-</form>
+                        <button type="submit" class="btn btn-primary">
+                            Actualizar contraseña
+                        </button>
 
-<br>
-<a href="index.php">← Volver</a>
+                    </form>
+
+                </div>
+
+                <!-- FOTO -->
+                <div class="profile-block">
+
+                    <h4>Imagen de perfil</h4>
+
+                    <form method="POST" enctype="multipart/form-data" class="auth-form">
+
+                        <div class="file-upload">
+
+                            <label class="file-btn">
+                                Seleccionar imagen
+                                <input type="file" name="foto" id="fileInput" required>
+                            </label>
+
+                            <span id="fileName">Ningún archivo seleccionado</span>
+
+                        </div>
+
+                        <button type="submit" name="subir_foto" class="btn btn-primary">
+                            Subir imagen
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+            <div class="profile-actions">
+                <a href="index.php" class="btn btn-soft">← Volver</a>
+            </div>
+        </div>
+    </div>
+    <?php require_once "../includes/footer.php"; ?>
 
 </body>
+
 </html>
+<script>
+    document.getElementById("fileInput").addEventListener("change", function () {
+        const fileName = this.files[0]?.name || "Ningún archivo seleccionado";
+        document.getElementById("fileName").textContent = fileName;
+    });
+</script>

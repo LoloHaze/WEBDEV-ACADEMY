@@ -39,39 +39,85 @@ $resultado = mysqli_stmt_get_result($stmt);
 
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Gestionar Lecciones</title>
+
+    <!-- 🔥 REUTILIZAMOS TODO -->
+    <link rel="stylesheet" href="../public/assets/css/index.css">
+    <link rel="stylesheet" href="../public/assets/css/components.css">
+    <link rel="stylesheet" href="../public/assets/css/admin.css">
 </head>
+
 <body>
 
-<h2>Lecciones de: <?php echo htmlspecialchars($curso["titulo"]); ?></h2>
 
-<a href="crearLeccion.php?curso_id=<?php echo $curso_id; ?>">
-    ➕ Añadir lección
-</a>
 
-<br><br>
+<div class="main">
+<div class="container">
+<?php require_once "../includes/headerAdmin.php"; ?>
+    <!-- TITULO -->
+    <h2 class="section-title">
+        Lecciones de: <?php echo htmlspecialchars($curso["titulo"]); ?>
+    </h2>
 
-<?php while ($leccion = mysqli_fetch_assoc($resultado)): ?>
+    <!-- BOTÓN CREAR -->
+    <div class="admin-top-actions">
+        <a href="crearLeccion.php?curso_id=<?php echo $curso_id; ?>" class="btn btn-primary">
+            ➕ Añadir lección
+        </a>
+    </div>
+    <br>
 
-    <div style="border:1px solid #ccc; padding:10px; margin:10px 0;">
-        <strong><?php echo $leccion["orden"]; ?>. 
-            <?php echo htmlspecialchars($leccion["titulo"]); ?>
-        </strong>
-        <br>
-        <a href="editarLeccion.php?id=<?php echo $leccion["id"]; ?>">
-            ✏ Editar
-        </a> |
-        <a href="eliminarLeccion.php?id=<?php echo $leccion["id"]; ?>&curso_id=<?php echo $curso_id; ?>"
-           onclick="return confirm('¿Eliminar lección?');">
-           🗑 Eliminar
+    <!-- LISTA -->
+    <div class="admin-list">
+
+    <?php while ($leccion = mysqli_fetch_assoc($resultado)): ?>
+
+        <div class="card admin-item">
+
+            <!-- INFO -->
+            <div class="admin-user-mini">
+                <div>
+                    <strong>
+                        <?php echo $leccion["orden"]; ?>.
+                        <?php echo htmlspecialchars($leccion["titulo"]); ?>
+                    </strong>
+                </div>
+            </div>
+
+            <!-- ACCIONES -->
+            <div class="admin-actions">
+
+                <a href="editarLeccion.php?id=<?php echo $leccion["id"]; ?>" class="btn btn-primary">
+                    Editar
+                </a>
+
+                <a href="eliminarLeccion.php?id=<?php echo $leccion["id"]; ?>&curso_id=<?php echo $curso_id; ?>"
+                   class="btn btn-soft"
+                   onclick="return confirm('¿Eliminar lección?');">
+                   Eliminar
+                </a>
+
+            </div>
+
+        </div>
+
+    <?php endwhile; ?>
+
+    </div>
+
+    <!-- VOLVER -->
+    <div class="admin-footer">
+        <a href="gestionCursos.php" class="btn btn-soft">
+            ← Volver a cursos
         </a>
     </div>
 
-<?php endwhile; ?>
+</div>
+</div>
 
-<br>
-<a href="gestionCursos.php">← Volver a cursos</a>
+
 
 </body>
 </html>

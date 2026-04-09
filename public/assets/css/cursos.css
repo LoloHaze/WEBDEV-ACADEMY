@@ -46,7 +46,7 @@
 }
 
 .hero-rating{
-    color:gold;
+  
     letter-spacing:2px;
     font-size:18px;
 }
@@ -128,3 +128,12 @@
 .comment-item p{
     color:#aaa;
 }
+.star{
+    color:#444;
+}
+
+.star.filled{
+    color:gold; 
+}
+
+

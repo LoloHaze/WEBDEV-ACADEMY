@@ -106,15 +106,29 @@ $rechazadas = mysqli_query($conexion, $sql_rechazadas);
 
 <head>
     <title>Gestión de Inscripciones</title>
+
+    <!-- 🔥 REUTILIZAMOS TODO -->
+    <link rel="stylesheet" href="../public/assets/css/index.css">
+    <link rel="stylesheet" href="../public/assets/css/components.css">
+    <link rel="stylesheet" href="../public/assets/css/admin.css"> <!-- tu css admin -->
 </head>
 
 <body>
 
-    <h2>Gestión de Inscripciones</h2>
+
+
+<div class="main">
+    
+<div class="container">
+
+<?php require_once "../includes/headerAdmin.php"; ?>
+
+    <h2 class="section-title">Gestión de Inscripciones</h2>
 
     <!-- ================= PENDIENTES ================= -->
+    <h3 class="section-subtitle">📌 Pendientes</h3>
 
-    <h3>📌 Pendientes</h3>
+    <div class="admin-list">
 
     <?php while ($row = mysqli_fetch_assoc($pendientes)): ?>
 
@@ -124,30 +138,33 @@ $rechazadas = mysqli_query($conexion, $sql_rechazadas);
             : "https://ui-avatars.com/api/?name=" . urlencode($row["nombre"]);
         ?>
 
-        <div style="display:flex; align-items:center; gap:15px; border:1px solid #ccc; padding:10px; margin:10px 0;">
+        <div class="card admin-item">
 
-            <img src="<?php echo $foto; ?>" width="50" height="50" style="border-radius:50%; object-fit:cover;">
-
-            <div style="flex:1;">
-                <strong><?php echo htmlspecialchars($row["nombre"]); ?></strong><br>
-                <small><?php echo htmlspecialchars($row["email"]); ?></small><br>
-                Curso: <strong><?php echo htmlspecialchars($row["titulo"]); ?></strong>
+            <div class="admin-user-mini">
+                <img src="<?php echo $foto; ?>">
+                <div>
+                    <strong><?php echo htmlspecialchars($row["nombre"]); ?></strong>
+                    <span><?php echo htmlspecialchars($row["email"]); ?></span>
+                    <p>Curso: <b><?php echo htmlspecialchars($row["titulo"]); ?></b></p>
+                </div>
             </div>
 
-            <div>
-                <a href="?aprobar=<?php echo $row["id"]; ?>">✅ Aprobar</a> |
-                <a href="?rechazar=<?php echo $row["id"]; ?>">❌ Rechazar</a> |
-
+            <div class="admin-actions">
+                <a href="?aprobar=<?php echo $row["id"]; ?>" class="btn btn-primary">Aprobar</a>
+                <a href="?rechazar=<?php echo $row["id"]; ?>" class="btn btn-soft">Rechazar</a>
             </div>
 
         </div>
 
     <?php endwhile; ?>
 
+    </div>
+
 
     <!-- ================= APROBADAS ================= -->
+    <h3 class="section-subtitle">✅ Aprobadas</h3>
 
-    <h3>✅ Aprobadas</h3>
+    <div class="admin-list">
 
     <?php while ($row = mysqli_fetch_assoc($aprobadas)): ?>
 
@@ -157,28 +174,35 @@ $rechazadas = mysqli_query($conexion, $sql_rechazadas);
             : "https://ui-avatars.com/api/?name=" . urlencode($row["nombre"]);
         ?>
 
-        <div style="display:flex; align-items:center; gap:15px; border:1px solid #ccc; padding:10px; margin:10px 0;">
+        <div class="card admin-item">
 
-            <img src="<?php echo $foto; ?>" width="50" height="50" style="border-radius:50%; object-fit:cover;">
-
-            <div style="flex:1;">
-                <strong><?php echo htmlspecialchars($row["nombre"]); ?></strong><br>
-                <small><?php echo htmlspecialchars($row["email"]); ?></small><br>
-                Curso: <strong><?php echo htmlspecialchars($row["titulo"]); ?></strong>
+            <div class="admin-user-mini">
+                <img src="<?php echo $foto; ?>">
+                <div>
+                    <strong><?php echo htmlspecialchars($row["nombre"]); ?></strong>
+                    <span><?php echo htmlspecialchars($row["email"]); ?></span>
+                    <p>Curso: <b><?php echo htmlspecialchars($row["titulo"]); ?></b></p>
+                </div>
             </div>
 
-            <div>
-                <span style="color:green;">✔ Aprobado</span> |
-                <a href="?rechazar=<?php echo $row["id"]; ?>" onclick="return confirm('¿Quitar acceso al curso?');">
-                    ⛔ Quitar acceso
+            <div class="admin-actions">
+                <span class="status success">✔ Aprobado</span>
+                <a href="?rechazar=<?php echo $row["id"]; ?>" class="btn btn-soft">
+                    Quitar acceso
                 </a>
             </div>
 
         </div>
-    <?php endwhile; ?>
-    <!-- =================RECHAZAADAS ================= -->
 
-    <h3>❌ Rechazadas</h3>
+    <?php endwhile; ?>
+
+    </div>
+
+
+    <!-- ================= RECHAZADAS ================= -->
+    <h3 class="section-subtitle">❌ Rechazadas</h3>
+
+    <div class="admin-list">
 
     <?php while ($row = mysqli_fetch_assoc($rechazadas)): ?>
 
@@ -188,31 +212,37 @@ $rechazadas = mysqli_query($conexion, $sql_rechazadas);
             : "https://ui-avatars.com/api/?name=" . urlencode($row["nombre"]);
         ?>
 
-        <div style="display:flex; align-items:center; gap:15px; border:1px solid #ccc; padding:10px; margin:10px 0;">
+        <div class="card admin-item">
 
-            <img src="<?php echo $foto; ?>" width="50" height="50" style="border-radius:50%; object-fit:cover;">
-
-            <div style="flex:1;">
-                <strong><?php echo htmlspecialchars($row["nombre"]); ?></strong><br>
-                <small><?php echo htmlspecialchars($row["email"]); ?></small><br>
-                Curso: <strong><?php echo htmlspecialchars($row["titulo"]); ?></strong>
+            <div class="admin-user-mini">
+                <img src="<?php echo $foto; ?>">
+                <div>
+                    <strong><?php echo htmlspecialchars($row["nombre"]); ?></strong>
+                    <span><?php echo htmlspecialchars($row["email"]); ?></span>
+                    <p>Curso: <b><?php echo htmlspecialchars($row["titulo"]); ?></b></p>
+                </div>
             </div>
 
-            <div>
-                <a href="?aprobar=<?php echo $row["id"]; ?>">✅ Aprobar</a> |
-                <a href="?pendiente=<?php echo $row["id"]; ?>">🔄 Poner pendiente</a>
+            <div class="admin-actions">
+                <a href="?aprobar=<?php echo $row["id"]; ?>" class="btn btn-primary">Aprobar</a>
+                <a href="?pendiente=<?php echo $row["id"]; ?>" class="btn btn-soft">Pendiente</a>
             </div>
 
         </div>
 
     <?php endwhile; ?>
 
+    </div>
 
-    <br><br>
-    <a href="panel.php">← Volver al panel</a>
-    <br>
+    <!-- VOLVER -->
+    <div class="admin-footer">
+        <a href="panel.php" class="btn btn-soft">← Volver</a>
+    </div>
 
+</div>
+</div>
+
+<?php require_once "../includes/footer.php"; ?>
 
 </body>
-
 </html>

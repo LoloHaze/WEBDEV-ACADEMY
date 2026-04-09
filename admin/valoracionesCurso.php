@@ -84,72 +84,121 @@ $total = $datosMedia["total"];
 
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Valoraciones del Curso</title>
+
+    <!-- 🔥 REUTILIZAMOS TODO -->
+    <link rel="stylesheet" href="../public/assets/css/index.css">
+    <link rel="stylesheet" href="../public/assets/css/components.css">
+    <link rel="stylesheet" href="../public/assets/css/admin.css">
+    <link rel="stylesheet" href="../public/assets/css/cursos.css">
 </head>
+
 <body>
 
-<h2>Valoraciones: <?php echo htmlspecialchars($curso["titulo"]); ?></h2>
 
-<a href="gestionCursos.php">← Volver a gestión de cursos</a>
 
-<hr>
+    <div class="main">
+        <div class="container">
+            <?php require_once "../includes/headerAdmin.php"; ?>
 
-<p>
-<strong>Media:</strong>
-<?php if ($total > 0): ?>
+            <h2 class="section-title">
+                Valoraciones: <?php echo htmlspecialchars($curso["titulo"]); ?>
+            </h2>
 
-    <?php for ($i = 1; $i <= 5; $i++): ?>
-        <span style="color:<?php echo $i <= round($media) ? 'gold' : '#ccc'; ?>">★</span>
-    <?php endfor; ?>
+            <!-- MEDIA -->
+            <div class="card" style="text-align:center; margin-bottom:20px;">
 
-    (<?php echo $media; ?> / 5 — <?php echo $total; ?> valoraciones)
+                <p><strong>Media:</strong></p>
 
-<?php else: ?>
-    Sin valoraciones
-<?php endif; ?>
-</p>
+                <?php if ($total > 0): ?>
 
-<hr>
+                    <div class="hero-rating">
 
-<?php if (mysqli_num_rows($resultado) > 0): ?>
+                        <?php for ($i = 1; $i <= 5; $i++): ?>
+                            <span class="star <?php echo $i <= round($media) ? 'filled' : ''; ?>">★</span>
+                        <?php endfor; ?>
 
-    <?php while ($val = mysqli_fetch_assoc($resultado)): ?>
+                    </div>
 
-        <div style="border:1px solid #ccc; padding:15px; margin:15px 0; border-radius:8px;">
+                    <p class="rating-info">
+                        <?php echo $media; ?> / 5 — <?php echo $total; ?> valoraciones
+                    </p>
 
-            <strong><?php echo htmlspecialchars($val["nombre"]); ?></strong>
-            <br>
+                <?php else: ?>
+                    <p class="empty-text">Sin valoraciones</p>
+                <?php endif; ?>
 
-            <?php for ($i = 1; $i <= 5; $i++): ?>
-                <span style="color:<?php echo $i <= $val["puntuacion"] ? 'gold' : '#ccc'; ?>">★</span>
-            <?php endfor; ?>
+            </div>
 
-            <br><br>
+            <!-- LISTA -->
+            <div class="admin-list">
 
-            <p><?php echo nl2br(htmlspecialchars($val["comentario"])); ?></p>
+                <?php if (mysqli_num_rows($resultado) > 0): ?>
 
-            <small>
-                <?php echo date("d/m/Y H:i", strtotime($val["fecha"])); ?>
-            </small>
+                    <?php while ($val = mysqli_fetch_assoc($resultado)): ?>
 
-            <br><br>
+                        <div class="card admin-item">
 
-            <a href="?id=<?php echo $curso_id; ?>&eliminar=<?php echo $val["id"]; ?>"
-               onclick="return confirm('¿Eliminar esta valoración?');"
-               style="color:red;">
-               🗑 Eliminar
-            </a>
+                            <!-- INFO -->
+                            <div class="admin-user-mini">
+                                <div>
+                                    <strong><?php echo htmlspecialchars($val["nombre"]); ?></strong>
+                                    <p class="rating-course">
+                                        📚 <?php echo htmlspecialchars($curso["titulo"]); ?>
+                                    </p>
+
+                                    <div class="hero-rating">
+
+                                        <?php for ($i = 1; $i <= 5; $i++): ?>
+                                            <span class="star <?php echo $i <= $val["puntuacion"] ? 'filled' : ''; ?>">★</span>
+                                        <?php endfor; ?>
+
+                                    </div>
+
+                                    <p class="rating-comment">
+                                        <?php echo nl2br(htmlspecialchars($val["comentario"])); ?>
+                                    </p>
+
+                                    <span class="rating-date">
+                                        <?php echo date("d/m/Y H:i", strtotime($val["fecha"])); ?>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- ACCIONES -->
+                            <div class="admin-actions">
+                                <a href="?id=<?php echo $curso_id; ?>&eliminar=<?php echo $val["id"]; ?>" class="btn btn-soft"
+                                    onclick="return confirm('¿Eliminar esta valoración?');">
+                                    Eliminar
+                                </a>
+                            </div>
+
+                        </div>
+
+                    <?php endwhile; ?>
+
+                <?php else: ?>
+
+                    <p class="empty-text">No hay valoraciones en este curso.</p>
+
+                <?php endif; ?>
+
+            </div>
+
+            <!-- VOLVER -->
+            <div class="admin-footer">
+                <a href="gestionCursos.php" class="btn btn-soft">
+                    ← Volver a cursos
+                </a>
+            </div>
 
         </div>
+    </div>
 
-    <?php endwhile; ?>
-
-<?php else: ?>
-
-    <p>No hay valoraciones en este curso.</p>
-
-<?php endif; ?>
+   
 
 </body>
+
 </html>

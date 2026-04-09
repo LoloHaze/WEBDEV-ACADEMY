@@ -93,114 +93,103 @@ $total_ins_pendientes = mysqli_fetch_assoc($result_ins)["total"];
 
 <head>
     <title>Panel Admin - WebDev Academy</title>
-    <link rel="stylesheet" href="../assets/css/style.css">
+
+    <!-- REUTILIZAMOS -->
+    <link rel="stylesheet" href="../public/assets/css/components.css">
+    <link rel="stylesheet" href="../public/assets/css/index.css">
+
+    <!-- NUEVO -->
+    <link rel="stylesheet" href="../public/assets/css/admin.css">
+
 </head>
 
 <body>
 
-    <!-- Barra superior admin -->
-    <div
-        style="display:flex; align-items:center; justify-content:space-between; padding:10px; border-bottom:1px solid #ccc;">
+    <div class="main">
+        <div class="container">
 
-        <div style="display:flex; align-items:center; gap:10px;">
-            <img src="<?php echo $foto; ?>" width="50" height="50" style="border-radius:50%; object-fit:cover;">
-            <div>
-                <strong><?php echo $_SESSION["nombre"]; ?></strong><br>
-                <small>Administrador</small>
+           <?php require_once "../includes/headerAdmin.php"; ?>
+            <!-- ADMIN -->
+            <h2 class="section-title">Administración</h2>
+
+            <div class="admin-grid">
+
+                <a href="gestionCursos.php" class="card admin-link">
+                    <span class="admin-link-text">📚 Cursos</span>
+                </a>
+
+                <a href="gestionUsuarios.php" class="card admin-link">
+                    <span class="admin-link-text">👥 Usuarios</span>
+
+                    <?php if ($total_users_pendientes > 0): ?>
+                        <span class="badge"><?php echo $total_users_pendientes; ?></span>
+                    <?php endif; ?>
+                </a>
+
+                <a href="gestionInscripciones.php" class="card admin-link">
+                    <span class="admin-link-text">📩 Inscripciones</span>
+
+                    <?php if ($total_ins_pendientes > 0): ?>
+                        <span class="badge"><?php echo $total_ins_pendientes; ?></span>
+                    <?php endif; ?>
+                </a>
+
             </div>
-        </div>
 
-        <div>
-            <a href="../public/index.php">Volver a la academia</a> |
-            <a href="../public/logout.php">Cerrar sesión</a>
-        </div>
+            <!-- STATS -->
+            <h2 class="section-title">Dashboard</h2>
 
+            <div class="admin-stats">
+
+                <div class="card admin-stat">
+                    <span>👥</span>
+                    <strong><?php echo $totalUsuarios; ?></strong>
+                    <p>Usuarios</p>
+                </div>
+
+                <div class="card admin-stat">
+                    <span>📚</span>
+                    <strong><?php echo $totalCursos; ?></strong>
+                    <p>Cursos</p>
+                </div>
+
+                <div class="card admin-stat">
+                    <span>📝</span>
+                    <strong><?php echo $totalInscripciones; ?></strong>
+                    <p>Inscripciones</p>
+                </div>
+
+                <div class="card admin-stat">
+                    <span>⭐</span>
+                    <strong><?php echo $totalValoraciones; ?></strong>
+                    <p>Valoraciones</p>
+                </div>
+
+            </div>
+
+            <!-- INFO -->
+            <div class="admin-info">
+
+                <div class="card">
+                    <h3>🔥 Curso más inscrito</h3>
+                    <p>
+                        <?php echo $cursoMasInscrito ? htmlspecialchars($cursoMasInscrito["titulo"]) : "Sin datos"; ?>
+                    </p>
+                </div>
+
+                <div class="card">
+                    <h3>🏆 Mejor valorado</h3>
+                    <p>
+                        <?php echo $cursoMejorValorado ? htmlspecialchars($cursoMejorValorado["titulo"]) : "Sin datos"; ?>
+                    </p>
+                </div>
+
+            </div>
+
+
+
+        </div>
     </div>
-    <h2>📊 Panel de Estadísticas</h2>
-
-    <div style="display:grid; grid-template-columns:repeat(2, 250px); gap:20px; margin-bottom:30px;">
-
-        <div style="border:1px solid #ccc; padding:20px; border-radius:10px;">
-            👥 <strong>
-                <?php echo $totalUsuarios; ?>
-            </strong><br>
-            Usuarios
-        </div>
-
-        <div style="border:1px solid #ccc; padding:20px; border-radius:10px;">
-            📚 <strong>
-                <?php echo $totalCursos; ?>
-            </strong><br>
-            Cursos
-        </div>
-
-        <div style="border:1px solid #ccc; padding:20px; border-radius:10px;">
-            📝 <strong>
-                <?php echo $totalInscripciones; ?>
-            </strong><br>
-            Inscripciones
-        </div>
-
-        <div style="border:1px solid #ccc; padding:20px; border-radius:10px;">
-            ⭐ <strong>
-                <?php echo $totalValoraciones; ?>
-            </strong><br>
-            Valoraciones
-        </div>
-
-    </div>
-
-    <hr>
-
-    <h3>🔥 Curso más inscrito</h3>
-
-    <?php if ($cursoMasInscrito && $cursoMasInscrito["total"] > 0): ?>
-        <?php echo htmlspecialchars($cursoMasInscrito["titulo"]); ?>
-        (
-        <?php echo $cursoMasInscrito["total"]; ?> alumnos)
-    <?php else: ?>
-        No hay inscripciones todavía.
-    <?php endif; ?>
-
-    <hr>
-
-    <h3>🏆 Curso mejor valorado</h3>
-
-    <?php if ($cursoMejorValorado): ?>
-        <?php echo htmlspecialchars($cursoMejorValorado["titulo"]); ?>
-        (
-        <?php echo round($cursoMejorValorado["media"], 1); ?> ⭐)
-    <?php else: ?>
-        No hay valoraciones todavía.
-    <?php endif; ?>
-
-    <hr>
-    <h2>Panel de Administración</h2>
-
-    <ul>
-        <li><a href="gestionCursos.php">📚 Gestión de cursos</a></li>
-        <li>
-            <a href="gestionUsuarios.php">
-                👥 Gestión de usuarioss
-                <?php if ($total_users_pendientes > 0): ?>
-                    <span style="color:red;">
-                        (<?php echo $total_users_pendientes; ?>)
-                    </span>
-                <?php endif; ?>
-            </a>
-        </li>
-
-        <li>
-            <a href="gestionInscripciones.php">
-                📩 Gestión de inscripciones
-                <?php if ($total_ins_pendientes > 0): ?>
-                    <span style="color:red;">
-                        (<?php echo $total_ins_pendientes; ?>)
-                    </span>
-                <?php endif; ?>
-            </a>
-        </li>
-    </ul>
 
 </body>
 

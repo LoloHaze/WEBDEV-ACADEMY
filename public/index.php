@@ -110,6 +110,7 @@ $cursoContinuar = mysqli_fetch_assoc($res_continue); ?>
     <link rel="stylesheet" href="assets/css/index.css">
     <link rel="stylesheet" href="assets/css/components.css">
     <link rel="stylesheet" href="assets/css/cursos.css">
+     <link rel="stylesheet" href="assets/css/loin.css">
     
 
 </head>

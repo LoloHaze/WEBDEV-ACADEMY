@@ -61,31 +61,43 @@ h1,h2,h3,h4{
 }
 
 /* PAGINACIÓN */
-.pagination{
-    display:flex;
-    justify-content:center;
-    gap:8px;
-    margin-top:30px;
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 30px;
 }
 
+/* BASE */
 .pagination a,
-.pagination strong{
-    padding:6px 12px;
-    border-radius:6px;
-    font-size:13px;
+.pagination strong {
+    padding: 8px 14px;
+    border-radius: 999px;
+    font-size: 13px;
+    text-decoration: none;
+    transition: 0.2s;
 }
 
-.pagination a{
-    background:#1a1a1a;
-    color:#ccc;
+/* NORMAL = NEGRO (como btn-soft) */
+.pagination a {
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    color: #ccc;
 }
 
-.pagination a:hover,
-.pagination strong{
-    background:#ea4c89;
-    color:#fff;
+/* HOVER = TU PRIMARY REAL */
+.pagination a:hover {
+    background: rgba(234,76,137,.15);
+    color: #ff6aa3;
+    border: 1px solid rgba(234,76,137,.3);
 }
 
+/* ACTIVO = PRIMARY */
+.pagination strong {
+    background: rgba(234,76,137,.15);
+    color: #ff6aa3;
+    border: 1px solid rgba(234,76,137,.3);
+}
 /* EXTRA */
 .progress-text{
     font-size:12px;
@@ -107,4 +119,65 @@ h1,h2,h3,h4{
 .back-link:hover{
     color:#ea4c89;
     transform:translateX(-3px);
+}
+
+
+
+/* =========================
+   FONDO ANIMADO
+========================= */
+/* BODY */
+body{
+    background:#0d0d0d;
+    overflow-x:hidden;
+    position:relative;
+}
+
+/* GLOW 1 */
+body::before{
+    content:"";
+    position:fixed;
+    width:600px;
+    height:600px;
+    background:radial-gradient(circle, rgba(234,76,137,0.25), transparent);
+    filter:blur(120px);
+    top:-150px;
+    left:-150px;
+    animation:moveGlow1 8s infinite alternate ease-in-out;
+    z-index:-1;
+    pointer-events:none;
+}
+
+/* GLOW 2 */
+body::after{
+    content:"";
+    position:fixed;
+    width:500px;
+    height:500px;
+    background:radial-gradient(circle, rgba(255,106,163,0.2), transparent);
+    filter:blur(120px);
+    bottom:-150px;
+    right:-150px;
+    animation:moveGlow2 10s infinite alternate ease-in-out;
+    z-index:-1;
+    pointer-events:none;
+}
+
+/* ANIMACIONES MÁS VISIBLES */
+@keyframes moveGlow1{
+    from{
+        transform:translate(0,0) scale(1);
+    }
+    to{
+        transform:translate(300px,200px) scale(1.3);
+    }
+}
+
+@keyframes moveGlow2{
+    from{
+        transform:translate(0,0) scale(1);
+    }
+    to{
+        transform:translate(-250px,-150px) scale(1.25);
+    }
 }

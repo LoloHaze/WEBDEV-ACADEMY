@@ -120,100 +120,104 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <head>
     <title><?php echo htmlspecialchars($leccion["titulo"]); ?></title>
+    <link rel="stylesheet" href="assets/css/index.css">
+    <link rel="stylesheet" href="assets/css/leccion.css">
+    <link rel="stylesheet" href="assets/css/components.css">
 </head>
 
-<body style="margin:0; font-family:Arial;">
+<body>
+    <?php require_once "../includes/header.php"; ?>
 
-    <div style="display:flex; height:100vh;">
+    <div class="main">
+        <div class="leccion-layout">
 
-        <!-- SIDEBAR -->
-        <div style="width:300px; background:#f5f5f5; overflow-y:auto; padding:15px; border-right:1px solid #ddd;">
+            <!-- SIDEBAR -->
+            <div class="leccion-sidebar">
 
-            <h3><?php echo htmlspecialchars($leccion["curso_titulo"]); ?></h3>
-            <hr>
+                <h3 class="sidebar-title"><?php echo htmlspecialchars($leccion["curso_titulo"]); ?></h3>
+                <hr>
 
-            <?php while ($item = mysqli_fetch_assoc($resultado_lista)): ?>
+                <?php while ($item = mysqli_fetch_assoc($resultado_lista)): ?>
 
-                <?php
-                // Comprobar progreso de cada lección
-                $sql_prog = "SELECT id FROM progreso 
+                    <?php
+                    $sql_prog = "SELECT id FROM progreso 
                          WHERE usuario_id = ? AND leccion_id = ?";
-                $stmt_prog = mysqli_prepare($conexion, $sql_prog);
-                mysqli_stmt_bind_param($stmt_prog, "ii", $usuario_id, $item["id"]);
-                mysqli_stmt_execute($stmt_prog);
-                mysqli_stmt_store_result($stmt_prog);
+                    $stmt_prog = mysqli_prepare($conexion, $sql_prog);
+                    mysqli_stmt_bind_param($stmt_prog, "ii", $usuario_id, $item["id"]);
+                    mysqli_stmt_execute($stmt_prog);
+                    mysqli_stmt_store_result($stmt_prog);
 
-                $completada_item = mysqli_stmt_num_rows($stmt_prog) > 0;
+                    $completada_item = mysqli_stmt_num_rows($stmt_prog) > 0;
+                    $activa = ($item["id"] == $leccion_id);
+                    ?>
 
-                $activa = ($item["id"] == $leccion_id);
-                ?>
+                    <div class="sidebar-item <?php echo $activa ? 'active' : ''; ?>">
 
-                <div style="
-                padding:10px;
-                margin-bottom:5px;
-                background:<?php echo $activa ? '#e3f2fd' : 'white'; ?>;
-                border-radius:5px;
-            ">
+                        <a href="leccion.php?id=<?php echo $item["id"]; ?>">
 
-                    <a href="leccion.php?id=<?php echo $item["id"]; ?>" style="text-decoration:none; color:black;">
+                            <?php if ($completada_item): ?>
+                                ✔
+                            <?php endif; ?>
 
-                        <?php if ($completada_item): ?>
-                            ✔
+                            <?php echo htmlspecialchars($item["orden"] . ". " . $item["titulo"]); ?>
+
+                        </a>
+
+                    </div>
+
+                <?php endwhile; ?>
+
+            </div>
+
+
+            <!-- CONTENIDO -->
+            <div class="leccion-content">
+
+                <div class="leccion-wrapper">
+
+                    <!-- VIDEO -->
+                    <div class="video-container">
+                        <iframe src="<?php echo htmlspecialchars($leccion['video_url']); ?>" allowfullscreen></iframe>
+                    </div>
+
+                    <!-- INFO -->
+                    <div class="leccion-info">
+                        <h2><?php echo htmlspecialchars($leccion["titulo"]); ?></h2>
+                        <p class="leccion-desc">
+                            <?php echo htmlspecialchars($leccion["descripcion"]); ?>
+                        </p>
+                    </div>
+
+                    <!-- ACCIONES -->
+                    <div class="leccion-actions">
+                        <a class="btn btn-soft" href="curso.php?id=<?php echo $leccion["curso_id"]; ?>">
+                            ← Volver al curso
+                        </a>
+                        <?php if ($completada): ?>
+                            <form method="POST">
+                                <button type="submit" class="btn btn-danger">
+                                    ❌ Marcar como no completada
+                                </button>
+                            </form>
+                        <?php else: ?>
+                            <form method="POST">
+                                <button type="submit" class="btn btn-success">
+                                    ✅ Marcar como completada
+                                </button>
+                            </form>
                         <?php endif; ?>
 
-                        <?php echo htmlspecialchars($item["orden"] . ". " . $item["titulo"]); ?>
 
-                    </a>
+
+                    </div>
 
                 </div>
 
-            <?php endwhile; ?>
+            </div>
 
         </div>
-
-
-        <!-- CONTENIDO PRINCIPAL -->
-        <div style="flex:1; padding:30px; overflow-y:auto;">
-
-            <h2><?php echo htmlspecialchars($leccion["titulo"]); ?></h2>
-
-            <p><?php echo htmlspecialchars($leccion["descripcion"]); ?></p>
-
-            <iframe width="50%" height="50%" src="<?php echo htmlspecialchars($leccion['video_url']); ?>"
-                frameborder="0" allowfullscreen>
-            </iframe>
-
-            <br><br>
-
-            <?php if ($completada): ?>
-
-                <form method="POST">
-                    <button type="submit"
-                        style="background:#dc3545; color:white; padding:10px 15px; border:none; border-radius:5px;">
-                        ❌ Marcar como no completada
-                    </button>
-                </form>
-
-            <?php else: ?>
-
-                <form method="POST">
-                    <button type="submit"
-                        style="background:#28a745; color:white; padding:10px 15px; border:none; border-radius:5px;">
-                        ✅ Marcar como completada
-                    </button>
-                </form>
-
-            <?php endif; ?>
-
-            <br><br>
-            <a href="curso.php?id=<?php echo $leccion["curso_id"]; ?>">
-                ← Volver al curso
-            </a>
-
-        </div>
-
     </div>
-
+    <?php require_once "../includes/footer.php"; ?>
 </body>
 
 </html>

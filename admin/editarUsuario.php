@@ -56,31 +56,88 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Editar Usuario</title>
+
+    <!-- 🔥 REUTILIZAMOS TODO -->
+    <link rel="stylesheet" href="../public/assets/css/index.css">
+    <link rel="stylesheet" href="../public/assets/css/components.css">
+    <link rel="stylesheet" href="../public/assets/css/login.css">
+    <link rel="stylesheet" href="../public/assets/css/admin.css">
+    
 </head>
+
 <body>
 
-<h2>Editar Usuario</h2>
+<div class="main">
+    <div class="container">
 
-<?php if ($mensaje != ""): ?>
-    <p><?php echo $mensaje; ?></p>
-<?php endif; ?>
+        <?php require_once "../includes/headerAdmin.php"; ?>
 
-<form method="POST">
-    <input type="text" name="nombre" value="<?php echo htmlspecialchars($usuario["nombre"]); ?>" required><br><br>
-    <input type="email" name="email" value="<?php echo htmlspecialchars($usuario["email"]); ?>" required><br><br>
+        <!-- CARD FORM -->
+        <div class="card admin-form-card">
 
-    <select name="rol">
-        <option value="alumno" <?php if ($usuario["rol"] == "alumno") echo "selected"; ?>>Alumno</option>
-        <option value="admin" <?php if ($usuario["rol"] == "admin") echo "selected"; ?>>Admin</option>
-    </select><br><br>
+            <h2 class="section-title" style="text-align:center;">
+                Editar usuario
+            </h2>
 
-    <button type="submit">Guardar cambios</button>
-</form>
+            <!-- MENSAJE -->
+            <?php if ($mensaje != ""): ?>
+                <div class="auth-error">
+                    <?php echo htmlspecialchars($mensaje); ?>
+                </div>
+            <?php endif; ?>
 
-<br>
-<a href="gestionUsuarios.php">← Volver</a>
+            <!-- FORM -->
+            <form method="POST" class="auth-form">
+
+                <!-- NOMBRE -->
+                <input type="text"
+                       name="nombre"
+                       class="auth-input"
+                       placeholder="Nombre"
+                       value="<?php echo htmlspecialchars($usuario["nombre"]); ?>"
+                       required>
+
+                <!-- EMAIL -->
+                <input type="email"
+                       name="email"
+                       class="auth-input"
+                       placeholder="Email"
+                       value="<?php echo htmlspecialchars($usuario["email"]); ?>"
+                       required>
+
+                <!-- ROL -->
+                <select name="rol" class="auth-input">
+                    <option value="alumno" <?php if ($usuario["rol"] == "alumno") echo "selected"; ?>>
+                        Alumno
+                    </option>
+                    <option value="admin" <?php if ($usuario["rol"] == "admin") echo "selected"; ?>>
+                        Administrador
+                    </option>
+                </select>
+
+                <!-- BOTÓN -->
+                <button type="submit" class="btn btn-primary" style="width:100%;">
+                    Guardar cambios
+                </button>
+
+            </form>
+
+        </div>
+
+        <!-- VOLVER -->
+        <div style="text-align:center; margin-top:20px;">
+            <a href="gestionUsuarios.php" class="btn btn-soft">
+                ← Volver
+            </a>
+        </div>
+
+    </div>
+</div>
+
+
 
 </body>
 </html>

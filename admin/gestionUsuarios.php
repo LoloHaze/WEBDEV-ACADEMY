@@ -75,95 +75,134 @@ $count_activos = mysqli_num_rows($activos);
 
 <head>
     <title>Gestión de Usuarios</title>
+
+    <link rel="stylesheet" href="../public/assets/css/index.css">
+    <link rel="stylesheet" href="../public/assets/css/components.css">
+    <link rel="stylesheet" href="../public/assets/css/admin.css">
 </head>
 
 <body>
 
-    <h2>Gestión de Usuarios</h2>
-
-    <!-- ========================= -->
-    <!-- USUARIOS PENDIENTES -->
-    <!-- ========================= -->
-
-    <h3>🔴 Usuarios Pendientes (<?php echo $count_pendientes; ?>)</h3>
-
-    <?php if ($count_pendientes == 0): ?>
-        <p>No hay usuarios pendientes.</p>
-    <?php else: ?>
-        <?php while ($usuario = mysqli_fetch_assoc($pendientes)): ?>
-
-            <?php
-            $foto = (!empty($usuario["foto"]) &&
-                file_exists("../public/uploads/perfiles/" . $usuario["foto"]))
-                ? "../public/uploads/perfiles/" . $usuario["foto"]
-                : "https://ui-avatars.com/api/?name=" . urlencode($usuario["nombre"])."&background=random&color=fff";
-            ?>
-
-            <div style="display:flex; align-items:center; gap:15px; border:1px solid #ccc; padding:10px; margin:10px 0;">
-
-                <img src="<?php echo $foto; ?>" width="50" height="50" style="border-radius:50%; object-fit:cover;">
-
-                <div style="flex:1;">
-                    <strong><?php echo htmlspecialchars($usuario["nombre"]); ?></strong><br>
-                    <small><?php echo htmlspecialchars($usuario["email"]); ?></small>
-                </div>
-
-                <div>
-                    <a href="?aprobar=<?php echo $usuario["id"]; ?>">✅ Aprobar</a> |
-                    <a href="editarUsuario.php?id=<?php echo $usuario["id"]; ?>">✏ Editar</a> |
-                    <a href="?eliminar=<?php echo $usuario["id"]; ?>" onclick="return confirm('¿Eliminar usuario?');">
-                        🗑 Eliminar
-                    </a>
-                </div>
-
-            </div>
-
-        <?php endwhile; ?>
-    <?php endif; ?>
 
 
-    <!-- ========================= -->
-    <!-- USUARIOS ACTIVOS -->
-    <!-- ========================= -->
+    <div class="main">
 
-    <h3>🟢 Usuarios Activos (<?php echo $count_activos; ?>)</h3>
+        <div class="container">
+                <?php require_once "../includes/headerAdmin.php"; ?>
 
-    <?php if ($count_activos == 0): ?>
-        <p>No hay usuarios activos.</p>
-    <?php else: ?>
-        <?php while ($usuario = mysqli_fetch_assoc($activos)): ?>
+            <h2 class="section-title">Gestión de Usuarios</h2>
 
-            <?php
-            $foto = (!empty($usuario["foto"]) &&
-                file_exists("../public/uploads/perfiles/" . $usuario["foto"]))
-                ? "../public/uploads/perfiles/" . $usuario["foto"]
-                : "https://ui-avatars.com/api/?name=" . urlencode($usuario["nombre"]) . "&background=random&color=fff";
-            ?>
+            <!-- ========================= -->
+            <!-- PENDIENTES -->
+            <!-- ========================= -->
 
-            <div style="display:flex; align-items:center; gap:15px; border:1px solid #ccc; padding:10px; margin:10px 0;">
+            <h3 class="section-subtitle">🔴 Pendientes (<?php echo $count_pendientes; ?>)</h3>
 
-                <img src="<?php echo $foto; ?>" width="50" height="50" style="border-radius:50%; object-fit:cover;">
+            <div class="admin-list">
 
-                <div style="flex:1;">
-                    <strong><?php echo htmlspecialchars($usuario["nombre"]); ?></strong><br>
-                    <small><?php echo htmlspecialchars($usuario["email"]); ?></small>
-                </div>
+                <?php if ($count_pendientes == 0): ?>
 
-                <div>
-                    <a href="?desactivar=<?php echo $usuario["id"]; ?>">⛔ Desactivar</a> |
-                    <a href="editarUsuario.php?id=<?php echo $usuario["id"]; ?>">✏ Editar</a> |
-                    <a href="?eliminar=<?php echo $usuario["id"]; ?>" onclick="return confirm('¿Eliminar usuario?');">
-                        🗑 Eliminar
-                    </a>
-                </div>
+                    <p class="empty-text">No hay usuarios pendientes.</p>
+
+                <?php else: ?>
+
+                    <?php while ($usuario = mysqli_fetch_assoc($pendientes)): ?>
+
+                        <?php
+                        $foto_usuario = (!empty($usuario["foto"]) &&
+                            file_exists("../public/uploads/perfiles/" . $usuario["foto"]))
+                            ? "../public/uploads/perfiles/" . $usuario["foto"]
+                            : "https://ui-avatars.com/api/?name=" . urlencode($usuario["nombre"]) . "&background=random&color=fff";
+                        ?>
+
+                        <div class="card admin-item">
+
+                            <div class="admin-user-mini">
+                                <img src="<?php echo $foto_usuario; ?>">
+                                <div>
+                                    <strong><?php echo htmlspecialchars($usuario["nombre"]); ?></strong>
+                                    <span><?php echo htmlspecialchars($usuario["email"]); ?></span>
+                                </div>
+                            </div>
+
+                            <div class="admin-actions">
+                                <a href="?aprobar=<?php echo $usuario["id"]; ?>" class="btn btn-primary">Aprobar</a>
+                                <a href="editarUsuario.php?id=<?php echo $usuario["id"]; ?>" class="btn btn-soft">Editar</a>
+                                <a href="?eliminar=<?php echo $usuario["id"]; ?>" class="btn btn-soft"
+                                    onclick="return confirm('¿Eliminar usuario?');">
+                                    Eliminar
+                                </a>
+                            </div>
+
+                        </div>
+
+                    <?php endwhile; ?>
+
+                <?php endif; ?>
 
             </div>
 
-        <?php endwhile; ?>
-    <?php endif; ?>
 
-    <br>
-    <a href="panel.php">← Volver al panel</a>
+            <!-- ========================= -->
+            <!-- ACTIVOS -->
+            <!-- ========================= -->
+
+            <h3 class="section-subtitle">🟢 Activos (<?php echo $count_activos; ?>)</h3>
+
+            <div class="admin-list">
+
+                <?php if ($count_activos == 0): ?>
+
+                    <p class="empty-text">No hay usuarios activos.</p>
+
+                <?php else: ?>
+
+                    <?php while ($usuario = mysqli_fetch_assoc($activos)): ?>
+
+                        <?php
+                        $foto_usuario = (!empty($usuario["foto"]) &&
+                            file_exists("../public/uploads/perfiles/" . $usuario["foto"]))
+                            ? "../public/uploads/perfiles/" . $usuario["foto"]
+                            : "https://ui-avatars.com/api/?name=" . urlencode($usuario["nombre"]) . "&background=random&color=fff";
+                        ?>
+
+                        <div class="card admin-item">
+
+                            <div class="admin-user-mini">
+                                <img src="<?php echo $foto_usuario; ?>">
+                                <div>
+                                    <strong><?php echo htmlspecialchars($usuario["nombre"]); ?></strong>
+                                    <span><?php echo htmlspecialchars($usuario["email"]); ?></span>
+                                </div>
+                            </div>
+
+                            <div class="admin-actions">
+                                <span class="status success">Activo</span>
+                                <a href="?desactivar=<?php echo $usuario["id"]; ?>" class="btn btn-soft">Desactivar</a>
+                                <a href="editarUsuario.php?id=<?php echo $usuario["id"]; ?>" class="btn btn-soft">Editar</a>
+                                <a href="?eliminar=<?php echo $usuario["id"]; ?>" class="btn btn-soft"
+                                    onclick="return confirm('¿Eliminar usuario?');">
+                                    Eliminar
+                                </a>
+                            </div>
+
+                        </div>
+
+                    <?php endwhile; ?>
+
+                <?php endif; ?>
+
+            </div>
+
+            <!-- VOLVER -->
+            <div class="admin-footer">
+                <a href="panel.php" class="btn btn-soft">← Volver</a>
+            </div>
+
+        </div>
+    </div>
+
+    <?php require_once "../includes/footer.php"; ?>
 
 </body>
 

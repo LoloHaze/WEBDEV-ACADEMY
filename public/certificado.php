@@ -8,7 +8,7 @@ require_once '../includes/fpdf/fpdf.php';
    LOGIN
 ========================= */
 if (!isset($_SESSION["usuario_id"])) {
-    die("No autorizado");
+   die("No autorizado");
 }
 
 $usuario_id = $_SESSION["usuario_id"];
@@ -17,7 +17,7 @@ $usuario_id = $_SESSION["usuario_id"];
    VALIDAR CURSO
 ========================= */
 if (!isset($_GET["id"]) || !is_numeric($_GET["id"])) {
-    die("Curso inválido");
+   die("Curso inválido");
 }
 
 $curso_id = intval($_GET["id"]);
@@ -25,8 +25,22 @@ $curso_id = intval($_GET["id"]);
 /* =========================
    COMPROBAR EXAMEN APROBADO
 ========================= */
-if (!isset($_SESSION["examen_aprobado_$curso_id"])) {
-    die("No has aprobado el curso");
+$sql_check = "
+SELECT aprobado 
+FROM resultados_examen 
+WHERE usuario_id = ? AND curso_id = ?
+LIMIT 1
+";
+
+$stmt_check = mysqli_prepare($conexion, $sql_check);
+mysqli_stmt_bind_param($stmt_check, "ii", $usuario_id, $curso_id);
+mysqli_stmt_execute($stmt_check);
+
+$res_check = mysqli_stmt_get_result($stmt_check);
+$row = mysqli_fetch_assoc($res_check);
+
+if (!$row || $row["aprobado"] != 1) {
+   die("No has aprobado el curso");
 }
 
 /* =========================
