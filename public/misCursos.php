@@ -1,42 +1,37 @@
 <?php
+// MIS CURSOS
+// -------------------------------------
+// - LISTA CURSOS DEL USUARIO
+// - CALCULA PROGRESO
+// - CONTROLA EXAMEN
+// -------------------------------------
+
 require_once "../includes/bd.php";
+require_once "../includes/funciones.php";
+require_once "../includes/proteccion.php";
+
 session_start();
 
-if (!isset($_SESSION["usuario_id"])) {
-    header("Location: login.php");
-    exit;
-}
+// PROTEGER
+protegerPagina();
 
 $usuario_id = $_SESSION["usuario_id"];
 
-/* ================================
-   OBTENER CURSOS APROBADOS
-================================ */
-
-$sql = "
-SELECT c.*
-FROM inscripciones i
-JOIN cursos c ON i.curso_id = c.id
-WHERE i.usuario_id = ?
-AND i.estado = 'aprobado'
-AND c.activo = 1
-";
-
-$stmt = mysqli_prepare($conexion, $sql);
-mysqli_stmt_bind_param($stmt, "i", $usuario_id);
-mysqli_stmt_execute($stmt);
-$resultado = mysqli_stmt_get_result($stmt);
+// OBTENER CURSOS
+$resultado = obtenerCursosUsuario($conexion, $usuario_id);
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="es">
 
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mis cursos</title>
     <link rel="stylesheet" href="assets/css/components.css">
     <link rel="stylesheet" href="assets/css/cursos.css">
     <link rel="stylesheet" href="assets/css/index.css">
-    
+
 </head>
 
 <body>
@@ -46,7 +41,7 @@ $resultado = mysqli_stmt_get_result($stmt);
 
             <h2 class="section-title">📚 Mis cursos</h2>
 
-           
+
 
             <?php if (mysqli_num_rows($resultado) > 0): ?>
 
@@ -56,44 +51,13 @@ $resultado = mysqli_stmt_get_result($stmt);
 
                         <?php
                         // COMPROBAR EXAMEN
-                        $sql_examen =
-                            "SELECT aprobado 
-                        FROM resultados_examen 
-                        WHERE usuario_id = ? AND curso_id = ?
-                        ORDER BY fecha DESC
-                        LIMIT 1
-                        ";
+                        $aprobado = examenAprobado($conexion, $usuario_id, $curso["id"]);
 
-                        $stmt_examen = mysqli_prepare($conexion, $sql_examen);
-                        mysqli_stmt_bind_param($stmt_examen, "ii", $usuario_id, $curso["id"]);
-                        mysqli_stmt_execute($stmt_examen);
-                        $res_examen = mysqli_stmt_get_result($stmt_examen);
+                        $progreso = obtenerProgresoCurso($conexion, $usuario_id, $curso["id"]);
 
-                        $examen = mysqli_fetch_assoc($res_examen);
-
-                        $aprobado = $examen && $examen["aprobado"] == 1;
-                        // TOTAL LECCIONES
-                        $sql_total = "SELECT COUNT(*) as total FROM lecciones WHERE curso_id = ?";
-                        $stmt_total = mysqli_prepare($conexion, $sql_total);
-                        mysqli_stmt_bind_param($stmt_total, "i", $curso["id"]);
-                        mysqli_stmt_execute($stmt_total);
-                        $res_total = mysqli_stmt_get_result($stmt_total);
-                        $total = mysqli_fetch_assoc($res_total)["total"];
-
-                        // COMPLETADAS
-                        $sql_comp = "
-        SELECT COUNT(*) as completadas
-        FROM progreso p
-        JOIN lecciones l ON p.leccion_id = l.id
-        WHERE p.usuario_id = ? AND l.curso_id = ?
-        ";
-                        $stmt_comp = mysqli_prepare($conexion, $sql_comp);
-                        mysqli_stmt_bind_param($stmt_comp, "ii", $usuario_id, $curso["id"]);
-                        mysqli_stmt_execute($stmt_comp);
-                        $res_comp = mysqli_stmt_get_result($stmt_comp);
-                        $completadas = mysqli_fetch_assoc($res_comp)["completadas"];
-
-                        $porcentaje = $total > 0 ? round(($completadas / $total) * 100) : 0;
+                        $total = $progreso["total"];
+                        $completadas = $progreso["completadas"];
+                        $porcentaje = $progreso["porcentaje"];
                         ?>
 
                         <div class="course-card">

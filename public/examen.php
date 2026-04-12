@@ -1,12 +1,20 @@
 <?php
+// EXAMEN
+// -------------------------------------
+// - GESTIONA PREGUNTAS
+// - CONTROLA PROGRESO EN SESIÓN
+// - CALCULA RESULTADO
+// - GUARDA NOTA
+// -------------------------------------
+
 require_once "../includes/bd.php";
+require_once "../includes/proteccion.php";
+require_once "../includes/funciones.php";
+
 session_start();
 
-/* LOGIN */
-if (!isset($_SESSION["usuario_id"])) {
-    header("Location: login.php");
-    exit;
-}
+// PROTEGER
+protegerPagina();
 
 /* VALIDAR ID */
 if (!isset($_GET["id"]) || !is_numeric($_GET["id"])) {
@@ -15,10 +23,9 @@ if (!isset($_GET["id"]) || !is_numeric($_GET["id"])) {
 }
 
 $curso_id = intval($_GET["id"]);
+$usuario_id = $_SESSION["usuario_id"];
 
-/* =========================
-   PREGUNTAS
-========================= */
+/* PREGUNTAS */
 $preguntas = [
     1 => [
         "tipo" => "test",
@@ -113,19 +120,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $aprobado = ($nota >= 3) ? 1 : 0;
 
         /* BORRAR INTENTO */
-        $stmt_delete = mysqli_prepare(
-            $conexion,
-            "DELETE FROM resultados_examen WHERE usuario_id = ? AND curso_id = ?"
-        );
-        mysqli_stmt_bind_param($stmt_delete, "ii", $_SESSION["usuario_id"], $curso_id);
-        mysqli_stmt_execute($stmt_delete);
+        borrarResultadoExamen($conexion, $usuario_id, $curso_id);
 
         /* GUARDAR */
-        $stmt_guardar = mysqli_prepare(
-            $conexion,
-            "INSERT INTO resultados_examen (usuario_id, curso_id, examen_id, nota, aprobado)
-             VALUES (?, ?, 1, ?, ?)"
-        );
+        guardarResultadoExamen($conexion, $usuario_id, $curso_id, $nota, $aprobado);
         mysqli_stmt_bind_param(
             $stmt_guardar,
             "iiii",
@@ -141,9 +139,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         ?>
 
         <!DOCTYPE html>
-        <html>
+        <html lang="es">
 
         <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>Resultado examen</title>
             <link rel="stylesheet" href="assets/css/components.css">
             <link rel="stylesheet" href="assets/css/index.css">
@@ -194,8 +194,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     </div>
 
                 </div>
-                </div>
-                <?php require_once "../includes/footer.php"; ?>
+            </div>
+            <?php require_once "../includes/footer.php"; ?>
         </body>
 
         </html>

@@ -208,3 +208,18 @@
 
 .badge.free{background:#16a34a;}
 .badge.paid{background:#ea4c89;}
+
+
+
+.auth-logo {
+    display: flex; 
+    flex-direction: column;         /* pone imagen y texto en línea */
+    align-items: center;    /* los centra verticalmente */
+    justify-content: center; /* centra todo el bloque */
+    gap: 10px;              /* espacio entre logo y texto */
+}
+
+.auth-logo img {
+    width: 100px;   /* 🔥 controla el tamaño del logo */
+    height: auto;
+}
