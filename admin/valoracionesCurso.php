@@ -2,17 +2,17 @@
 require_once "../includes/bd.php";
 session_start();
 
-/* ==========================
-   PROTECCIÓN ADMIN
-========================== */
+
+//PROTECCIÓN ADMIN
+ 
 if (!isset($_SESSION["usuario_id"]) || $_SESSION["rol"] !== "admin") {
     header("Location: ../public/index.php");
     exit;
 }
 
-/* ==========================
-   VALIDAR ID CURSO
-========================== */
+ 
+//VALIDAR ID CURSO
+ 
 if (!isset($_GET["id"]) || !is_numeric($_GET["id"])) {
     header("Location: gestionCursos.php");
     exit;
@@ -20,9 +20,7 @@ if (!isset($_GET["id"]) || !is_numeric($_GET["id"])) {
 
 $curso_id = intval($_GET["id"]);
 
-/* ==========================
-   ELIMINAR VALORACIÓN
-========================== */
+// ELIMINAR VALORACIÓN
 if (isset($_GET["eliminar"]) && is_numeric($_GET["eliminar"])) {
 
     $val_id = intval($_GET["eliminar"]);
@@ -36,9 +34,8 @@ if (isset($_GET["eliminar"]) && is_numeric($_GET["eliminar"])) {
     exit;
 }
 
-/* ==========================
-   OBTENER CURSO
-========================== */
+//OBTENER CURSO
+
 $sqlCurso = "SELECT titulo FROM cursos WHERE id = ?";
 $stmtCurso = mysqli_prepare($conexion, $sqlCurso);
 mysqli_stmt_bind_param($stmtCurso, "i", $curso_id);
@@ -50,10 +47,7 @@ if (!$curso) {
     header("Location: gestionCursos.php");
     exit;
 }
-
-/* ==========================
-   OBTENER VALORACIONES
-========================== */
+   //OBTENER VALORACIONES
 $sql = "SELECT v.id, v.puntuacion, v.comentario, v.fecha,
                u.nombre
         FROM valoraciones v
@@ -66,9 +60,8 @@ mysqli_stmt_bind_param($stmt, "i", $curso_id);
 mysqli_stmt_execute($stmt);
 $resultado = mysqli_stmt_get_result($stmt);
 
-/* ==========================
-   CALCULAR MEDIA
-========================== */
+   //CALCULAR MEDIA
+
 $sqlMedia = "SELECT AVG(puntuacion) as media, COUNT(*) as total
              FROM valoraciones
              WHERE curso_id = ?";
@@ -81,24 +74,18 @@ $datosMedia = mysqli_fetch_assoc($resMedia);
 $media = round($datosMedia["media"], 1);
 $total = $datosMedia["total"];
 ?>
-
 <!DOCTYPE html>
 <html>
 
 <head>
     <title>Valoraciones del Curso</title>
-
-    <!-- 🔥 REUTILIZAMOS TODO -->
     <link rel="stylesheet" href="../public/assets/css/index.css">
     <link rel="stylesheet" href="../public/assets/css/components.css">
     <link rel="stylesheet" href="../public/assets/css/admin.css">
     <link rel="stylesheet" href="../public/assets/css/cursos.css">
+       <link rel="stylesheet" href="../public/assets/css/reescalado.css">
 </head>
-
 <body>
-
-
-
     <div class="main">
         <div class="container">
             <?php require_once "../includes/headerAdmin.php"; ?>
@@ -169,7 +156,7 @@ $total = $datosMedia["total"];
 
                             <!-- ACCIONES -->
                             <div class="admin-actions">
-                                <a href="?id=<?php echo $curso_id; ?>&eliminar=<?php echo $val["id"]; ?>" class="btn btn-soft"
+                                <a href="?id=<?php echo $curso_id; ?>&eliminar=<?php echo $val["id"]; ?>" class="btn btn-soft2"
                                     onclick="return confirm('¿Eliminar esta valoración?');">
                                     Eliminar
                                 </a>

@@ -18,3 +18,14 @@ header("Location: index.php");
 exit;
 }
 }
+
+// VALIDAR ID GET
+function validarId($nombre = "id", $redireccion = "index.php")
+{
+    if (!isset($_GET[$nombre]) || !is_numeric($_GET[$nombre])) {
+        header("Location: $redireccion");
+        exit;
+    }
+
+    return intval($_GET[$nombre]);
+}

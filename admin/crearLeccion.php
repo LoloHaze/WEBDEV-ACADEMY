@@ -13,7 +13,10 @@ if (!isset($_GET["curso_id"]) || !is_numeric($_GET["curso_id"])) {
 }
 
 $curso_id = intval($_GET["curso_id"]);
-$mensaje = "";
+
+// 👇 NUEVO
+$mensaje_error = "";
+$mensaje_exito = "";
 
 // Obtener curso
 $sqlCurso = "SELECT titulo FROM cursos WHERE id = ?";
@@ -35,9 +38,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $video_url = trim($_POST["video_url"]);
 
     if (strlen($titulo) < 5) {
-        $mensaje = "Título demasiado corto.";
+        $mensaje_error = "Título demasiado corto.";
     } elseif (strlen($video_url) < 5) {
-        $mensaje = "URL de vídeo inválida.";
+        $mensaje_error = "URL de vídeo inválida.";
     } else {
 
         // Calcular orden automáticamente
@@ -65,78 +68,92 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         );
 
         if (mysqli_stmt_execute($stmt)) {
-            header("Location: gestionarLecciones.php?curso_id=" . $curso_id);
-            exit;
+            $mensaje_exito = "Lección creada correctamente.";
         } else {
-            $mensaje = "Error al crear lección.";
+            $mensaje_error = "Error al crear lección.";
         }
     }
 }
 ?>
-
 <!DOCTYPE html>
 <html>
 
 <head>
     <title>Crear Lección</title>
 
-    <!-- 🔥 REUTILIZAMOS TODO -->
     <link rel="stylesheet" href="../public/assets/css/index.css">
     <link rel="stylesheet" href="../public/assets/css/components.css">
     <link rel="stylesheet" href="../public/assets/css/login.css">
     <link rel="stylesheet" href="../public/assets/css/perfil.css">
     <link rel="stylesheet" href="../public/assets/css/crearCurso.css">
     <link rel="stylesheet" href="../public/assets/css/admin.css">
+       <link rel="stylesheet" href="../public/assets/css/reescalado.css">
+
+     <script src="../public/assets/js/forms.js" defer></script>
 </head>
 
 <body>
 
-<div class="main">
-    <div class="container">
+    <div class="main">
+        <div class="container">
 
-        <?php require_once "../includes/headerAdmin.php"; ?>
+            <?php require_once "../includes/headerAdmin.php"; ?>
 
-       <div class="card" style="max-width:500px; margin:auto;">
+            <div class="card" style="max-width:500px; margin:auto;">
 
-            <h3>
-                Añadir lección a:<br>
-                <?php echo htmlspecialchars($curso["titulo"]); ?>
-            </h3>
+                <h3>
+                    Añadir lección a:<br>
+                    <?php echo htmlspecialchars($curso["titulo"]); ?>
+                </h3>
 
-            <?php if ($mensaje): ?>
-                <div class="auth-error">
-                    <?php echo $mensaje; ?>
-                </div>
-            <?php endif; ?>
+                <!-- MENSAJES -->
+                <?php if ($mensaje_error): ?>
+                    <div class="auth-error">
+                        <?php echo htmlspecialchars($mensaje_error); ?>
+                    </div>
+                <?php endif; ?>
 
-            <form method="POST" class="auth-form">
+                <?php if ($mensaje_exito): ?>
+                    <div class="auth-success">
+                        <?php echo htmlspecialchars($mensaje_exito); ?>
+                    </div>
+                <?php endif; ?>
 
-                <input type="text" name="titulo" class="auth-input" placeholder="Título de la lección" required>
+                <form method="POST" class="auth-form" id="formCurso">
 
-                <textarea name="descripcion" class="auth-input"
-                    placeholder="Descripción de la lección"></textarea>
+                    <!-- TITULO -->
+                    <input type="text" name="titulo" id="titulo" class="auth-input" placeholder="Título de la lección">
+                    <p class="error-msg" id="errorTitulo"></p>
 
-                <input type="text" name="video_url" class="auth-input"
-                    placeholder="URL del vídeo (YouTube embed)" required>
 
-                <button type="submit" class="btn btn-primary">
-                    Crear lección
-                </button>
+                    <!-- DESCRIPCION -->
+                    <textarea name="descripcion" id="descripcion" class="auth-input"
+                        placeholder="Descripción de la lección"></textarea>
+                    <p class="error-msg" id="errorDescripcion"></p>
 
-            </form>
+
+                    <!-- VIDEO URL -->
+                    <input type="text" name="video_url" id="video_url" class="auth-input"
+                        placeholder="URL del vídeo (YouTube embed)">
+                    <p class="error-msg" id="errorVideo"></p>
+
+                    <button type="submit" class="btn btn-primary">
+                        Crear lección
+                    </button>
+
+                </form>
+
+            </div>
+
+            <div style="text-align:center; margin-top:20px;">
+                <a href="gestionarLecciones.php?curso_id=<?php echo $curso_id; ?>" class="btn btn-soft">
+                    ← Volver
+                </a>
+            </div>
 
         </div>
-
-        <div style="text-align:center; margin-top:20px;">
-            <a href="gestionarLecciones.php?curso_id=<?php echo $curso_id; ?>" class="btn btn-soft">
-                ← Volver
-            </a>
-        </div>
-
     </div>
-</div>
-
-
 
 </body>
+
 </html>

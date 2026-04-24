@@ -124,15 +124,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
         /* GUARDAR */
         guardarResultadoExamen($conexion, $usuario_id, $curso_id, $nota, $aprobado);
-        mysqli_stmt_bind_param(
-            $stmt_guardar,
-            "iiii",
-            $_SESSION["usuario_id"],
-            $curso_id,
-            $nota,
-            $aprobado
-        );
-        mysqli_stmt_execute($stmt_guardar);
+
 
         /* LIMPIAR */
         unset($_SESSION["pregunta_actual"], $_SESSION["respuestas"]);
@@ -148,11 +140,15 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             <link rel="stylesheet" href="assets/css/components.css">
             <link rel="stylesheet" href="assets/css/index.css">
             <link rel="stylesheet" href="assets/css/examen.css">
+            <link rel="stylesheet" href="assets/css/reescalado2.css">
+            <link rel="stylesheet" href="assets/css/reescalado.css">
         </head>
 
         <body>
-            <?php require_once "../includes/header.php"; ?>
+
             <div class="main">
+
+                <?php require_once "../includes/header.php"; ?>
                 <div class="container">
 
                     <div class="card result-card">
@@ -228,9 +224,12 @@ $respuesta_guardada = $_SESSION["respuestas"][$actual] ?? "";
 
 <head>
     <title>Examen</title>
+    <link rel="icon" href="assets/logowebdev.png" type="image/png">
     <link rel="stylesheet" href="assets/css/index.css">
     <link rel="stylesheet" href="assets/css/components.css">
     <link rel="stylesheet" href="assets/css/examen.css">
+    <link rel="stylesheet" href="assets/css/reescalado2.css">
+    <link rel="stylesheet" href="assets/css/reescalado.css">
 
 </head>
 

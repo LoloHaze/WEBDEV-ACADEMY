@@ -3,7 +3,7 @@
 // -------------------------------------
 // - VALIDA ACCESO
 // - COMPRUEBA EXAMEN APROBADO
-// - GENERA PDF
+// - GENERA CERTIFICADO PDF 
 // -------------------------------------
 
 require_once '../includes/bd.php';
@@ -31,7 +31,7 @@ if (!examenAprobado($conexion, $usuario_id, $curso_id)) {
 }
 
 /* DATOS */
-$usuario = obtenerNombreUsuario($conexion, $usuario_id);
+$usuario = obtenerUsuarioPorId($conexion, $usuario_id);
 $curso = obtenerCurso($conexion, $curso_id);
 
 /* PDF */

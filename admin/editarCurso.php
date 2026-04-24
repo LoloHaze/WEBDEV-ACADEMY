@@ -13,7 +13,10 @@ if (!isset($_GET["id"]) || !is_numeric($_GET["id"])) {
 }
 
 $id = intval($_GET["id"]);
-$mensaje = "";
+
+// 👇 NUEVO
+$mensaje_error = "";
+$mensaje_exito = "";
 
 // Obtener curso
 $sql = "SELECT * FROM cursos WHERE id = ?";
@@ -35,12 +38,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $precio = trim($_POST["precio"]);
 
     if (strlen($titulo) < 5) {
-        $mensaje = "Título demasiado corto.";
+        $mensaje_error = "Título demasiado corto.";
     } elseif (!is_numeric($precio) || $precio < 0) {
-        $mensaje = "Precio inválido.";
+        $mensaje_error = "Precio inválido.";
     } else {
 
-        $imagenNombre = $curso["imagen_portada"]; // mantener actual
+        $imagenNombre = $curso["imagen_portada"];
 
         if (!empty($_FILES["imagen_portada"]["name"])) {
 
@@ -61,15 +64,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         move_uploaded_file($archivo["tmp_name"], $rutaDestino);
 
                     } else {
-                        $mensaje = "Imagen demasiado grande (máx 3MB).";
+                        $mensaje_error = "Imagen demasiado grande (máx 3MB).";
                     }
                 } else {
-                    $mensaje = "Formato no permitido.";
+                    $mensaje_error = "Formato no permitido.";
                 }
             }
         }
 
-        if ($mensaje == "") {
+        if ($mensaje_error == "") {
 
             $sql_update = "UPDATE cursos 
                            SET titulo = ?, descripcion = ?, precio = ?, imagen_portada = ?
@@ -87,14 +90,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             );
 
             if (mysqli_stmt_execute($stmt)) {
-                $mensaje = "Curso actualizado correctamente.";
+                $mensaje_exito = "Curso actualizado correctamente.";
                 $curso["imagen_portada"] = $imagenNombre;
             } else {
-                $mensaje = "Error al actualizar.";
+                $mensaje_error = "Error al actualizar.";
             }
         }
     }
-} 
+}
+
+$imagenActual = (!empty($curso["imagen_portada"]))
+    ? "../public/uploads/cursos/" . $curso["imagen_portada"]
+    : "https://via.placeholder.com/400x200?text=Sin+imagen";
+
 ?>
 
 <!DOCTYPE html>
@@ -102,47 +110,88 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <head>
     <title>Editar Curso</title>
+    <link rel="stylesheet" href="../public/assets/css/index.css">
+    <link rel="stylesheet" href="../public/assets/css/components.css">
+    <link rel="stylesheet" href="../public/assets/css/login.css">
+    <link rel="stylesheet" href="../public/assets/css/perfil.css">
+    <link rel="stylesheet" href="../public/assets/css/admin.css">
+    <link rel="stylesheet" href="../public/assets/css/crearCurso.css">
+       <link rel="stylesheet" href="../public/assets/css/reescalado.css">
+
+    <script src="../public/assets/js/forms.js" defer></script>
 </head>
 
 <body>
 
-    <h2>Editar Curso</h2>
+    <div class="main">
+        <div class="container">
 
-    <?php
-    $imagenActual = (!empty($curso["imagen_portada"]) &&
-        file_exists("../public/uploads/cursos/" . $curso["imagen_portada"]))
-        ? "../public/uploads/cursos/" . $curso["imagen_portada"]
-        : "https://via.placeholder.com/400x200?text=Sin+imagen";
-    ?>
+            <?php require_once "../includes/headerAdmin.php"; ?>
 
-    <img src="<?php echo $imagenActual; ?>" style="width:300px; height:150px; object-fit:cover; border-radius:8px;">
-    <br><br>
+            <div class="card" style="max-width:500px; margin:auto;">
 
-    <?php if ($mensaje): ?>
-        <p><?php echo htmlspecialchars($mensaje); ?></p>
-    <?php endif; ?>
+                <h3>Editar curso</h3>
 
-    <form method="POST" enctype="multipart/form-data">
+                <!-- IMAGEN -->
+                <img src="<?php echo $imagenActual; ?>"
+                    style="width:100%; height:200px; object-fit:cover; border-radius:10px; margin-bottom:15px;">
 
-        <input type="text" name="titulo" value="<?php echo htmlspecialchars($curso["titulo"]); ?>" required><br><br>
+                <!-- MENSAJES -->
+                <?php if ($mensaje_error): ?>
+                    <div class="auth-error">
+                        <?php echo htmlspecialchars($mensaje_error); ?>
+                    </div>
+                <?php endif; ?>
 
-        <textarea name="descripcion"><?php
-        echo htmlspecialchars($curso["descripcion"]);
-        ?></textarea><br><br>
+                <?php if ($mensaje_exito): ?>
+                    <div class="auth-success">
+                        <?php echo htmlspecialchars($mensaje_exito); ?>
+                    </div>
+                <?php endif; ?>
 
-        <input type="number" step="0.01" name="precio"
-            value="<?php echo htmlspecialchars($curso["precio"]); ?>"><br><br>
+                <!-- FORM -->
+                <form method="POST" enctype="multipart/form-data" class="auth-form" id="formCurso">
 
-        <label>Nueva imagen
-        </label><br>
-        <input type="file" name="imagen_portada" accept="image/*"><br><br>
+                    <!-- TITULO -->
+                    <input type="text" name="titulo" id="titulo" class="auth-input"
+                        value="<?php echo htmlspecialchars($curso["titulo"]); ?>">
+                    <p class="error-msg" id="errorTitulo"></p>
 
-        <button type="submit">Guardar cambios</button>
 
-    </form>
+                    <!-- DESCRIPCION -->
+                    <textarea name="descripcion" id="descripcion"
+                        class="auth-input"><?php echo htmlspecialchars($curso["descripcion"]); ?></textarea>
+                    <p class="error-msg" id="errorDescripcion"></p>
 
-    <br>
-    <a href="gestionCursos.php">← Volver</a>
+
+                    <!-- PRECIO -->
+                    <input type="number" step="0.01" name="precio" id="precio" class="auth-input"
+                        value="<?php echo htmlspecialchars($curso["precio"]); ?>">
+                    <p class="error-msg" id="errorPrecio"></p>
+
+
+                    <!-- IMAGEN -->
+                    <input type="file" name="imagen_portada" id="imagen" class="auth-input" accept="image/*">
+                    <p class="error-msg" id="errorImagen"></p>
+
+                    <!-- BOTÓN -->
+                    <button type="submit" class="btn btn-primary">
+                        Guardar cambios
+                    </button>
+
+                </form>
+
+            </div>
+
+            <!-- VOLVER -->
+            <div style="text-align:center; margin-top:20px;">
+                <a href="gestionCursos.php" class="btn btn-soft">
+                    ← Volver
+                </a>
+            </div>
+
+        </div>
+    </div>
 
 </body>
 

@@ -18,7 +18,8 @@ $foto = isset($_SESSION["foto"]) && $_SESSION["foto"]
                 </div>
 
                 <div class="admin-actions">
-                    <a href="../public/index.php" class="btn btn-soft">Ver web</a>
+                    <a href="../admin/panel.php" class="btn btn-soft">Panel</a>
+                    <a href="../public/index.php" class="btn btn-soft">Volver a la Web</a>
                     <a href="../public/logout.php" class="btn btn-primary">Salir</a>
                 </div>
 

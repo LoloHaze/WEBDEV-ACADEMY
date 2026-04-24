@@ -96,6 +96,16 @@ html,body{height:100%;}
     margin-bottom:10px;
 }
 
+.auth-success{
+    background:rgba(22,163,74,0.2);
+    border:1px solid rgba(22,163,74,0.4);
+    color:#4ade80;
+    padding:10px;
+    border-radius:10px;
+    font-size:13px;
+    margin-bottom:10px;
+}
+
 /* =========================
    LINK
 ========================= */
@@ -114,66 +124,5 @@ html,body{height:100%;}
     text-decoration:underline;
 }
 
-/* =========================
-   FONDO ANIMADO
-========================= */
-body{
-    background:#0d0d0d;
-    overflow:hidden;
-    position:relative;
-}
-
-/* GLOW 1 */
-body::before{
-    content:"";
-    position:absolute;
-    width:600px;
-    height:600px;
-    background:radial-gradient(circle, rgba(234,76,137,0.25), transparent);
-    filter:blur(120px);
-    top:-150px;
-    left:-150px;
-    animation:moveGlow1 10s infinite alternate ease-in-out;
-}
-
-/* GLOW 2 */
-body::after{
-    content:"";
-    position:absolute;
-    width:500px;
-    height:500px;
-    background:radial-gradient(circle, rgba(255,106,163,0.2), transparent);
-    filter:blur(120px);
-    bottom:-150px;
-    right:-150px;
-    animation:moveGlow2 12s infinite alternate ease-in-out;
-}
-
-/* =========================
-   ANIMACIONES
-========================= */
-@keyframes moveGlow1{
-    from{transform:translate(0,0);}
-    to{transform:translate(250px,150px) scale(1.2);}
-}
-
-@keyframes moveGlow2{
-    from{transform:translate(0,0);}
-    to{transform:translate(-200px,-100px) scale(1.1);}
-}
-
-@keyframes fadeInUp{
-    from{
-        opacity:0;
-        transform:translateY(20px) scale(0.98);
-    }
-    to{
-        opacity:1;
-        transform:translateY(0) scale(1);
-    }
-}
-
-
-
-/* ----- */
+/*  */
 

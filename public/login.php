@@ -69,15 +69,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" href="assets/logowebdev.png" type="image/png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - WebDev Academy</title>
-</head>
-
-<body>
 
     <link rel="stylesheet" href="assets/css/login.css">
     <link rel="stylesheet" href="assets/css/components.css">
     <link rel="stylesheet" href="assets/css/nav.css">
+    <link rel="stylesheet" href="assets/css/animacion1.css">
+    <link rel="stylesheet" href="assets/css/responsive.css">
+    <link rel="stylesheet" href="assets/css/reescalado.css">
+    <link rel="stylesheet" href="assets/css/reescalado2.css">
+
+
+    <script src="../public/assets/js/forms.js" defer></script>
+</head>
+
+<body>
+
+
 
     <div class="auth-container">
 
@@ -98,11 +108,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     </div>
                 <?php endif; ?>
 
-                <form method="POST" class="auth-form">
+                <form method="POST" class="auth-form" id="formLogin">
 
-                    <input type="email" name="email" placeholder="Email" required>
+                    <input type="email" name="email" id="emailLogin" placeholder="Email">
+                    <p class="error-msg" id="errorEmailLogin"></p>
 
-                    <input type="password" name="password" placeholder="Contraseña" required>
+                    <input type="password" name="password" id="passwordLogin" placeholder="Contraseña">
+                    <p class="error-msg" id="errorPasswordLogin"></p>
 
                     <button type="submit" class="btn btn-primary">
                         Entrar
@@ -118,7 +130,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
 
         </div>
-
+    </div>
 </body>
 
 </html>

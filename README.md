@@ -53,7 +53,8 @@ El sistema está diseñado utilizando gestión por estados en lugar de eliminaci
 - Control de acceso mediante sesiones
 - Dashboard personal (`misCursos.php`)
 - Visualización del progreso por curso
-- Descarga de certificado al completar el 100%
+- Examen final al completar el curso
+- Descarga de certificado al aprobar el examen
 
 ---
 

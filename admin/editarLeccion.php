@@ -13,7 +13,10 @@ if (!isset($_GET["id"]) || !is_numeric($_GET["id"])) {
 }
 
 $id = intval($_GET["id"]);
-$mensaje = "";
+
+// 👇 NUEVO
+$mensaje_error = "";
+$mensaje_exito = "";
 
 // Obtener lección
 $sql = "SELECT * FROM lecciones WHERE id = ?";
@@ -35,7 +38,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $video_url = trim($_POST["video_url"]);
 
     if (strlen($titulo) < 5) {
-        $mensaje = "Título demasiado corto.";
+        $mensaje_error = "Título demasiado corto.";
     } else {
 
         $sqlUpdate = "UPDATE lecciones
@@ -43,7 +46,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                       WHERE id = ?";
 
         $stmt = mysqli_prepare($conexion, $sqlUpdate);
-        mysqli_stmt_bind_param($stmt, "sssi",
+        mysqli_stmt_bind_param(
+            $stmt,
+            "sssi",
             $titulo,
             $descripcion,
             $video_url,
@@ -51,12 +56,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         );
 
         if (mysqli_stmt_execute($stmt)) {
-            $mensaje = "Lección actualizada correctamente.";
+            $mensaje_exito = "Lección actualizada correctamente.";
+
+            // actualizar datos en pantalla
             $leccion["titulo"] = $titulo;
             $leccion["descripcion"] = $descripcion;
             $leccion["video_url"] = $video_url;
+
         } else {
-            $mensaje = "Error al actualizar.";
+            $mensaje_error = "Error al actualizar.";
         }
     }
 }
@@ -67,88 +75,78 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <head>
     <title>Editar Lección</title>
-
-    <!-- 🔥 REUTILIZAMOS TODO -->
     <link rel="stylesheet" href="../public/assets/css/index.css">
     <link rel="stylesheet" href="../public/assets/css/components.css">
     <link rel="stylesheet" href="../public/assets/css/login.css">
     <link rel="stylesheet" href="../public/assets/css/perfil.css">
     <link rel="stylesheet" href="../public/assets/css/admin.css">
     <link rel="stylesheet" href="../public/assets/css/crearCurso.css">
+       <link rel="stylesheet" href="../public/assets/css/reescalado.css">
+
+    <script src="../public/assets/js/forms.js" defer></script>
 </head>
 
 <body>
 
+    <div class="main">
+        <div class="container">
 
+            <?php require_once "../includes/headerAdmin.php"; ?>
 
-<div class="main">
-<div class="container">
-    
+            <div class="card" style="max-width:500px; margin:auto;">
 
-     <?php require_once "../includes/headerAdmin.php"; ?>
+                <h3>Editar lección</h3>
 
-       <div class="card" style="max-width:500px; margin:auto;">
+                <!-- MENSAJES -->
+                            <?php if ($mensaje_error): ?>
+                    <div class="auth-error">
+                                    <?php echo htmlspecialchars($mensaje_error); ?>
+                    </div>
+                            <?php endif; ?>
 
-        <h3>Editar lección</h3>
+                            <?php if ($mensaje_exito): ?>
+                    <div class="auth-success">
+                                    <?php echo htmlspecialchars($mensaje_exito); ?>
+                    </div>
+                            <?php endif; ?>
 
-        <!-- MENSAJE -->
-        <?php if ($mensaje): ?>
-            <div class="auth-error">
-                <?php echo $mensaje; ?>
+                <!-- FORM -->
+                <form method="POST" class="auth-form" id="formCurso">
+
+                    <!-- TITULO -->
+                    <input type="text" name="titulo" id="titulo" class="auth-input" placeholder="Título de la lección"
+                        value="<?php echo htmlspecialchars($leccion["titulo"]); ?>">
+                    <p class="error-msg" id="errorTitulo"></p>
+
+                    <!-- DESCRIPCION -->
+                    <textarea name="descripcion" id="descripcion" class="auth-input"
+                        placeholder="Descripción de la lección"><?php echo htmlspecialchars($leccion["descripcion"]); ?></textarea>
+                    <p class="error-msg" id="errorDescripcion"></p>
+
+                    <!-- VIDEO -->
+                    <input type="text" name="video_url" id="video_url" class="auth-input" placeholder="URL del vídeo"
+                        value="<?php echo htmlspecialchars($leccion["video_url"]); ?>">
+                    <p class="error-msg" id="errorVideo"></p>
+
+                    <!-- BOTÓN -->
+                    <button type="submit" class="btn btn-primary">
+                        Guardar cambios
+                    </button>
+
+                </form>
+
             </div>
-        <?php endif; ?>
 
-        <!-- FORM -->
-        <form method="POST" class="auth-form">
+            <!-- VOLVER -->
+            <div style="text-align:center; margin-top:20px;">
+                <a href="gestionarLecciones.php?curso_id=<?php echo $leccion["curso_id"]; ?>" class="btn btn-soft">
+                    ← Volver
+                </a>
+            </div>
 
-            <!-- TITULO -->
-            <input 
-                type="text" 
-                name="titulo"
-                class="auth-input"
-                placeholder="Título de la lección"
-                value="<?php echo htmlspecialchars($leccion["titulo"]); ?>"
-                required
-            >
-
-            <!-- DESCRIPCION -->
-            <textarea 
-                name="descripcion"
-                class="auth-input"
-                placeholder="Descripción de la lección"
-            ><?php echo htmlspecialchars($leccion["descripcion"]); ?></textarea>
-
-            <!-- VIDEO -->
-            <input 
-                type="text" 
-                name="video_url"
-                class="auth-input"
-                placeholder="URL del vídeo"
-                value="<?php echo htmlspecialchars($leccion["video_url"]); ?>"
-                required
-            >
-
-            <!-- BOTÓN -->
-            <button type="submit" class="btn btn-primary">
-                Guardar cambios
-            </button>
-
-        </form>
-
+        </div>
     </div>
-
-    <!-- VOLVER -->
-    <div style="text-align:center; margin-top:20px;">
-        <a href="gestionarLecciones.php?curso_id=<?php echo $leccion["curso_id"]; ?>" 
-           class="btn btn-soft">
-            ← Volver
-        </a>
-    </div>
-
-</div>
-</div>
-
-
 
 </body>
+
 </html>

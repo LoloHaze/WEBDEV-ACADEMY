@@ -15,12 +15,6 @@ session_start();
 // PROTEGER
 protegerPagina();
 
-// VALIDAR ID
-if (!isset($_GET["id"]) || !is_numeric($_GET["id"])) {
-    header("Location: index.php");
-    exit;
-}
-
 $leccion_id = intval($_GET["id"]);
 $usuario_id = $_SESSION["usuario_id"];
 
@@ -59,11 +53,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" href="assets/logowebdev.png" type="image/png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo htmlspecialchars($leccion["titulo"]); ?></title>
     <link rel="stylesheet" href="assets/css/index.css">
     <link rel="stylesheet" href="assets/css/leccion.css">
     <link rel="stylesheet" href="assets/css/components.css">
+    <link rel="stylesheet" href="assets/css/animacion1.css">
+    <link rel="stylesheet" href="assets/css/responsive.css">
+    <link rel="stylesheet" href="assets/css/reescalado.css">
 </head>
 
 <body>
@@ -71,7 +69,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <div class="main">
         <div class="leccion-layout">
-
+            
             <!-- SIDEBAR -->
             <div class="leccion-sidebar">
 
@@ -116,6 +114,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <!-- INFO -->
                     <div class="leccion-info">
                         <h2><?php echo htmlspecialchars($leccion["titulo"]); ?></h2>
+                        <hr>
+                        <br>
                         <p class="leccion-desc">
                             <?php echo htmlspecialchars($leccion["descripcion"]); ?>
                         </p>
@@ -152,5 +152,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </div>
     <?php require_once "../includes/footer.php"; ?>
 </body>
+<script>
+const btn = document.querySelector('.sidebar-toggle');
+const sidebar = document.querySelector('.leccion-sidebar');
+
+btn.addEventListener('click', () => {
+    sidebar.classList.toggle('active');
+});
+</script>
 
 </html>

@@ -9,21 +9,15 @@
 
 require_once "../includes/bd.php";
 require_once "../includes/funciones.php";
+require_once "../includes/proteccion.php";
+
 session_start();
 
-// PROTECCIÓN LOGIN
-if (!isset($_SESSION["usuario_id"])) {
-    header("Location: login.php");
-    exit;
-}
+// PROTEGER
+protegerPagina();
 
 // VALIDAR ID
-if (!isset($_GET["id"]) || !is_numeric($_GET["id"])) {
-    header("Location: index.php");
-    exit;
-}
-
-$curso_id = intval($_GET["id"]);
+$curso_id = validarId();
 $usuario_id = $_SESSION["usuario_id"];
 
 // CANCELAR INSCRIPCIÓN
@@ -36,10 +30,7 @@ if (isset($_POST["cancelar_inscripcion"])) {
 // OBTENER CURSO
 $curso = obtenerCurso($conexion, $curso_id);
 
-if (!$curso || $curso["activo"] != 1) {
-    header("Location: index.php");
-    exit;
-}
+validarCursoActivo($curso);
 
 // SOLICITAR INSCRIPCIÓN
 if (isset($_POST["solicitar_inscripcion"])) {
@@ -98,10 +89,16 @@ $resultado_listar = obtenerComentariosCurso($conexion, $curso_id);
 
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" href="assets/logowebdev.png" type="image/png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <link rel="stylesheet" href="assets/css/index.css">
     <link rel="stylesheet" href="assets/css/cursos.css">
     <link rel="stylesheet" href="assets/css/components.css">
+    <link rel="stylesheet" href="assets/css/animacion1.css">
+     <link rel="stylesheet" href="assets/css/reescalado.css">
+
+    <script src="../public/assets/js/forms.js" defer></script>
 
     <title><?php echo htmlspecialchars($curso["titulo"]); ?></title>
 </head>
@@ -170,7 +167,8 @@ $resultado_listar = obtenerComentariosCurso($conexion, $curso_id);
 
                     <?php elseif ($inscripcion["estado"] === "aprobado"): ?>
                         <form method="POST">
-                            <button class="btn btn-soft2" type="submit" name="cancelar_inscripcion">
+                            <button class="btn btn-soft2" type="submit" name="cancelar_inscripcion"
+                                onclick="return confirm('¿Seguro que quieres darte de baja del curso?');">
                                 Darse de baja
                             </button>
                         </form>
@@ -232,24 +230,24 @@ $resultado_listar = obtenerComentariosCurso($conexion, $curso_id);
                 </div>
                 <!-- VALORACIÓN-->
 
-                <?php if (!$valoracion_existente || $valoracion_editar): ?>
+                <?php if (!$valoracion_existente || isset($_POST["editar_id"])): ?>
                     <div class="card rating-card">
 
                         <h3>Valorar curso</h3>
 
-                        <form method="POST" class="rating-form">
+                        <form method="POST" class="rating-form" id="formValoracion">
 
-                            <!-- ESTRELLAS -->
-                            <div class="stars-input">
+                            <div class="stars-input" id="grupoEstrellas">
                                 <?php for ($i = 5; $i >= 1; $i--): ?>
                                     <input type="radio" name="puntuacion" value="<?php echo $i; ?>" id="star<?php echo $i; ?>">
                                     <label for="star<?php echo $i; ?>">★</label>
                                 <?php endfor; ?>
                             </div>
-                            <!--  COMENTARIO -->
-                            <textarea name="comentario" placeholder="Escribe tu opinión..."></textarea>
+                            <p class="error-msg" id="errorPuntuacion"></p>
 
-                            <!-- BOTÓN -->
+                            <textarea name="comentario" id="comentario" placeholder="Escribe tu opinión..."></textarea>
+                            <p class="error-msg" id="errorComentario"></p>
+
                             <button class="btn btn-primary" type="submit" name="valorar">
                                 Enviar valoración
                             </button>
@@ -302,7 +300,68 @@ $resultado_listar = obtenerComentariosCurso($conexion, $curso_id);
                 </div>
             <?php endif; ?>
         </div>
-        <?php require_once "../includes/footer.php"; ?>
+    </div>
+    <?php require_once "../includes/footer.php"; ?>
 </body>
 
 </html>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+
+        const form = document.getElementById("formValoracion");
+
+        // 🔥 evitar error si no existe el form
+        if (!form) return;
+
+        const comentario = document.getElementById("comentario");
+        const grupoEstrellas = document.getElementById("grupoEstrellas");
+
+        const errorPuntuacion = document.getElementById("errorPuntuacion");
+        const errorComentario = document.getElementById("errorComentario");
+
+        form.addEventListener("submit", function (e) {
+
+            let valido = true;
+
+            // limpiar errores
+            errorPuntuacion.textContent = "";
+            errorComentario.textContent = "";
+            comentario.classList.remove("input-error");
+            grupoEstrellas.classList.remove("stars-error");
+
+            // comprobar puntuación
+            const puntuacion = document.querySelector('input[name="puntuacion"]:checked');
+
+            if (!puntuacion) {
+                errorPuntuacion.textContent = "Selecciona una puntuación";
+                grupoEstrellas.classList.add("stars-error");
+                valido = false;
+            }
+
+            // comprobar comentario
+            const texto = comentario.value.trim();
+
+            if (texto === "") {
+                errorComentario.textContent = "Escribe un comentario";
+                comentario.classList.add("input-error");
+                valido = false;
+            }
+
+            // bloquear envío
+            if (!valido) {
+                e.preventDefault();
+            }
+
+        });
+
+        //quitar error al seleccionar estrella
+        document.querySelectorAll('input[name="puntuacion"]').forEach(radio => {
+            radio.addEventListener("change", () => {
+                errorPuntuacion.textContent = "";
+                grupoEstrellas.classList.remove("stars-error");
+            });
+        });
+
+    });
+</script>

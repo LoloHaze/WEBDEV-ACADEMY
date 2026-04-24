@@ -19,9 +19,8 @@ $foto = isset($_SESSION["foto"]) && $_SESSION["foto"]
     ? "../public/uploads/perfiles/" . $_SESSION["foto"]
     : "https://placekitten.com/640/360";
 
-/* ==========================
-ESTADÍSTICAS DASHBOARD
-========================== */
+/* 
+ESTADÍSTICAS DASHBOARD */
 
 // Total usuarios
 $resUsuarios = mysqli_query($conexion, "SELECT COUNT(*) as total FROM usuarios");
@@ -39,9 +38,8 @@ $totalInscripciones = mysqli_fetch_assoc($resInscripciones)["total"];
 $resValoraciones = mysqli_query($conexion, "SELECT COUNT(*) as total FROM valoraciones");
 $totalValoraciones = mysqli_fetch_assoc($resValoraciones)["total"];
 
-/* ==========================
-   CURSO MÁS INSCRITO
-========================== */
+/* 
+   CURSO MÁS INSCRITO */
 
 $sqlMasInscrito = "
     SELECT c.titulo, COUNT(i.id) as total
@@ -55,9 +53,7 @@ $sqlMasInscrito = "
 $resMasInscrito = mysqli_query($conexion, $sqlMasInscrito);
 $cursoMasInscrito = mysqli_fetch_assoc($resMasInscrito);
 
-/* ==========================
-   CURSO MEJOR VALORADO
-========================== */
+/* CURSO MEJOR VALORADO */
 
 $sqlMejorValorado = "
     SELECT c.titulo, AVG(v.puntuacion) as media
@@ -72,16 +68,16 @@ $sqlMejorValorado = "
 $resMejorValorado = mysqli_query($conexion, $sqlMejorValorado);
 $cursoMejorValorado = mysqli_fetch_assoc($resMejorValorado);
 
-// =============================
+
 // CONTADOR USUARIOS PENDIENTES
-// =============================
+
 $sql_users = "SELECT COUNT(*) as total FROM usuarios WHERE activo = 0";
 $result_users = mysqli_query($conexion, $sql_users);
 $total_users_pendientes = mysqli_fetch_assoc($result_users)["total"];
 
-// =============================
+
 // CONTADOR INSCRIPCIONES PENDIENTES
-// =============================
+
 $sql_ins = "SELECT COUNT(*) as total FROM inscripciones WHERE estado = 'pendiente'";
 $result_ins = mysqli_query($conexion, $sql_ins);
 $total_ins_pendientes = mysqli_fetch_assoc($result_ins)["total"];
@@ -94,12 +90,11 @@ $total_ins_pendientes = mysqli_fetch_assoc($result_ins)["total"];
 <head>
     <title>Panel Admin - WebDev Academy</title>
 
-    <!-- REUTILIZAMOS -->
+ 
     <link rel="stylesheet" href="../public/assets/css/components.css">
     <link rel="stylesheet" href="../public/assets/css/index.css">
-
-    <!-- NUEVO -->
     <link rel="stylesheet" href="../public/assets/css/admin.css">
+    <link rel="stylesheet" href="../public/assets/css/reescalado.css">
 
 </head>
 
@@ -109,17 +104,18 @@ $total_ins_pendientes = mysqli_fetch_assoc($result_ins)["total"];
         <div class="container">
 
            <?php require_once "../includes/headerAdmin.php"; ?>
+
             <!-- ADMIN -->
             <h2 class="section-title">Administración</h2>
 
             <div class="admin-grid">
 
                 <a href="gestionCursos.php" class="card admin-link">
-                    <span class="admin-link-text">📚 Cursos</span>
+                    <span class="admin-link-text"> Cursos</span>
                 </a>
 
                 <a href="gestionUsuarios.php" class="card admin-link">
-                    <span class="admin-link-text">👥 Usuarios</span>
+                    <span class="admin-link-text"> Usuarios</span>
 
                     <?php if ($total_users_pendientes > 0): ?>
                         <span class="badge"><?php echo $total_users_pendientes; ?></span>
@@ -127,7 +123,7 @@ $total_ins_pendientes = mysqli_fetch_assoc($result_ins)["total"];
                 </a>
 
                 <a href="gestionInscripciones.php" class="card admin-link">
-                    <span class="admin-link-text">📩 Inscripciones</span>
+                    <span class="admin-link-text"> Inscripciones</span>
 
                     <?php if ($total_ins_pendientes > 0): ?>
                         <span class="badge"><?php echo $total_ins_pendientes; ?></span>
@@ -136,31 +132,31 @@ $total_ins_pendientes = mysqli_fetch_assoc($result_ins)["total"];
 
             </div>
 
-            <!-- STATS -->
+            <!-- STADISTICAS -->
             <h2 class="section-title">Dashboard</h2>
 
             <div class="admin-stats">
 
                 <div class="card admin-stat">
-                    <span>👥</span>
+                    <span></span>
                     <strong><?php echo $totalUsuarios; ?></strong>
                     <p>Usuarios</p>
                 </div>
 
                 <div class="card admin-stat">
-                    <span>📚</span>
+                    <span></span>
                     <strong><?php echo $totalCursos; ?></strong>
                     <p>Cursos</p>
                 </div>
 
                 <div class="card admin-stat">
-                    <span>📝</span>
+                    <span></span>
                     <strong><?php echo $totalInscripciones; ?></strong>
                     <p>Inscripciones</p>
                 </div>
 
                 <div class="card admin-stat">
-                    <span>⭐</span>
+                    <span></span>
                     <strong><?php echo $totalValoraciones; ?></strong>
                     <p>Valoraciones</p>
                 </div>
@@ -171,14 +167,14 @@ $total_ins_pendientes = mysqli_fetch_assoc($result_ins)["total"];
             <div class="admin-info">
 
                 <div class="card">
-                    <h3>🔥 Curso más inscrito</h3>
+                    <h3>Curso más inscrito</h3>
                     <p>
                         <?php echo $cursoMasInscrito ? htmlspecialchars($cursoMasInscrito["titulo"]) : "Sin datos"; ?>
                     </p>
                 </div>
 
                 <div class="card">
-                    <h3>🏆 Mejor valorado</h3>
+                    <h3>Mejor valorado</h3>
                     <p>
                         <?php echo $cursoMejorValorado ? htmlspecialchars($cursoMejorValorado["titulo"]) : "Sin datos"; ?>
                     </p>

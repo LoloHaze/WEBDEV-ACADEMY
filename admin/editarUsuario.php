@@ -15,7 +15,10 @@ if (!isset($_GET["id"]) || !is_numeric($_GET["id"])) {
 }
 
 $id = intval($_GET["id"]);
-$mensaje = "";
+
+// 👇 NUEVO
+$mensaje_error = "";
+$mensaje_exito = "";
 
 // Obtener datos actuales
 $sql = "SELECT * FROM usuarios WHERE id = ?";
@@ -38,106 +41,113 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $rol = $_POST["rol"];
 
     if (strlen($nombre) < 3) {
-        $mensaje = "Nombre demasiado corto.";
+        $mensaje_error = "Nombre demasiado corto.";
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $mensaje = "Email no válido.";
+        $mensaje_error = "Email no válido.";
     } else {
 
         $sql_update = "UPDATE usuarios SET nombre = ?, email = ?, rol = ? WHERE id = ?";
         $stmt = mysqli_prepare($conexion, $sql_update);
         mysqli_stmt_bind_param($stmt, "sssi", $nombre, $email, $rol, $id);
-        mysqli_stmt_execute($stmt);
 
-        header("Location: gestionUsuarios.php");
-        exit;
+        if (mysqli_stmt_execute($stmt)) {
+
+            $mensaje_exito = "Usuario actualizado correctamente.";
+
+            // actualizar datos en pantalla
+            $usuario["nombre"] = $nombre;
+            $usuario["email"] = $email;
+            $usuario["rol"] = $rol;
+
+        } else {
+            $mensaje_error = "Error al actualizar.";
+        }
     }
 }
 ?>
-
 <!DOCTYPE html>
 <html>
 
 <head>
     <title>Editar Usuario</title>
-
-    <!-- 🔥 REUTILIZAMOS TODO -->
     <link rel="stylesheet" href="../public/assets/css/index.css">
     <link rel="stylesheet" href="../public/assets/css/components.css">
     <link rel="stylesheet" href="../public/assets/css/login.css">
     <link rel="stylesheet" href="../public/assets/css/admin.css">
-    
+       <link rel="stylesheet" href="../public/assets/css/reescalado.css">
+
+    <script src="../public/assets/js/forms.js" defer></script>
 </head>
 
 <body>
 
-<div class="main">
-    <div class="container">
+    <div class="main">
+        <div class="container">
 
-        <?php require_once "../includes/headerAdmin.php"; ?>
+            <?php require_once "../includes/headerAdmin.php"; ?>
 
-        <!-- CARD FORM -->
-        <div class="card admin-form-card">
+            <!-- CARD FORM -->
+            <div class="card admin-form-card">
 
-            <h2 class="section-title" style="text-align:center;">
-                Editar usuario
-            </h2>
+                <h2 class="section-title" style="text-align:center;">
+                    Editar usuario
+                </h2>
 
-            <!-- MENSAJE -->
-            <?php if ($mensaje != ""): ?>
-                <div class="auth-error">
-                    <?php echo htmlspecialchars($mensaje); ?>
-                </div>
-            <?php endif; ?>
+                <!-- MENSAJES -->
+                <?php if ($mensaje_error): ?>
+                    <div class="auth-error">
+                        <?php echo htmlspecialchars($mensaje_error); ?>
+                    </div>
+                <?php endif; ?>
 
-            <!-- FORM -->
-            <form method="POST" class="auth-form">
+                <?php if ($mensaje_exito): ?>
+                    <div class="auth-success">
+                        <?php echo htmlspecialchars($mensaje_exito); ?>
+                    </div>
+                <?php endif; ?>
 
-                <!-- NOMBRE -->
-                <input type="text"
-                       name="nombre"
-                       class="auth-input"
-                       placeholder="Nombre"
-                       value="<?php echo htmlspecialchars($usuario["nombre"]); ?>"
-                       required>
+                <!-- FORM -->
+                <form method="POST" class="auth-form" id="formUsuario">
 
-                <!-- EMAIL -->
-                <input type="email"
-                       name="email"
-                       class="auth-input"
-                       placeholder="Email"
-                       value="<?php echo htmlspecialchars($usuario["email"]); ?>"
-                       required>
+                    <!-- NOMBRE -->
+                    <input type="text" name="nombre" id="nombre" class="auth-input"
+                        value="<?php echo htmlspecialchars($usuario["nombre"]); ?>">
+                    <p class="error-msg" id="errorNombre"></p>
 
-                <!-- ROL -->
-                <select name="rol" class="auth-input">
-                    <option value="alumno" <?php if ($usuario["rol"] == "alumno") echo "selected"; ?>>
-                        Alumno
-                    </option>
-                    <option value="admin" <?php if ($usuario["rol"] == "admin") echo "selected"; ?>>
-                        Administrador
-                    </option>
-                </select>
+                    <!-- EMAIL -->
+                    <input type="email" name="email" id="email" class="auth-input"
+                        value="<?php echo htmlspecialchars($usuario["email"]); ?>">
+                    <p class="error-msg" id="errorEmail"></p>
 
-                <!-- BOTÓN -->
-                <button type="submit" class="btn btn-primary" style="width:100%;">
-                    Guardar cambios
-                </button>
+                    <!-- ROL -->
+                    <select name="rol" id="rol" class="auth-input">
+                        <option value="alumno" <?php if ($usuario["rol"] == "alumno")
+                            echo "selected"; ?>>
+                            Alumno
+                        </option>
+                        <option value="admin" <?php if ($usuario["rol"] == "admin")
+                            echo "selected"; ?>>
+                            Administrador
+                        </option>
+                    </select>
 
-            </form>
+                    <button type="submit" class="btn btn-primary" style="width:100%;">
+                        Guardar cambios
+                    </button>
+
+                </form>
+            </div>
+
+            <!-- VOLVER -->
+            <div style="text-align:center; margin-top:20px;">
+                <a href="gestionUsuarios.php" class="btn btn-soft">
+                    ← Volver
+                </a>
+            </div>
 
         </div>
-
-        <!-- VOLVER -->
-        <div style="text-align:center; margin-top:20px;">
-            <a href="gestionUsuarios.php" class="btn btn-soft">
-                ← Volver
-            </a>
-        </div>
-
     </div>
-</div>
-
-
 
 </body>
+
 </html>

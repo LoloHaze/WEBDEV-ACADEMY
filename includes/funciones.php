@@ -76,6 +76,7 @@ function obtenerLecciones($conexion, $curso_id)
     return mysqli_stmt_get_result($stmt);
 }
 
+
 // LECCIÓN COMPLETADA
 function leccionCompletada($conexion, $usuario_id, $leccion_id)
 {
@@ -247,18 +248,18 @@ function obtenerUsuarioPorId($conexion, $id)
 
     return mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
 }
-// OBTENER FOTO PERFIL
-function obtenerFotoPerfil($usuario)
-{
-    if (
-        !empty($usuario["foto"]) &&
-        file_exists("uploads/perfiles/" . $usuario["foto"])
-    ) {
 
-        return "uploads/perfiles/" . $usuario["foto"];
+// OBTENER FOTO PERFIL
+function obtenerFotoUsuario($nombre, $foto)
+{
+    $rutaFisica = __DIR__ . "/../public/uploads/perfiles/" . $foto;
+    $rutaWeb = "uploads/perfiles/" . $foto;
+
+    if (!empty($foto) && file_exists($rutaFisica)) {
+        return $rutaWeb;
     }
 
-    return "https://ui-avatars.com/api/?name=" . urlencode($usuario["nombre"]) . "&background=random&color=fff";
+    return "https://ui-avatars.com/api/?name=" . urlencode($nombre) . "&background=random&color=fff";
 }
 
 
@@ -452,13 +453,95 @@ function guardarResultadoExamen($conexion, $usuario_id, $curso_id, $nota, $aprob
     mysqli_stmt_bind_param($stmt, "iiii", $usuario_id, $curso_id, $nota, $aprobado);
     mysqli_stmt_execute($stmt);
 }
-// OBTENER NOMBRE USUARIO
-function obtenerNombreUsuario($conexion, $usuario_id)
+
+// CURSOS FILTRADOS
+
+function obtenerCursosFiltrados($conexion, $buscar, $precio, $orden, $limit, $offset)
 {
-    $sql = "SELECT nombre FROM usuarios WHERE id = ?";
+    $sql = "
+    SELECT c.*, 
+    COUNT(DISTINCT i.id) as total_inscritos,
+    AVG(v.puntuacion) as media_rating
+    FROM cursos c
+    LEFT JOIN inscripciones i ON c.id = i.curso_id
+    LEFT JOIN valoraciones v ON c.id = v.curso_id
+    WHERE c.activo = 1
+    ";
+
+    if (!empty($buscar)) {
+        $buscarSeguro = mysqli_real_escape_string($conexion, $buscar);
+        $sql .= " AND c.titulo LIKE '%$buscarSeguro%'";
+    }
+
+    if ($precio === "gratis") {
+        $sql .= " AND c.precio = 0";
+    }
+
+    if ($precio === "pago") {
+        $sql .= " AND c.precio > 0";
+    }
+
+    $sql .= " GROUP BY c.id";
+
+    if ($orden === "rating") {
+        $sql .= " ORDER BY media_rating DESC";
+    } elseif ($orden === "inscritos") {
+        $sql .= " ORDER BY total_inscritos DESC";
+    } elseif ($orden === "recientes") {
+        $sql .= " ORDER BY c.id DESC";
+    }
+
+    $sql .= " LIMIT $limit OFFSET $offset";
+
+    return mysqli_query($conexion, $sql);
+}
+
+// TOTAL CURSOS
+function contarCursosFiltrados($conexion, $buscar, $precio)
+{
+    $sql = "SELECT COUNT(*) as total FROM cursos WHERE activo = 1";
+
+    if (!empty($buscar)) {
+        $buscarSeguro = mysqli_real_escape_string($conexion, $buscar);
+        $sql .= " AND titulo LIKE '%$buscarSeguro%'";
+    }
+
+    if ($precio === "gratis") {
+        $sql .= " AND precio = 0";
+    }
+
+    if ($precio === "pago") {
+        $sql .= " AND precio > 0";
+    }
+
+    $res = mysqli_query($conexion, $sql);
+    return mysqli_fetch_assoc($res)["total"];
+}
+
+// CURSO CONTINUAR
+function obtenerCursoContinuar($conexion, $usuario_id)
+{
+    $sql = "
+    SELECT c.id, c.titulo
+    FROM inscripciones i
+    JOIN cursos c ON i.curso_id = c.id
+    WHERE i.usuario_id = ? AND i.estado = 'aprobado'
+    ORDER BY i.id DESC
+    LIMIT 1
+    ";
+
     $stmt = mysqli_prepare($conexion, $sql);
     mysqli_stmt_bind_param($stmt, "i", $usuario_id);
     mysqli_stmt_execute($stmt);
 
     return mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
+}
+
+
+function validarCursoActivo($curso)
+{
+    if (!$curso || $curso["activo"] != 1) {
+        header("Location: index.php");
+        exit;
+    }
 }

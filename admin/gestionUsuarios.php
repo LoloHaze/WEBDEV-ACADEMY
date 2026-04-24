@@ -2,17 +2,13 @@
 require_once "../includes/bd.php";
 session_start();
 
-// 🔐 Protección admin
+// Protección admin
 if (!isset($_SESSION["usuario_id"]) || $_SESSION["rol"] !== "admin") {
     header("Location: ../public/index.php");
     exit;
 }
 
-/*
---------------------------------------------------
-ACCIONES (APROBAR / DESACTIVAR / ELIMINAR)
---------------------------------------------------
-*/
+//ACCIONES (APROBAR / DESACTIVAR / ELIMINAR)
 
 if (isset($_GET["aprobar"])) {
     $id = intval($_GET["aprobar"]);
@@ -36,9 +32,8 @@ if (isset($_GET["desactivar"])) {
     exit;
 }
 
-// -----------------------------------------
 // ELIMINAR USUARIO
-// -----------------------------------------
+
 if (isset($_GET["eliminar"])) {
     $id = intval($_GET["eliminar"]);
 
@@ -51,12 +46,7 @@ if (isset($_GET["eliminar"])) {
     exit;
 }
 
-/*
---------------------------------------------------
-OBTENER USUARIOS SEPARADOS POR ESTADO
---------------------------------------------------
-*/
-
+//OBTENER USUARIOS SEPARADOS POR ESTADO
 // Pendientes
 $sql_pendientes = "SELECT * FROM usuarios WHERE activo = 0 ORDER BY fecha_registro DESC";
 $pendientes = mysqli_query($conexion, $sql_pendientes);
@@ -69,21 +59,17 @@ $activos = mysqli_query($conexion, $sql_activos);
 $count_pendientes = mysqli_num_rows($pendientes);
 $count_activos = mysqli_num_rows($activos);
 ?>
-
 <!DOCTYPE html>
 <html>
-
 <head>
     <title>Gestión de Usuarios</title>
-
     <link rel="stylesheet" href="../public/assets/css/index.css">
     <link rel="stylesheet" href="../public/assets/css/components.css">
     <link rel="stylesheet" href="../public/assets/css/admin.css">
+       <link rel="stylesheet" href="../public/assets/css/reescalado.css">
 </head>
 
 <body>
-
-
 
     <div class="main">
 
@@ -92,31 +78,22 @@ $count_activos = mysqli_num_rows($activos);
 
             <h2 class="section-title">Gestión de Usuarios</h2>
 
-            <!-- ========================= -->
             <!-- PENDIENTES -->
-            <!-- ========================= -->
 
             <h3 class="section-subtitle">🔴 Pendientes (<?php echo $count_pendientes; ?>)</h3>
-
             <div class="admin-list">
 
                 <?php if ($count_pendientes == 0): ?>
-
                     <p class="empty-text">No hay usuarios pendientes.</p>
-
                 <?php else: ?>
-
                     <?php while ($usuario = mysqli_fetch_assoc($pendientes)): ?>
-
                         <?php
                         $foto_usuario = (!empty($usuario["foto"]) &&
                             file_exists("../public/uploads/perfiles/" . $usuario["foto"]))
                             ? "../public/uploads/perfiles/" . $usuario["foto"]
                             : "https://ui-avatars.com/api/?name=" . urlencode($usuario["nombre"]) . "&background=random&color=fff";
                         ?>
-
                         <div class="card admin-item">
-
                             <div class="admin-user-mini">
                                 <img src="<?php echo $foto_usuario; ?>">
                                 <div>
@@ -124,29 +101,20 @@ $count_activos = mysqli_num_rows($activos);
                                     <span><?php echo htmlspecialchars($usuario["email"]); ?></span>
                                 </div>
                             </div>
-
                             <div class="admin-actions">
                                 <a href="?aprobar=<?php echo $usuario["id"]; ?>" class="btn btn-primary">Aprobar</a>
                                 <a href="editarUsuario.php?id=<?php echo $usuario["id"]; ?>" class="btn btn-soft">Editar</a>
-                                <a href="?eliminar=<?php echo $usuario["id"]; ?>" class="btn btn-soft"
+                                <a href="?eliminar=<?php echo $usuario["id"]; ?>" class="btn btn-soft2"
                                     onclick="return confirm('¿Eliminar usuario?');">
                                     Eliminar
                                 </a>
                             </div>
-
                         </div>
-
                     <?php endwhile; ?>
-
                 <?php endif; ?>
-
             </div>
-
-
-            <!-- ========================= -->
             <!-- ACTIVOS -->
-            <!-- ========================= -->
-
+       
             <h3 class="section-subtitle">🟢 Activos (<?php echo $count_activos; ?>)</h3>
 
             <div class="admin-list">
@@ -180,7 +148,7 @@ $count_activos = mysqli_num_rows($activos);
                                 <span class="status success">Activo</span>
                                 <a href="?desactivar=<?php echo $usuario["id"]; ?>" class="btn btn-soft">Desactivar</a>
                                 <a href="editarUsuario.php?id=<?php echo $usuario["id"]; ?>" class="btn btn-soft">Editar</a>
-                                <a href="?eliminar=<?php echo $usuario["id"]; ?>" class="btn btn-soft"
+                                <a href="?eliminar=<?php echo $usuario["id"]; ?>" class="btn btn-soft2"
                                     onclick="return confirm('¿Eliminar usuario?');">
                                     Eliminar
                                 </a>

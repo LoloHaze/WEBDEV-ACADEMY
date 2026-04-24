@@ -213,13 +213,23 @@
 
 .auth-logo {
     display: flex; 
-    flex-direction: column;         /* pone imagen y texto en línea */
-    align-items: center;    /* los centra verticalmente */
-    justify-content: center; /* centra todo el bloque */
-    gap: 10px;              /* espacio entre logo y texto */
+    flex-direction: column;        
+    align-items: center;    
+    justify-content: center; 
+    gap: 10px;             
 }
 
 .auth-logo img {
-    width: 100px;   /* 🔥 controla el tamaño del logo */
+    width: 100px;   
     height: auto;
+}
+
+.error-msg {
+   color: #b61d50;
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+.input-error {
+    border: 2px solid #b61d3e !important;
 }

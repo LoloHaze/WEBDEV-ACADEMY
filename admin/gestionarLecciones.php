@@ -42,11 +42,10 @@ $resultado = mysqli_stmt_get_result($stmt);
 
 <head>
     <title>Gestionar Lecciones</title>
-
-    <!-- 🔥 REUTILIZAMOS TODO -->
     <link rel="stylesheet" href="../public/assets/css/index.css">
     <link rel="stylesheet" href="../public/assets/css/components.css">
     <link rel="stylesheet" href="../public/assets/css/admin.css">
+       <link rel="stylesheet" href="../public/assets/css/reescalado.css">
 </head>
 
 <body>
@@ -94,7 +93,7 @@ $resultado = mysqli_stmt_get_result($stmt);
                 </a>
 
                 <a href="eliminarLeccion.php?id=<?php echo $leccion["id"]; ?>&curso_id=<?php echo $curso_id; ?>"
-                   class="btn btn-soft"
+                   class="btn btn-soft2"
                    onclick="return confirm('¿Eliminar lección?');">
                    Eliminar
                 </a>
