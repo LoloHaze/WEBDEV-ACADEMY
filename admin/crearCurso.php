@@ -101,35 +101,39 @@ if (isset($_GET["success"])) {
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="es">
 
 <head>
     <title>Crear Curso</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="../public/assets/logowebdev.png" type="image/png">
+
 
     <link rel="stylesheet" href="../public/assets/css/index.css">
     <link rel="stylesheet" href="../public/assets/css/components.css">
     <link rel="stylesheet" href="../public/assets/css/login.css">
     <link rel="stylesheet" href="../public/assets/css/admin.css">
     <link rel="stylesheet" href="../public/assets/css/crearCurso.css">
-       <link rel="stylesheet" href="../public/assets/css/reescalado.css">
+    <link rel="stylesheet" href="../public/assets/css/reescalado.css">
+    <link rel="stylesheet" href="../public/assets/css/responsiveAdmin.css">
 
+
+    <script src="../public/assets/js/responsiveAdmin.js" defer></script>
     <script src="../public/assets/js/forms.js" defer></script>
+
+
 </head>
 
 
 <body>
-
     <div class="main">
         <div class="container">
-
             <?php require_once "../includes/headerAdmin.php"; ?>
-
             <div class="card" style="max-width:500px; margin:auto;">
-
                 <h2 class="section-title" style="text-align:center;">
                     Crear nuevo curso
                 </h2>
-
                 <!-- MENSAJES -->
                 <?php if ($mensaje_error): ?>
                     <div class="auth-error">
@@ -148,7 +152,7 @@ if (isset($_GET["success"])) {
 
                     <!-- TITULO -->
                     <input type="text" name="titulo" id="titulo" class="auth-input" placeholder="Título del curso"
-                        value="<?php echo htmlspecialchars($titulo); ?>" >
+                        value="<?php echo htmlspecialchars($titulo); ?>">
                     <p class="error-msg" id="errorTitulo"></p>
 
                     <!-- DESCRIPCION -->

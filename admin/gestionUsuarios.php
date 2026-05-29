@@ -37,6 +37,32 @@ if (isset($_GET["desactivar"])) {
 if (isset($_GET["eliminar"])) {
     $id = intval($_GET["eliminar"]);
 
+    $sqlUsuario = "SELECT rol FROM usuarios WHERE id = ?";
+    $stmt = mysqli_prepare($conexion, $sqlUsuario);
+    mysqli_stmt_bind_param($stmt, "i", $id);
+    mysqli_stmt_execute($stmt);
+
+    $resultadoUsuario = mysqli_stmt_get_result($stmt);
+    $usuarioEliminar = mysqli_fetch_assoc($resultadoUsuario);
+
+    if ($usuarioEliminar && $usuarioEliminar["rol"] === "admin") {
+
+        $sqlAdmins = "SELECT COUNT(*) as total
+                  FROM usuarios
+                  WHERE rol = 'admin'";
+
+        $resultadoAdmins = mysqli_query($conexion, $sqlAdmins);
+        $admins = mysqli_fetch_assoc($resultadoAdmins);
+
+        if ($admins["total"] <= 1) {
+
+            header("Location: gestionUsuarios.php");
+            exit;
+
+        }
+
+    }
+
     $sql = "DELETE FROM usuarios WHERE id = ?";
     $stmt = mysqli_prepare($conexion, $sql);
     mysqli_stmt_bind_param($stmt, "i", $id);
@@ -60,13 +86,19 @@ $count_pendientes = mysqli_num_rows($pendientes);
 $count_activos = mysqli_num_rows($activos);
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="es">
+
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="../public/assets/logowebdev.png" type="image/png">
+
     <title>Gestión de Usuarios</title>
     <link rel="stylesheet" href="../public/assets/css/index.css">
     <link rel="stylesheet" href="../public/assets/css/components.css">
     <link rel="stylesheet" href="../public/assets/css/admin.css">
-       <link rel="stylesheet" href="../public/assets/css/reescalado.css">
+    <link rel="stylesheet" href="../public/assets/css/reescalado.css">
+    <link rel="stylesheet" href="../public/assets/css/responsiveAdmin.css">
+    <script src="../public/assets/js/responsiveAdmin.js" defer></script>
 </head>
 
 <body>
@@ -74,7 +106,7 @@ $count_activos = mysqli_num_rows($activos);
     <div class="main">
 
         <div class="container">
-                <?php require_once "../includes/headerAdmin.php"; ?>
+            <?php require_once "../includes/headerAdmin.php"; ?>
 
             <h2 class="section-title">Gestión de Usuarios</h2>
 
@@ -95,7 +127,7 @@ $count_activos = mysqli_num_rows($activos);
                         ?>
                         <div class="card admin-item">
                             <div class="admin-user-mini">
-                                <img src="<?php echo $foto_usuario; ?>">
+                                <img src="<?php echo $foto_usuario; ?>" alt="Foto Usuario">
                                 <div>
                                     <strong><?php echo htmlspecialchars($usuario["nombre"]); ?></strong>
                                     <span><?php echo htmlspecialchars($usuario["email"]); ?></span>
@@ -114,7 +146,7 @@ $count_activos = mysqli_num_rows($activos);
                 <?php endif; ?>
             </div>
             <!-- ACTIVOS -->
-       
+
             <h3 class="section-subtitle">🟢 Activos (<?php echo $count_activos; ?>)</h3>
 
             <div class="admin-list">
@@ -137,7 +169,7 @@ $count_activos = mysqli_num_rows($activos);
                         <div class="card admin-item">
 
                             <div class="admin-user-mini">
-                                <img src="<?php echo $foto_usuario; ?>">
+                                <img src="<?php echo $foto_usuario; ?>" alt="Foto Usuario">
                                 <div>
                                     <strong><?php echo htmlspecialchars($usuario["nombre"]); ?></strong>
                                     <span><?php echo htmlspecialchars($usuario["email"]); ?></span>

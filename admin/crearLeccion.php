@@ -14,6 +14,10 @@ if (!isset($_GET["curso_id"]) || !is_numeric($_GET["curso_id"])) {
 
 $curso_id = intval($_GET["curso_id"]);
 
+$redirect = $_POST["redirect"]
+    ?? $_GET["redirect"]
+    ?? "gestionarLecciones.php?curso_id=" . $curso_id;
+
 // 👇 NUEVO
 $mensaje_error = "";
 $mensaje_exito = "";
@@ -68,7 +72,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         );
 
         if (mysqli_stmt_execute($stmt)) {
-            $mensaje_exito = "Lección creada correctamente.";
+
+            header("Location: " . $redirect);
+            exit;
         } else {
             $mensaje_error = "Error al crear lección.";
         }
@@ -76,10 +82,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="es">
 
 <head>
     <title>Crear Lección</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="../public/assets/logowebdev.png" type="image/png">
 
     <link rel="stylesheet" href="../public/assets/css/index.css">
     <link rel="stylesheet" href="../public/assets/css/components.css">
@@ -87,9 +96,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <link rel="stylesheet" href="../public/assets/css/perfil.css">
     <link rel="stylesheet" href="../public/assets/css/crearCurso.css">
     <link rel="stylesheet" href="../public/assets/css/admin.css">
-       <link rel="stylesheet" href="../public/assets/css/reescalado.css">
+    <link rel="stylesheet" href="../public/assets/css/reescalado.css">
+    <link rel="stylesheet" href="../public/assets/css/responsiveAdmin.css">
 
-     <script src="../public/assets/js/forms.js" defer></script>
+    <script src="../public/assets/js/forms.js" defer></script>
+    <script src="../public/assets/js/responsiveAdmin.js" defer></script>
+
 </head>
 
 <body>
@@ -121,6 +133,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                 <form method="POST" class="auth-form" id="formCurso">
 
+                    <input type="hidden" name="redirect" value="<?php echo htmlspecialchars($redirect); ?>">
+
                     <!-- TITULO -->
                     <input type="text" name="titulo" id="titulo" class="auth-input" placeholder="Título de la lección">
                     <p class="error-msg" id="errorTitulo"></p>
@@ -146,7 +160,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
 
             <div style="text-align:center; margin-top:20px;">
-                <a href="gestionarLecciones.php?curso_id=<?php echo $curso_id; ?>" class="btn btn-soft">
+               <a href="<?php echo htmlspecialchars($redirect); ?>" class="btn btn-soft">
                     ← Volver
                 </a>
             </div>

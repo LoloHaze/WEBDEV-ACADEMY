@@ -16,7 +16,6 @@ if (!isset($_GET["id"]) || !is_numeric($_GET["id"])) {
 
 $id = intval($_GET["id"]);
 
-// 👇 NUEVO
 $mensaje_error = "";
 $mensaje_exito = "";
 
@@ -46,19 +45,43 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $mensaje_error = "Email no válido.";
     } else {
 
-        $sql_update = "UPDATE usuarios SET nombre = ?, email = ?, rol = ? WHERE id = ?";
-        $stmt = mysqli_prepare($conexion, $sql_update);
-        mysqli_stmt_bind_param($stmt, "sssi", $nombre, $email, $rol, $id);
+        if ($usuario["rol"] === "admin" && $rol !== "admin") {
 
-        if (mysqli_stmt_execute($stmt)) {
+            $sqlAdmins = "SELECT COUNT(*) as total
+                  FROM usuarios
+                  WHERE rol = 'admin'";
 
-            $mensaje_exito = "Usuario actualizado correctamente.";
+            $resultadoAdmins = mysqli_query($conexion, $sqlAdmins);
+            $admins = mysqli_fetch_assoc($resultadoAdmins);
 
-            // actualizar datos en pantalla
-            $usuario["nombre"] = $nombre;
-            $usuario["email"] = $email;
-            $usuario["rol"] = $rol;
+            if ($admins["total"] <= 1) {
 
+                $mensaje_error =
+                    "Debe existir al menos un administrador.";
+
+            }
+
+        }
+
+        if ($mensaje_error == "") {
+
+            $sql_update = "UPDATE usuarios
+                   SET nombre = ?, email = ?, rol = ?
+                   WHERE id = ?";
+
+            $stmt = mysqli_prepare($conexion, $sql_update);
+            $stmt = mysqli_prepare($conexion, $sql_update);
+            mysqli_stmt_bind_param($stmt, "sssi", $nombre, $email, $rol, $id);
+
+            if (mysqli_stmt_execute($stmt)) {
+
+                $mensaje_exito = "Usuario actualizado correctamente.";
+
+                // actualizar datos en pantalla
+                $usuario["nombre"] = $nombre;
+                $usuario["email"] = $email;
+                $usuario["rol"] = $rol;
+            }
         } else {
             $mensaje_error = "Error al actualizar.";
         }
@@ -66,17 +89,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="es">
 
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="../public/assets/logowebdev.png" type="image/png">
+
     <title>Editar Usuario</title>
     <link rel="stylesheet" href="../public/assets/css/index.css">
     <link rel="stylesheet" href="../public/assets/css/components.css">
     <link rel="stylesheet" href="../public/assets/css/login.css">
     <link rel="stylesheet" href="../public/assets/css/admin.css">
-       <link rel="stylesheet" href="../public/assets/css/reescalado.css">
+    <link rel="stylesheet" href="../public/assets/css/reescalado.css">
+    <link rel="stylesheet" href="../public/assets/css/responsiveAdmin.css">
 
     <script src="../public/assets/js/forms.js" defer></script>
+    <script src="../public/assets/js/responsiveAdmin.js" defer></script>
 </head>
 
 <body>

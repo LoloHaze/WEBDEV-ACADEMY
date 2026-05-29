@@ -38,14 +38,20 @@ $resultado = mysqli_stmt_get_result($stmt);
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="es">
 
 <head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="../public/assets/logowebdev.png" type="image/png">
+
     <title>Gestionar Lecciones</title>
     <link rel="stylesheet" href="../public/assets/css/index.css">
     <link rel="stylesheet" href="../public/assets/css/components.css">
     <link rel="stylesheet" href="../public/assets/css/admin.css">
        <link rel="stylesheet" href="../public/assets/css/reescalado.css">
+        <link rel="stylesheet" href="../public/assets/css/responsiveAdmin.css">
+
+          <script src="../public/assets/js/responsiveAdmin.js" defer></script>
 </head>
 
 <body>

@@ -4,15 +4,15 @@ session_start();
 
 
 //PROTECCIÓN ADMIN
- 
+
 if (!isset($_SESSION["usuario_id"]) || $_SESSION["rol"] !== "admin") {
     header("Location: ../public/index.php");
     exit;
 }
 
- 
+
 //VALIDAR ID CURSO
- 
+
 if (!isset($_GET["id"]) || !is_numeric($_GET["id"])) {
     header("Location: gestionCursos.php");
     exit;
@@ -47,7 +47,7 @@ if (!$curso) {
     header("Location: gestionCursos.php");
     exit;
 }
-   //OBTENER VALORACIONES
+//OBTENER VALORACIONES
 $sql = "SELECT v.id, v.puntuacion, v.comentario, v.fecha,
                u.nombre
         FROM valoraciones v
@@ -60,7 +60,7 @@ mysqli_stmt_bind_param($stmt, "i", $curso_id);
 mysqli_stmt_execute($stmt);
 $resultado = mysqli_stmt_get_result($stmt);
 
-   //CALCULAR MEDIA
+//CALCULAR MEDIA
 
 $sqlMedia = "SELECT AVG(puntuacion) as media, COUNT(*) as total
              FROM valoraciones
@@ -75,16 +75,24 @@ $media = round($datosMedia["media"], 1);
 $total = $datosMedia["total"];
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="es">
 
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Valoraciones del Curso</title>
+
+    <link rel="icon" href="../public/assets/logowebdev.png" type="image/png">
+
     <link rel="stylesheet" href="../public/assets/css/index.css">
     <link rel="stylesheet" href="../public/assets/css/components.css">
     <link rel="stylesheet" href="../public/assets/css/admin.css">
     <link rel="stylesheet" href="../public/assets/css/cursos.css">
-       <link rel="stylesheet" href="../public/assets/css/reescalado.css">
+    <link rel="stylesheet" href="../public/assets/css/reescalado.css">
+    <link rel="stylesheet" href="../public/assets/css/responsiveAdmin.css">
+
+      <script src="../public/assets/js/responsiveAdmin.js" defer></script>
 </head>
+
 <body>
     <div class="main">
         <div class="container">
@@ -184,7 +192,7 @@ $total = $datosMedia["total"];
         </div>
     </div>
 
-   
+
 
 </body>
 

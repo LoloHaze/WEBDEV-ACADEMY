@@ -13,6 +13,9 @@ if (!isset($_GET["id"]) || !is_numeric($_GET["id"])) {
 }
 
 $id = intval($_GET["id"]);
+$redirect = $_POST["redirect"]
+    ?? $_GET["redirect"]
+    ?? "gestionCursos.php";
 
 // 👇 NUEVO
 $mensaje_error = "";
@@ -90,8 +93,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             );
 
             if (mysqli_stmt_execute($stmt)) {
-                $mensaje_exito = "Curso actualizado correctamente.";
-                $curso["imagen_portada"] = $imagenNombre;
+
+                header("Location: " . $redirect);
+                exit;
+
             } else {
                 $mensaje_error = "Error al actualizar.";
             }
@@ -101,14 +106,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 $imagenActual = (!empty($curso["imagen_portada"]))
     ? "../public/uploads/cursos/" . $curso["imagen_portada"]
-    : "https://via.placeholder.com/400x200?text=Sin+imagen";
+    : "https://placehold.net/600x400.png";                   // cambio !
 
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="es">
 
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="../public/assets/logowebdev.png" type="image/png">
+
     <title>Editar Curso</title>
     <link rel="stylesheet" href="../public/assets/css/index.css">
     <link rel="stylesheet" href="../public/assets/css/components.css">
@@ -116,9 +124,11 @@ $imagenActual = (!empty($curso["imagen_portada"]))
     <link rel="stylesheet" href="../public/assets/css/perfil.css">
     <link rel="stylesheet" href="../public/assets/css/admin.css">
     <link rel="stylesheet" href="../public/assets/css/crearCurso.css">
-       <link rel="stylesheet" href="../public/assets/css/reescalado.css">
+    <link rel="stylesheet" href="../public/assets/css/reescalado.css">
+    <link rel="stylesheet" href="../public/assets/css/responsiveAdmin.css">
 
     <script src="../public/assets/js/forms.js" defer></script>
+    <script src="../public/assets/js/responsiveAdmin.js" defer></script>
 </head>
 
 <body>
@@ -133,7 +143,7 @@ $imagenActual = (!empty($curso["imagen_portada"]))
                 <h3>Editar curso</h3>
 
                 <!-- IMAGEN -->
-                <img src="<?php echo $imagenActual; ?>"
+                <img src="<?php echo $imagenActual; ?>" alt="Imagen Curso"
                     style="width:100%; height:200px; object-fit:cover; border-radius:10px; margin-bottom:15px;">
 
                 <!-- MENSAJES -->
@@ -151,6 +161,7 @@ $imagenActual = (!empty($curso["imagen_portada"]))
 
                 <!-- FORM -->
                 <form method="POST" enctype="multipart/form-data" class="auth-form" id="formCurso">
+
 
                     <!-- TITULO -->
                     <input type="text" name="titulo" id="titulo" class="auth-input"
@@ -185,7 +196,7 @@ $imagenActual = (!empty($curso["imagen_portada"]))
 
             <!-- VOLVER -->
             <div style="text-align:center; margin-top:20px;">
-                <a href="gestionCursos.php" class="btn btn-soft">
+                <a href="<?php echo htmlspecialchars($redirect); ?>" class="btn btn-soft">
                     ← Volver
                 </a>
             </div>
