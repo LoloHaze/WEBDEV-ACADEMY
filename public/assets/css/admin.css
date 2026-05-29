@@ -8,6 +8,7 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 25px;
+    
 }
 
 .admin-user {
@@ -288,3 +289,18 @@ select.auth-input option {
     background: #1a1a1a;
     color: #fff;
 }
+
+
+.nav-link {
+    padding: 5px;
+    color: #ccc;
+    font-size: 14px;
+    text-decoration: none;
+    transition: .2s;
+}
+
+.nav-link:hover {
+    color: #ff6aa3;
+    transform: translateX(-1px);
+}
+

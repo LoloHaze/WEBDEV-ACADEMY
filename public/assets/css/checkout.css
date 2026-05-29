@@ -1,0 +1,82 @@
+.main .container{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+.checkout-card{
+    width:100%;
+    max-width:420px;
+    margin:0 auto;
+    padding:38px 34px;
+}
+
+.checkout-info{
+    text-align:center;
+    margin-bottom:26px;
+}
+
+.checkout-info h3{
+    font-size:30px;
+    margin-bottom:14px;
+}
+
+.checkout-price{
+    font-size:22px;
+    font-weight:700;
+    color:#fff;
+    opacity:.9;
+}
+
+.checkout-card .auth-form{
+    width:100%;
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+    align-items:stretch;
+}
+
+.checkout-card .auth-input,
+.checkout-card input{
+    width:100%;
+    min-width:0;
+}
+
+.checkout-row{
+    display:flex;
+    gap:12px;
+    width:100%;
+}
+
+.checkout-row > *{
+    min-width:0;
+}
+
+.checkout-row .auth-input:first-child{
+    flex:2;
+}
+
+.checkout-row .auth-input:last-child{
+    flex:1;
+}
+
+.checkout-card .btn{
+    width:100%;
+    margin-top:6px;
+}
+
+.checkout-card .admin-footer{
+    margin-top:18px;
+    display:flex;
+    justify-content:center;
+}
+
+.checkout-row-errors{
+    display:flex;
+    gap:12px;
+    margin-top:-8px;
+}
+
+.checkout-row-errors .error-msg{
+    flex:1;
+}

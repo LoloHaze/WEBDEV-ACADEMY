@@ -62,14 +62,19 @@ if (isset($_POST["subir_foto"]) && isset($_FILES["foto"])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Mi Perfil</title>
-
+   <link rel="stylesheet" href="assets/css/nav.css">
     <link rel="stylesheet" href="assets/css/index.css">
     <link rel="stylesheet" href="assets/css/components.css">
     <link rel="stylesheet" href="assets/css/perfil.css">
     <link rel="stylesheet" href="assets/css/login.css">
-    <link rel="stylesheet" href="assets/css/crearCurso.css"> 
+    <link rel="stylesheet" href="assets/css/crearCurso.css">
     <link rel="stylesheet" href="assets/css/animacion1.css">
     <link rel="stylesheet" href="assets/css/reescalado.css">
+    <link rel="stylesheet" href="assets/css/footer.css">
+    <link rel="stylesheet" href="assets/css/responsive.css">
+    
+    <script src="assets/js/responsive.js" defer></script>
+ 
 </head>
 
 <body>
@@ -83,7 +88,7 @@ if (isset($_POST["subir_foto"]) && isset($_FILES["foto"])) {
                 <div class="profile-header">
 
                     <div class="profile-avatar">
-                        <img src="<?php echo $foto; ?>">
+                        <img src="<?php echo htmlspecialchars($foto); ?>" alt="Avatar">
                     </div>
 
                     <div class="profile-info">
@@ -134,7 +139,7 @@ if (isset($_POST["subir_foto"]) && isset($_FILES["foto"])) {
                     <form method="POST" enctype="multipart/form-data" class="auth-imput">
 
                         <input type="file" name="foto" accept="image/*" required>
-                         <br> <br> 
+                        <br> <br>
                         <button type="submit" name="subir_foto" class="btn btn-primary">
                             Subir imagen
                         </button>
@@ -148,4 +153,5 @@ if (isset($_POST["subir_foto"]) && isset($_FILES["foto"])) {
     </div>
     <?php require_once "../includes/footer.php"; ?>
 </body>
+
 </html>

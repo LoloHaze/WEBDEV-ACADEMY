@@ -59,9 +59,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <html lang="es">
 
 <head>
-    <link rel="icon" href="assets/logowebdev.png" type="image/png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <link rel="icon" href="assets/logowebdev.png" type="image/png">
     <title>Registro - WebDev Academy</title>
 
     <link rel="stylesheet" href="assets/css/login.css">
@@ -70,6 +70,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <link rel="stylesheet" href="assets/css/animacion1.css">
     <link rel="stylesheet" href="assets/css/reescalado.css">
     <link rel="stylesheet" href="assets/css/reescalado2.css">
+    <link rel="stylesheet" href="assets/css/responsive.css">
+    
+    <script src="assets/js/responsive.js" defer></script>
     <script src="../public/assets/js/forms.js" defer></script>
 </head>
 
@@ -128,7 +131,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
 
         </div>
-
+</div>
 </body>
 
 </html>

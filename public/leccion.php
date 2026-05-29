@@ -55,13 +55,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta charset="UTF-8">
     <link rel="icon" href="assets/logowebdev.png" type="image/png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title><?php echo htmlspecialchars($leccion["titulo"]); ?></title>
+
+    <link rel="stylesheet" href="assets/css/nav.css">
     <link rel="stylesheet" href="assets/css/index.css">
     <link rel="stylesheet" href="assets/css/leccion.css">
     <link rel="stylesheet" href="assets/css/components.css">
     <link rel="stylesheet" href="assets/css/animacion1.css">
     <link rel="stylesheet" href="assets/css/responsive.css">
     <link rel="stylesheet" href="assets/css/reescalado.css">
+    <link rel="stylesheet" href="assets/css/footer.css">
+
+
+    <script src="assets/js/responsive.js" defer></script>
+
 </head>
 
 <body>
@@ -69,7 +77,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <div class="main">
         <div class="leccion-layout">
-            
+
             <!-- SIDEBAR -->
             <div class="leccion-sidebar">
 
@@ -80,6 +88,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                     <?php
                     $completada_item = leccionCompletada($conexion, $usuario_id, $item["id"]);
+                    ?>
+
+                    <?php
+                    $completada_item = leccionCompletada($conexion, $usuario_id, $item["id"]);
+                    $activa = $item["id"] == $leccion_id;
                     ?>
 
                     <div class="sidebar-item <?php echo $activa ? 'active' : ''; ?>">
@@ -128,14 +141,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         </a>
                         <?php if ($completada): ?>
                             <form method="POST">
-                                <button type="submit" class="btn btn-danger">
-                                    ❌ Marcar como no completada
+                                <button type="submit" class="btn btn-success">
+                                    Completada
                                 </button>
                             </form>
                         <?php else: ?>
                             <form method="POST">
-                                <button type="submit" class="btn btn-success">
-                                    ✅ Marcar como completada
+                                <button type="submit" class="btn btn-danger">
+                                    
+                                No Completada
                                 </button>
                             </form>
                         <?php endif; ?>
@@ -152,13 +166,5 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </div>
     <?php require_once "../includes/footer.php"; ?>
 </body>
-<script>
-const btn = document.querySelector('.sidebar-toggle');
-const sidebar = document.querySelector('.leccion-sidebar');
-
-btn.addEventListener('click', () => {
-    sidebar.classList.toggle('active');
-});
-</script>
 
 </html>

@@ -13,15 +13,25 @@ require_once "../includes/proteccion.php";
 
 session_start();
 
-// PROTEGER
-protegerPagina();
-
 // VALIDAR ID
 $curso_id = validarId();
-$usuario_id = $_SESSION["usuario_id"];
+
+// LOGIN CONTROL
+$logueado = isset($_SESSION["usuario_id"]);
+$usuario_id = $logueado ? $_SESSION["usuario_id"] : null;
+
+// ACTUALIZAR ÚLTIMA VISITA SOLO SI ESTÁ LOGUEADO
+if ($logueado) {
+    $sql = "UPDATE inscripciones
+            SET ultima_visita = NOW()
+            WHERE usuario_id = ? AND curso_id = ?";
+    $stmt = mysqli_prepare($conexion, $sql);
+    mysqli_stmt_bind_param($stmt, "ii", $usuario_id, $curso_id);
+    mysqli_stmt_execute($stmt);
+}
 
 // CANCELAR INSCRIPCIÓN
-if (isset($_POST["cancelar_inscripcion"])) {
+if ($logueado && isset($_POST["cancelar_inscripcion"])) {
     cancelarInscripcion($conexion, $usuario_id, $curso_id);
     header("Location: curso.php?id=" . $curso_id);
     exit;
@@ -29,60 +39,63 @@ if (isset($_POST["cancelar_inscripcion"])) {
 
 // OBTENER CURSO
 $curso = obtenerCurso($conexion, $curso_id);
-
 validarCursoActivo($curso);
 
 // SOLICITAR INSCRIPCIÓN
-if (isset($_POST["solicitar_inscripcion"])) {
+if ($logueado && isset($_POST["solicitar_inscripcion"])) {
     gestionarInscripcion($conexion, $usuario_id, $curso_id);
     header("Location: curso.php?id=" . $curso_id);
     exit;
 }
 
 // INSCRIPCIÓN
-$inscripcion = obtenerInscripcion($conexion, $usuario_id, $curso_id);
+$inscripcion = $logueado
+    ? obtenerInscripcion($conexion, $usuario_id, $curso_id)
+    : null;
 
-// PROGRESO Y LECCIONES
+// PROGRESO SOLO SI APROBADO
 if ($inscripcion && $inscripcion["estado"] === "aprobado") {
-
     $progreso = obtenerProgresoCurso($conexion, $usuario_id, $curso_id);
     $total = $progreso["total"];
     $completadas = $progreso["completadas"];
     $porcentaje = $progreso["porcentaje"];
-
-    $resultado_lecciones = obtenerLecciones($conexion, $curso_id);
 }
-// ELIMINAR VALORACIÓN
-if (isset($_POST["eliminar_id"])) {
+
+
+// VALORACIONES
+if ($logueado && isset($_POST["eliminar_id"])) {
     eliminarValoracion($conexion, intval($_POST["eliminar_id"]), $usuario_id);
     header("Location: curso.php?id=" . $curso_id);
     exit;
 }
 
-// EDITAR VALORACIÓN
 $valoracion_editar = null;
-
-if (isset($_POST["editar_id"])) {
+if ($logueado && isset($_POST["editar_id"])) {
     $valoracion_editar = obtenerValoracion($conexion, intval($_POST["editar_id"]), $usuario_id);
 }
 
-// GUARDAR VALORACIÓN
-if (isset($_POST["valorar"]) && $inscripcion && $inscripcion["estado"] === "aprobado") {
+if ($logueado && isset($_POST["valorar"]) && $inscripcion && $inscripcion["estado"] === "aprobado") {
     guardarValoracion($conexion, $usuario_id, $curso_id, $_POST);
     header("Location: curso.php?id=" . $curso_id);
     exit;
 }
-// DATOS VALORACIONES
-$valoracion_existente = obtenerValoracionUsuario($conexion, $usuario_id, $curso_id);
+
+$valoracion_existente = $logueado
+    ? obtenerValoracionUsuario($conexion, $usuario_id, $curso_id)
+    : null;
+
 $datos_media = obtenerMediaCurso($conexion, $curso_id);
 $media = round($datos_media["media"], 1);
 $total_val = $datos_media["total"];
 
-// EXAMEN
-$examen_aprobado = examenAprobado($conexion, $usuario_id, $curso_id);
+$examen_aprobado = $logueado
+    ? examenAprobado($conexion, $usuario_id, $curso_id)
+    : false;
 
-// COMENTARIOS
 $resultado_listar = obtenerComentariosCurso($conexion, $curso_id);
+
+// SIEMPRE OBTENEMOS LECCIONES
+$resultado_lecciones = obtenerLecciones($conexion, $curso_id);
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -96,8 +109,12 @@ $resultado_listar = obtenerComentariosCurso($conexion, $curso_id);
     <link rel="stylesheet" href="assets/css/cursos.css">
     <link rel="stylesheet" href="assets/css/components.css">
     <link rel="stylesheet" href="assets/css/animacion1.css">
-     <link rel="stylesheet" href="assets/css/reescalado.css">
+    <link rel="stylesheet" href="assets/css/reescalado.css">
+    <link rel="stylesheet" href="assets/css/nav.css">
+    <link rel="stylesheet" href="assets/css/footer.css">
+    <link rel="stylesheet" href="assets/css/responsive.css">
 
+    <script src="../public/assets/js/responsive.js" defer></script>
     <script src="../public/assets/js/forms.js" defer></script>
 
     <title><?php echo htmlspecialchars($curso["titulo"]); ?></title>
@@ -107,13 +124,14 @@ $resultado_listar = obtenerComentariosCurso($conexion, $curso_id);
     <?php require_once "../includes/header.php"; ?>
 
     <div class="main">
-
         <div class="container">
 
-            <!--CURSO INFO-->
+            <!-- HERO -->
             <div class="course-hero">
                 <div class="hero-left">
+
                     <h1 class="section-title"><?php echo htmlspecialchars($curso["titulo"]); ?></h1>
+
                     <div class="hero-rating">
                         <?php if ($total_val > 0): ?>
                             <?php $media_redondeada = floor($media); ?>
@@ -129,8 +147,9 @@ $resultado_listar = obtenerComentariosCurso($conexion, $curso_id);
                             <span class="no-rating">Sin valoraciones</span>
                         <?php endif; ?>
                     </div>
+
                     <p class="card-desc"><?php echo htmlspecialchars($curso["descripcion"]); ?></p>
-                    <!-- PROGRESO -->
+
                     <?php if ($inscripcion && $inscripcion["estado"] === "aprobado"): ?>
                         <div class="hero-progress-row">
                             <div class="hero-progress">
@@ -147,18 +166,40 @@ $resultado_listar = obtenerComentariosCurso($conexion, $curso_id);
                     <?php endif; ?>
 
                 </div>
+
                 <div class="hero-right">
 
-                    <?php if (!$inscripcion || $inscripcion["estado"] === "rechazado"): ?>
+                    <?php if (!$logueado): ?>
+                        <a href="login.php?redirect=<?php echo urlencode($_SERVER['REQUEST_URI']); ?>"
+                            class="btn btn-primary">
+                            Inicia sesión para inscribirte
+                        </a>
 
-                        <form method="POST">
-                            <button class="btn btn-primary" type="submit" name="solicitar_inscripcion">
-                                Inscribirme
-                            </button>
-                        </form>
+                    <?php elseif (!$inscripcion || $inscripcion["estado"] === "rechazado"): ?>
+
+                        <?php if ($curso["precio"] > 0): ?>
+
+                            <a href="checkout.php?id=<?php echo $curso_id; ?>" class="btn btn-primary">
+
+                                Comprar curso
+
+                            </a>
+
+                        <?php else: ?>
+
+                            <form method="POST">
+
+                                <button class="btn btn-primary" type="submit" name="solicitar_inscripcion">
+
+                                    Inscribirme
+
+                                </button>
+
+                            </form>
+
+                        <?php endif; ?>
 
                     <?php elseif ($inscripcion["estado"] === "pendiente"): ?>
-
                         <form method="POST">
                             <button class="btn btn-danger" type="submit" name="cancelar_inscripcion">
                                 Cancelar solicitud
@@ -167,68 +208,119 @@ $resultado_listar = obtenerComentariosCurso($conexion, $curso_id);
 
                     <?php elseif ($inscripcion["estado"] === "aprobado"): ?>
                         <form method="POST">
-                            <button class="btn btn-soft2" type="submit" name="cancelar_inscripcion"
-                                onclick="return confirm('¿Seguro que quieres darte de baja del curso?');">
+                            <button class="btn btn-soft2" type="submit" name="cancelar_inscripcion">
                                 Darse de baja
                             </button>
                         </form>
+
                         <?php if ($porcentaje >= 100 && !$examen_aprobado): ?>
-                            <a href="examen.php?id=<?php echo $curso_id; ?>" class="btn btn-primary">
-                                Examen
-                            </a>
+                            <a href="examen.php?id=<?php echo $curso_id; ?>" class="btn btn-primary">Examen</a>
                         <?php endif; ?>
 
                         <?php if ($porcentaje >= 100 && $examen_aprobado): ?>
-                            <a href="certificado.php?id=<?php echo $curso_id; ?>" class="btn btn-primary">
-                                Certificado
-                            </a>
+                            <a href="certificado.php?id=<?php echo $curso_id; ?>" class="btn btn-primary">Certificado</a>
                         <?php endif; ?>
 
                     <?php endif; ?>
+                    <?php if ($logueado && $_SESSION["rol"] === "admin"): ?>
 
-                </div>
+                        <div class="admin-course-actions">
 
-            </div>
+                            <a href="../admin/editarCurso.php?id=<?php echo $curso_id; ?>&redirect=<?php echo urlencode($_SERVER['REQUEST_URI']); ?>"
+                                class="btn btn-soft">
 
-            <!--CONTENIDO CURSO-->
+                                Editar curso
 
-            <?php if ($inscripcion && $inscripcion["estado"] === "aprobado"): ?>
+                            </a>
 
-                <!--LECCIONES-->
+                            <a href="../admin/crearLeccion.php?curso_id=<?php echo $curso_id; ?>&redirect=<?php echo urlencode($_SERVER['REQUEST_URI']); ?>"
+                                class="btn btn-soft">
 
-                <div class="lessons-section">
+                                Añadir lección
 
-                    <h3>Lecciones</h3>
+                            </a>
 
-                    <?php while ($leccion = mysqli_fetch_assoc($resultado_lecciones)): ?>
+                            <a href="../admin/gestionCursos.php?redirect=<?php echo urlencode($_SERVER['REQUEST_URI']); ?>"
+                                class="btn btn-soft">
 
-                        <?php
-                        $esta_completada = leccionCompletada($conexion, $usuario_id, $leccion["id"]);
-                        ?>
+                                Panel cursos
 
-                        <div class="lesson-item">
-                            <div class="lesson-info">
-                                <h4>
-                                    <?php echo $leccion["orden"]; ?>.
-                                    <?php echo htmlspecialchars($leccion["titulo"]); ?>
-
-                                    <?php if ($esta_completada): ?>
-                                        <span style="color:#16a34a;">✔</span>
-                                    <?php endif; ?>
-                                </h4>
-
-                                <p><?php echo htmlspecialchars($leccion["descripcion"]); ?></p>
-                            </div>
-                            <a href="leccion.php?id=<?php echo $leccion["id"]; ?>" class="btn btn-primary">
-                                Ver lección
                             </a>
 
                         </div>
 
-                    <?php endwhile; ?>
+                    <?php endif; ?>
 
                 </div>
-                <!-- VALORACIÓN-->
+            </div>
+
+            <!-- LECCIONES SIEMPRE VISIBLES -->
+            <div class="lessons-section">
+                <h2>Lecciones</h2>
+
+                <?php while ($leccion = mysqli_fetch_assoc($resultado_lecciones)):
+
+                    $esta_completada = ($logueado && $inscripcion && $inscripcion["estado"] === "aprobado")
+                        ? leccionCompletada($conexion, $usuario_id, $leccion["id"])
+                        : false;
+                    ?>
+
+                    <div class="lesson-item">
+                        <div class="lesson-info">
+                            <h3>
+                                <?php echo $leccion["orden"]; ?>.
+                                <?php echo htmlspecialchars($leccion["titulo"]); ?>
+
+                                <?php if ($esta_completada): ?>
+                                    <span style="color:#16a34a;">✔</span>
+                                <?php endif; ?>
+                            </h3>
+                            <p><?php echo htmlspecialchars($leccion["descripcion"]); ?></p>
+                        </div>
+
+                        <?php if (!$logueado): ?>
+                            <a href="login.php?redirect=<?php echo urlencode($_SERVER['REQUEST_URI']); ?>"
+                                class="btn btn-primary">
+                                Inicia sesión para acceder
+                            </a>
+
+                        <?php elseif (!$inscripcion || $inscripcion["estado"] !== "aprobado"): ?>
+                            <button class="btn btn-soft" disabled>Inscríbete para acceder</button>
+
+                        <?php else: ?>
+
+                            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+
+                                <a href="leccion.php?id=<?php echo $leccion["id"]; ?>" class="btn btn-primary">
+
+                                    Ver lección
+
+                                </a>
+
+                                <?php if ($_SESSION["rol"] === "admin"): ?>
+
+                                    <a href="../admin/editarLeccion.php?id=<?php echo $leccion["id"]; ?>&redirect=<?php echo urlencode($_SERVER['REQUEST_URI']); ?>"
+                                        class="btn btn-soft">
+
+                                        Editar
+
+                                    </a>
+
+                                <?php endif; ?>
+
+                            </div>
+
+                        <?php endif; ?>
+
+                    </div>
+
+                <?php endwhile; ?>
+            </div>
+
+
+            <!-- VALORACIÓN -->
+            <!-- VALORACIÓN SOLO SI INSCRITO -->
+            <?php if ($inscripcion && $inscripcion["estado"] === "aprobado"): ?>
 
                 <?php if (!$valoracion_existente || isset($_POST["editar_id"])): ?>
                     <div class="card rating-card">
@@ -243,6 +335,7 @@ $resultado_listar = obtenerComentariosCurso($conexion, $curso_id);
                                     <label for="star<?php echo $i; ?>">★</label>
                                 <?php endfor; ?>
                             </div>
+
                             <p class="error-msg" id="errorPuntuacion"></p>
 
                             <textarea name="comentario" id="comentario" placeholder="Escribe tu opinión..."></textarea>
@@ -256,112 +349,82 @@ $resultado_listar = obtenerComentariosCurso($conexion, $curso_id);
 
                     </div>
                 <?php endif; ?>
-                <!--  COMENTARIOS  -->
-                <div class="comments-section">
-                    <h3>💬 Comentarios</h3>
-                    <?php if (mysqli_num_rows($resultado_listar) > 0): ?>
-                        <?php while ($val = mysqli_fetch_assoc($resultado_listar)): ?>
-                            <div class="comment-item">
-                                <div class="comment-content">
-                                    <?php for ($i = 1; $i <= 5; $i++): ?>
-                                        <?php if ($i <= $val["puntuacion"]): ?>
-                                            <span style="color:gold;">★</span>
-                                        <?php else: ?>
-                                            <span style="color:#ccc;">★</span>
-                                        <?php endif; ?>
-                                    <?php endfor; ?>
-                                    <strong><?php echo htmlspecialchars($val["nombre"]); ?></strong>
-                                    <small style="color:#777;">
-                                        (<?php echo date("d/m/Y", strtotime($val["fecha"])); ?>)
-                                    </small>
-                                    <p><?php echo nl2br(htmlspecialchars($val["comentario"])); ?></p>
-                                </div>
-                                <div class="comment-actions">
-                                    <?php if ($val["usuario_id"] == $usuario_id): ?>
 
-                                        <form method="POST" style="display:inline;">
-                                            <input type="hidden" name="editar_id" value="<?php echo $val["id"]; ?>">
-                                            <button class="btn btn-primary">Editar</button>
-                                        </form>
-
-                                        <form method="POST" style="display:inline;">
-                                            <input type="hidden" name="eliminar_id" value="<?php echo $val["id"]; ?>">
-                                            <button class="btn btn-soft2" onclick="return confirm('¿Eliminar?');">
-                                                Eliminar
-                                            </button>
-                                        </form>
-                                    <?php endif; ?>
-                                </div>
-                            </div>
-                        <?php endwhile; ?>
-                    <?php else: ?>
-                        <p>Este curso aún no tiene valoraciones.</p>
-                    <?php endif; ?>
-                </div>
             <?php endif; ?>
+
+
+            <!-- COMENTARIOS SIEMPRE VISIBLES -->
+            <div class="comments-section">
+
+                <h3>💬 Comentarios</h3>
+
+                <?php if (mysqli_num_rows($resultado_listar) > 0): ?>
+
+                    <?php while ($val = mysqli_fetch_assoc($resultado_listar)): ?>
+
+                        <div class="comment-item">
+
+                            <div class="comment-content">
+
+                                <?php for ($i = 1; $i <= 5; $i++): ?>
+                                    <?php if ($i <= $val["puntuacion"]): ?>
+                                        <span style="color:gold;">★</span>
+                                    <?php else: ?>
+                                        <span style="color:#ccc;">★</span>
+                                    <?php endif; ?>
+                                <?php endfor; ?>
+
+                                <strong>
+                                    <?php echo htmlspecialchars($val["nombre"]); ?>
+                                </strong>
+
+                                <small style="color:#777;">
+                                    (<?php echo date("d/m/Y", strtotime($val["fecha"])); ?>)
+                                </small>
+
+                                <p>
+                                    <?php echo nl2br(htmlspecialchars($val["comentario"])); ?>
+                                </p>
+
+                            </div>
+
+                            <div class="comment-actions">
+
+                                <?php if ($logueado && $val["usuario_id"] == $usuario_id): ?>
+
+                                    <form method="POST" style="display:inline;">
+                                        <input type="hidden" name="editar_id" value="<?php echo $val["id"]; ?>">
+                                        <button class="btn btn-primary">Editar</button>
+                                    </form>
+
+                                    <form method="POST" style="display:inline;">
+                                        <input type="hidden" name="eliminar_id" value="<?php echo $val["id"]; ?>">
+                                        <button class="btn btn-soft2" onclick="return confirm('¿Eliminar?');">
+                                            Eliminar
+                                        </button>
+                                    </form>
+
+                                <?php endif; ?>
+
+                            </div>
+
+                        </div>
+
+                    <?php endwhile; ?>
+
+                <?php else: ?>
+
+                    <p>Este curso aún no tiene valoraciones.</p>
+
+                <?php endif; ?>
+
+            </div>
+
+
         </div>
     </div>
+
     <?php require_once "../includes/footer.php"; ?>
 </body>
 
 </html>
-
-<script>
-    document.addEventListener("DOMContentLoaded", () => {
-
-        const form = document.getElementById("formValoracion");
-
-        // 🔥 evitar error si no existe el form
-        if (!form) return;
-
-        const comentario = document.getElementById("comentario");
-        const grupoEstrellas = document.getElementById("grupoEstrellas");
-
-        const errorPuntuacion = document.getElementById("errorPuntuacion");
-        const errorComentario = document.getElementById("errorComentario");
-
-        form.addEventListener("submit", function (e) {
-
-            let valido = true;
-
-            // limpiar errores
-            errorPuntuacion.textContent = "";
-            errorComentario.textContent = "";
-            comentario.classList.remove("input-error");
-            grupoEstrellas.classList.remove("stars-error");
-
-            // comprobar puntuación
-            const puntuacion = document.querySelector('input[name="puntuacion"]:checked');
-
-            if (!puntuacion) {
-                errorPuntuacion.textContent = "Selecciona una puntuación";
-                grupoEstrellas.classList.add("stars-error");
-                valido = false;
-            }
-
-            // comprobar comentario
-            const texto = comentario.value.trim();
-
-            if (texto === "") {
-                errorComentario.textContent = "Escribe un comentario";
-                comentario.classList.add("input-error");
-                valido = false;
-            }
-
-            // bloquear envío
-            if (!valido) {
-                e.preventDefault();
-            }
-
-        });
-
-        //quitar error al seleccionar estrella
-        document.querySelectorAll('input[name="puntuacion"]').forEach(radio => {
-            radio.addEventListener("change", () => {
-                errorPuntuacion.textContent = "";
-                grupoEstrellas.classList.remove("stars-error");
-            });
-        });
-
-    });
-</script>

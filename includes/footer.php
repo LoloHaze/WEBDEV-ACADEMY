@@ -1,20 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="../public/assets/css/footer.css">
-    <link rel="stylesheet" href="../public/assets/css/responsive.css">
-    
-</head>
-<body>
-    
-</body>
-</html><footer class="footer">
-    
-    <div class="footer-left">
-        🌐 Youtube
+<footer class="footer">
+
+    <div class="footer-right">
+
     </div>
 
     <div class="footer-center">
@@ -22,9 +9,11 @@
     </div>
 
     <div class="footer-right">
-        <a href="#">Sobre</a>
-        <a href="#">Contacto</a>
+
+        <a href="contacto.php">Contacto</a>
+
+        <a href="sobreNosotros.php">Sobre</a>
+
     </div>
 
 </footer>
-<style></style>

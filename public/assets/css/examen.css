@@ -188,3 +188,7 @@
         transform: translateY(0) scale(1);
     }
 }
+
+.error-msg:empty{
+    display:none;
+}

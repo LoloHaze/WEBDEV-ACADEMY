@@ -11,17 +11,24 @@
 require_once "../includes/bd.php";
 session_start();
 
+// cambio!
+$logueado = isset($_SESSION["usuario_id"]);
+
 require_once "../includes/proteccion.php";
 require_once "../includes/funciones.php";
 
-protegerPagina();
+// protegerPagina();
 
 
 // GET
 $buscar = trim($_GET["buscar"] ?? "");
 $filtroPrecio = $_GET["precio"] ?? "";
 $orden = $_GET["orden"] ?? "";
-$foto = obtenerFotoUsuario($_SESSION["nombre"], $_SESSION["foto"]);
+
+// cambio!
+$foto = $logueado
+    ? obtenerFotoUsuario($_SESSION["nombre"], $_SESSION["foto"])
+    : "https://ui-avatars.com/api/?name=Invitado";
 
 // PAGINACIÓN
 $porPagina = 3;
@@ -42,7 +49,11 @@ $resultadoCursos = obtenerCursosFiltrados(
 );
 
 // CURSO CONTINUAR
-$cursoContinuar = obtenerCursoContinuar($conexion, $_SESSION["usuario_id"]);
+
+//cambio!
+$cursoContinuar = $logueado
+    ? obtenerCursoContinuar($conexion, $_SESSION["usuario_id"])
+    : null;
 ?>
 
 <!DOCTYPE html>
@@ -54,12 +65,19 @@ $cursoContinuar = obtenerCursoContinuar($conexion, $_SESSION["usuario_id"]);
     <title>WebDev Academy</title>
     <link rel="icon" href="assets/logowebdev.png" type="image/png">
 
+    <link rel="stylesheet" href="assets/css/nav.css">
     <link rel="stylesheet" href="assets/css/index.css">
     <link rel="stylesheet" href="assets/css/components.css">
     <link rel="stylesheet" href="assets/css/cursos.css">
     <link rel="stylesheet" href="assets/css/animacion1.css">
     <link rel="stylesheet" href="assets/css/responsive.css">
     <link rel="stylesheet" href="assets/css/reescalado.css">
+    <link rel="stylesheet" href="assets/css/footer.css">
+    <link rel="stylesheet" href="assets/css/responsive.css">
+
+    <script src="assets/js/responsive.js" defer></script>
+    <script src="assets/js/frasesRandom.js" defer></script>
+
 </head>
 
 <body>
@@ -72,16 +90,30 @@ $cursoContinuar = obtenerCursoContinuar($conexion, $_SESSION["usuario_id"]);
             <div class="welcome">
 
                 <div class="welcome-left">
-                    <img src="<?php echo $foto; ?>" class="welcome-avatar">
+
+                <!-- //cambio! -->
+                    <?php if ($logueado): ?>
+                        <img src="<?php echo $foto; ?>" class="welcome-avatar" alt="Foto usuario">
+                    <?php endif; ?>
 
                     <div>
-                        <h2>Hola, <?php echo htmlspecialchars($_SESSION["nombre"]); ?></h2>
-                        <p>¿Listo para seguir aprendiendo hoy?</p>
+
+                        <!-- //cambio! -->
+
+                        <?php if ($logueado): ?>
+                            <h2>Hola, <br><?php echo htmlspecialchars($_SESSION["nombre"]); ?></h2>
+                        <?php else: ?>
+                            <h2>Bienvenido a WebDev Academy</h2>
+                        <?php endif; ?>
+
+                        <p id="frase-bienvenida"></p>
                     </div>
                 </div>
 
+
                 <div class="welcome-right">
-                    <?php if ($cursoContinuar): ?>
+                    <!-- //cambio! -->
+                    <?php if ($logueado && $cursoContinuar): ?>
                         <a href="curso.php?id=<?php echo $cursoContinuar["id"]; ?>" class="btn btn-primary">
                             ▶ Continuar: <?php echo htmlspecialchars($cursoContinuar["titulo"]); ?>
                         </a>
@@ -99,7 +131,8 @@ $cursoContinuar = obtenerCursoContinuar($conexion, $_SESSION["usuario_id"]);
             <h3 class="section-subtitle">Cursos disponibles</h3>
 
             <?php if (mysqli_num_rows($resultadoCursos) > 0):
-                $usuario_id = $_SESSION["usuario_id"]; ?>
+                // cambio!
+                $usuario_id = $logueado ? $_SESSION["usuario_id"] : null; ?>
 
                 <div class="courses-grid">
 
@@ -125,7 +158,7 @@ $cursoContinuar = obtenerCursoContinuar($conexion, $_SESSION["usuario_id"]);
                         <div class="course-card">
 
                             <div class="card-image">
-                                <img src="<?php echo $imagen; ?>">
+                                <img src="<?php echo $imagen; ?>" alt="Foto curso">
 
                                 <?php if ($curso["precio"] == 0): ?>
                                     <span class="badge free">Gratis</span>
@@ -171,7 +204,14 @@ $cursoContinuar = obtenerCursoContinuar($conexion, $_SESSION["usuario_id"]);
 
                                 <div class="card-actions">
 
-                                    <?php if (!$inscripcion || $inscripcion["estado"] === "rechazado"): ?>
+
+                                    <!-- // cambio! --> <?php if (!$logueado): ?>
+                                        <a href="curso.php?id=<?php echo $curso["id"]; ?>" class="btn btn-primary">
+                                            Ver curso
+                                        </a>
+
+                                        <!-- // -->
+                                    <?php elseif (!$inscripcion || $inscripcion["estado"] === "rechazado"): ?>
                                         <a href="curso.php?id=<?php echo $curso["id"]; ?>" class="btn btn-soft">Ver curso</a>
 
                                     <?php elseif ($inscripcion["estado"] === "pendiente"): ?>

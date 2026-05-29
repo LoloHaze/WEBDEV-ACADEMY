@@ -310,16 +310,21 @@ function subirFotoPerfil($conexion, $id, $archivo)
     }
 
     $extension = pathinfo($archivo["name"], PATHINFO_EXTENSION);
+
     $nombre = "usuario_" . $id . "." . $extension;
-    $ruta = "uploads/perfiles/" . $nombre;
+
+    $ruta = __DIR__ . "/../public/uploads/perfiles/" . $nombre;
 
     if (!move_uploaded_file($archivo["tmp_name"], $ruta)) {
         return "Error al mover archivo.";
     }
 
     $sql = "UPDATE usuarios SET foto = ? WHERE id = ?";
+
     $stmt = mysqli_prepare($conexion, $sql);
+
     mysqli_stmt_bind_param($stmt, "si", $nombre, $id);
+
     mysqli_stmt_execute($stmt);
 
     $_SESSION["foto"] = $nombre;
@@ -525,8 +530,9 @@ function obtenerCursoContinuar($conexion, $usuario_id)
     SELECT c.id, c.titulo
     FROM inscripciones i
     JOIN cursos c ON i.curso_id = c.id
-    WHERE i.usuario_id = ? AND i.estado = 'aprobado'
-    ORDER BY i.id DESC
+    WHERE i.usuario_id = ? 
+    AND i.estado = 'aprobado'
+    ORDER BY i.ultima_visita DESC
     LIMIT 1
     ";
 

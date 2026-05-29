@@ -7,9 +7,9 @@
 // - GUARDA NOTA
 // -------------------------------------
 
-require_once "../includes/bd.php";
-require_once "../includes/proteccion.php";
-require_once "../includes/funciones.php";
+require_once __DIR__ . "/../includes/bd.php";
+require_once __DIR__ . "/../includes/proteccion.php";
+require_once __DIR__ . "/../includes/funciones.php";
 
 session_start();
 
@@ -25,47 +25,119 @@ if (!isset($_GET["id"]) || !is_numeric($_GET["id"])) {
 $curso_id = intval($_GET["id"]);
 $usuario_id = $_SESSION["usuario_id"];
 
-/* PREGUNTAS */
-$preguntas = [
-    1 => [
-        "tipo" => "test",
-        "pregunta" => "¿Cómo se declara una variable en JavaScript (ES6)?",
-        "opciones" => ["var x = 5", "let x = 5", "int x = 5", "variable x = 5"],
-        "correcta" => "let x = 5"
-    ],
-    2 => [
-        "tipo" => "test",
-        "pregunta" => "¿Qué método muestra un mensaje en consola?",
-        "opciones" => ["print()", "echo()", "console.log()", "log.console()"],
-        "correcta" => "console.log()"
-    ],
-    3 => [
-        "tipo" => "codigo",
-        "pregunta" => "Completa: for (let i = 0; i < 5; ____ )",
-        "correcta" => "i++"
-    ],
-    4 => [
-        "tipo" => "texto",
-        "pregunta" => "¿Qué palabra clave se usa para crear una función?",
-        "correcta" => "function"
-    ],
-    5 => [
-        "tipo" => "test",
-        "pregunta" => "¿Cómo se escribe un comentario de una línea?",
-        "opciones" => ["// comentario", "# comentario", "<!-- comentario -->", "/* comentario */"],
-        "correcta" => "// comentario"
-    ],
-];
+/* BUSCAR EXAMEN */
+$sqlExamen = "SELECT * FROM examenes
+              WHERE curso_id = ?";
+
+$stmtExamen = mysqli_prepare(
+    $conexion,
+    $sqlExamen
+);
+
+mysqli_stmt_bind_param(
+    $stmtExamen,
+    "i",
+    $curso_id
+);
+
+mysqli_stmt_execute($stmtExamen);
+
+$resultExamen = mysqli_stmt_get_result($stmtExamen);
+
+$examen = mysqli_fetch_assoc($resultExamen);
+
+/* SI NO HAY EXAMEN */
+if (!$examen) {
+
+    header("Location: curso.php?id=" . $curso_id);
+    exit;
+}
+
+$examen_id = $examen["id"];
+
+/* CARGAR PREGUNTAS */
+$sqlPreguntas = "SELECT *
+                 FROM preguntas
+                 WHERE examen_id = ?
+                 ORDER BY id ASC";
+
+$stmtPreguntas = mysqli_prepare(
+    $conexion,
+    $sqlPreguntas
+);
+
+mysqli_stmt_bind_param(
+    $stmtPreguntas,
+    "i",
+    $examen_id
+);
+
+mysqli_stmt_execute($stmtPreguntas);
+
+$resultPreguntas = mysqli_stmt_get_result($stmtPreguntas);
+
+$preguntas = [];
+
+/* MONTAR ARRAY */
+while ($pregunta = mysqli_fetch_assoc($resultPreguntas)) {
+
+    $sqlRespuestas = "SELECT *
+                      FROM respuestas
+                      WHERE pregunta_id = ?
+                      ORDER BY id ASC";
+
+    $stmtRespuestas = mysqli_prepare(
+        $conexion,
+        $sqlRespuestas
+    );
+
+    mysqli_stmt_bind_param(
+        $stmtRespuestas,
+        "i",
+        $pregunta["id"]
+    );
+
+    mysqli_stmt_execute($stmtRespuestas);
+
+    $resultRespuestas = mysqli_stmt_get_result(
+        $stmtRespuestas
+    );
+
+    $opciones = [];
+
+    $correcta = "";
+
+    while ($respuesta = mysqli_fetch_assoc($resultRespuestas)) {
+
+        $opciones[] = $respuesta["respuesta"];
+
+        if ($respuesta["correcta"] == 1) {
+            $correcta = $respuesta["respuesta"];
+        }
+    }
+
+    $preguntas[] = [
+
+        "tipo" => $pregunta["tipo"],
+
+        "pregunta" => $pregunta["pregunta"],
+
+        "opciones" => $opciones,
+
+        "correcta" => $correcta
+
+    ];
+}
 
 /* INICIALIZAR */
 if (!isset($_SESSION["pregunta_actual"]) || !is_numeric($_SESSION["pregunta_actual"])) {
-    $_SESSION["pregunta_actual"] = 1;
+    $_SESSION["pregunta_actual"] = 0;
     $_SESSION["respuestas"] = [];
 }
 
 /* ASEGURAR RANGO */
-if ($_SESSION["pregunta_actual"] < 1 || $_SESSION["pregunta_actual"] > count($preguntas)) {
-    $_SESSION["pregunta_actual"] = 1;
+if ($_SESSION["pregunta_actual"] < 0 || $_SESSION["pregunta_actual"] > count($preguntas)) {
+    $_SESSION["pregunta_actual"] = 0;
     $_SESSION["respuestas"] = [];
 }
 
@@ -97,13 +169,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     /* ANTERIOR */
     if (isset($_POST["anterior"])) {
-        if ($_SESSION["pregunta_actual"] > 1) {
+        if ($_SESSION["pregunta_actual"] > 0) {
             $_SESSION["pregunta_actual"]--;
         }
     }
 
     /* FINAL EXAMEN */
-    if ($_SESSION["pregunta_actual"] > count($preguntas)) {
+    if ($_SESSION["pregunta_actual"] >= count($preguntas)) {
 
         $nota = 0;
         $total = count($preguntas);
@@ -117,7 +189,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             }
         }
 
-        $aprobado = ($nota >= 3) ? 1 : 0;
+      $aprobado = ($nota >= ceil($total * 0.6)) ? 1 : 0;
 
         /* BORRAR INTENTO */
         borrarResultadoExamen($conexion, $usuario_id, $curso_id);
@@ -137,6 +209,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>Resultado examen</title>
+            <link rel="stylesheet" href="assets/css/nav.css">
             <link rel="stylesheet" href="assets/css/components.css">
             <link rel="stylesheet" href="assets/css/index.css">
             <link rel="stylesheet" href="assets/css/examen.css">
@@ -207,7 +280,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 $actual = $_SESSION["pregunta_actual"];
 
 if (!isset($preguntas[$actual])) {
-    $_SESSION["pregunta_actual"] = 1;
+    $_SESSION["pregunta_actual"] = 0;
     $_SESSION["respuestas"] = [];
     header("Location: examen.php?id=" . $curso_id);
     exit;
@@ -215,21 +288,32 @@ if (!isset($preguntas[$actual])) {
 
 $p = $preguntas[$actual];
 $total = count($preguntas);
-$progreso = ($actual / $total) * 100;
+$progreso = (($actual + 1) / $total) * 100;
 $respuesta_guardada = $_SESSION["respuestas"][$actual] ?? "";
 ?>
 
 <!DOCTYPE html>
-<html>
+
+<html lang="es">
+
+
 
 <head>
     <title>Examen</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <link rel="icon" href="assets/logowebdev.png" type="image/png">
+    <link rel="stylesheet" href="assets/css/nav.css">
     <link rel="stylesheet" href="assets/css/index.css">
     <link rel="stylesheet" href="assets/css/components.css">
     <link rel="stylesheet" href="assets/css/examen.css">
     <link rel="stylesheet" href="assets/css/reescalado2.css">
     <link rel="stylesheet" href="assets/css/reescalado.css">
+    <link rel="stylesheet" href="assets/css/footer.css">
+    <link rel="stylesheet" href="assets/css/responsive.css">
+
+
+    <script src="assets/js/responsive.js" defer></script>
 
 </head>
 
@@ -246,7 +330,7 @@ $respuesta_guardada = $_SESSION["respuestas"][$actual] ?? "";
             </div>
 
             <p class="progress-text">
-                Pregunta <?php echo $actual; ?> / <?php echo $total; ?>
+                Pregunta <?php echo $actual + 1; ?> / <?php echo $total; ?>
                 (<?php echo round($progreso); ?>%)
             </p>
 
@@ -279,7 +363,7 @@ $respuesta_guardada = $_SESSION["respuestas"][$actual] ?? "";
 
                     <div class="exam-actions">
 
-                        <?php if ($actual > 1): ?>
+                        <?php if ($actual > 0): ?>
                             <button type="submit" name="anterior" class="btn btn-soft">← Anterior</button>
                         <?php endif; ?>
 

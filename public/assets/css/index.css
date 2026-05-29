@@ -15,7 +15,7 @@ body{
 /* GENERALES */
 .container{
     width:90%;
-    max-width:1300px;
+    max-width:1100px;              
     margin:40px auto;
     color:#fff;
 }
@@ -77,6 +77,12 @@ h1,h2,h3,h4{
     text-decoration: none;
     transition: 0.2s;
 }
+/* ACTIVO = PRIMARY */
+.pagination a.active {
+    background: rgba(234,76,137,.15);
+    color: #ff6aa3;
+    border: 1px solid rgba(234,76,137,.3);
+}
 
 /* NORMAL = NEGRO (como btn-soft) */
 .pagination a {
@@ -121,3 +127,12 @@ h1,h2,h3,h4{
     transform:translateX(-3px);
 }
 
+
+
+
+.admin-course-actions{
+    display:flex;
+   
+    gap:12px;
+    margin-top:20px;
+}

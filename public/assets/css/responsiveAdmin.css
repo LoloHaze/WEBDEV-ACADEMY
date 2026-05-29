@@ -1,0 +1,159 @@
+/* =========================
+   ADMIN PANEL - MOBILE
+========================= */
+
+@media (max-width: 768px) {
+
+    /* CONTENEDOR */
+    .container {
+       
+        width: 95%;
+        margin: 20px auto;
+    }
+    /* GRID PRINCIPAL (links) */
+    .admin-grid {
+        
+        grid-template-columns: 1fr;
+    }
+
+    .admin-link {
+        justify-content: center;
+        text-align: center;
+        padding: 15px;
+    }
+
+    /* STATS */
+    .admin-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-stat {
+        padding: 15px;
+    }
+
+    /* INFO (2 columnas → 1) */
+    .admin-info {
+        grid-template-columns: 1fr;
+    }
+
+    /* TITULOS */
+    .section-title {
+        font-size: 20px;
+    }
+
+}
+@media (max-width: 768px) {
+
+    .admin-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    .admin-stats {
+        grid-template-columns: 1fr !important;
+    }
+
+    .admin-info {
+        grid-template-columns: 1fr !important;
+    }
+
+}
+/* BOTÓN OCULTO EN DESKTOP */
+.admin-toggle {
+    display: none;
+    font-size: 20px;
+    background: none;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+}
+
+
+/* =========================
+   MOBILE ADMIN HEADER
+========================= */
+
+@media (max-width: 768px) {
+
+    .admin-header {
+        position: relative;
+    }
+
+    .admin-toggle {
+        display: block;
+    }
+
+    /* 🔥 ocultamos botones normales */
+    .admin-actions {
+        display: none;
+    }
+
+    /* 🔥 menú hamburguesa */
+    .admin-menu {
+        position: absolute;
+        top: 55px;
+        right: 10px;
+
+        background: #1a1a1a;
+        border: 1px solid #2a2a2a;
+        border-radius: 10px;
+
+        padding: 10px;
+
+        display: none;
+        flex-direction: column;
+        gap: 10px;
+
+        min-width: 150px;
+        z-index: 999;
+    }
+
+    .admin-menu.active {
+        display: flex;
+    }
+
+
+
+    /* SOLO BOTÓN SALIR */
+    .admin-menu a.logout {
+        text-align: center;
+        border: 1px solid #ea4c89;
+        border-radius: 999px;
+        color: #ea4c89;
+        padding: 8px;
+    }
+
+   .admin-menu a {
+    text-align: center;
+}
+}
+
+@media (max-width: 768px) {
+
+    /* ITEM COMPLETO */
+    .admin-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    /* INFO ocupa todo */
+    .admin-user-mini {
+        width: 100%;
+    }
+
+    /* BOTONES ABAJO */
+    .admin-actions {
+        width: 100%;
+        display: flex;
+        flex-direction: column; /* 🔥 clave */
+        gap: 10px;
+    }
+
+    /* BOTONES FULL WIDTH */
+    .admin-actions .btn {
+        width: 100%;
+        text-align: center;
+    }
+
+}
+

@@ -354,3 +354,266 @@ if (formRegistro) {
 
     });
 }
+
+/* =========================================
+   CHECKOUT
+========================================= */
+
+const formCheckout =
+    document.getElementById("formCheckout");
+
+if (formCheckout) {
+
+    const titular =
+        document.getElementById("titular");
+
+    const tarjeta =
+        document.getElementById("tarjeta");
+
+    const fecha =
+        document.getElementById("fecha");
+
+    const cvv =
+        document.getElementById("cvv");
+
+    const errorTitular =
+        document.getElementById("errorTitular");
+
+    const errorTarjeta =
+        document.getElementById("errorTarjeta");
+
+    const errorFecha =
+        document.getElementById("errorFecha");
+
+    const errorCvv =
+        document.getElementById("errorCvv");
+
+    function validarTitular() {
+
+        const v = titular.value.trim();
+
+        if (v.length < 3) {
+
+            errorTitular.textContent =
+                "Nombre inválido";
+
+            titular.classList.add("input-error");
+
+            return false;
+        }
+
+        errorTitular.textContent = "";
+
+        titular.classList.remove("input-error");
+
+        return true;
+    }
+
+    function validarTarjeta() {
+
+        const limpia =
+            tarjeta.value.replace(/\s/g, '');
+
+        if (!/^\d{16}$/.test(limpia)) {
+
+            errorTarjeta.textContent =
+                "Tarjeta inválida";
+
+            tarjeta.classList.add("input-error");
+
+            return false;
+        }
+
+        errorTarjeta.textContent = "";
+
+        tarjeta.classList.remove("input-error");
+
+        return true;
+    }
+
+    function validarFecha() {
+
+        const v = fecha.value.trim();
+
+        if (!/^\d{2}\/\d{2}$/.test(v)) {
+
+            errorFecha.textContent =
+                "Formato MM/YY";
+
+            fecha.classList.add("input-error");
+
+            return false;
+        }
+
+        errorFecha.textContent = "";
+
+        fecha.classList.remove("input-error");
+
+        return true;
+    }
+
+    function validarCVV() {
+
+        const v = cvv.value.trim();
+
+        if (!/^\d{3}$/.test(v)) {
+
+            errorCvv.textContent =
+                "CVV inválido";
+
+            cvv.classList.add("input-error");
+
+            return false;
+        }
+
+        errorCvv.textContent = "";
+
+        cvv.classList.remove("input-error");
+
+        return true;
+    }
+
+    // BLUR
+    titular.addEventListener("blur", validarTitular);
+
+    tarjeta.addEventListener("blur", validarTarjeta);
+
+    fecha.addEventListener("blur", validarFecha);
+
+    cvv.addEventListener("blur", validarCVV);
+
+    // SUBMIT
+    formCheckout.addEventListener("submit", (e) => {
+
+        const ok =
+            validarTitular() &&
+            validarTarjeta() &&
+            validarFecha() &&
+            validarCVV();
+
+        if (!ok) e.preventDefault();
+
+    });
+
+}
+
+/* =========================================
+   FORM EXAMEN
+========================================= */
+
+const formExamen =
+    document.getElementById("formExamen")
+    || document.getElementById("formEditarPregunta");
+
+if (formExamen) {
+
+    const pregunta =
+        document.getElementById("pregunta");
+
+    const respuesta1 =
+        document.getElementById("respuesta1");
+
+    const respuesta2 =
+        document.getElementById("respuesta2");
+
+    const errorPregunta =
+        document.getElementById("errorPregunta");
+
+    const errorRespuesta1 =
+        document.getElementById("errorRespuesta1");
+
+    const errorRespuesta2 =
+        document.getElementById("errorRespuesta2");
+
+    function validarPregunta() {
+
+        const v = pregunta.value.trim();
+
+        if (v.length < 10) {
+
+            errorPregunta.textContent =
+                "Mínimo 10 caracteres";
+
+            pregunta.classList.add("input-error");
+
+            return false;
+        }
+
+        errorPregunta.textContent = "";
+
+        pregunta.classList.remove("input-error");
+
+        return true;
+    }
+
+    function validarRespuesta1() {
+
+        const v = respuesta1.value.trim();
+
+        if (v.length < 1) {
+
+            errorRespuesta1.textContent =
+                "Respuesta obligatoria";
+
+            respuesta1.classList.add("input-error");
+
+            return false;
+        }
+
+        errorRespuesta1.textContent = "";
+
+        respuesta1.classList.remove("input-error");
+
+        return true;
+    }
+
+    function validarRespuesta2() {
+
+        const v = respuesta2.value.trim();
+
+        if (v.length < 1) {
+
+            errorRespuesta2.textContent =
+                "Respuesta obligatoria";
+
+            respuesta2.classList.add("input-error");
+
+            return false;
+        }
+
+        errorRespuesta2.textContent = "";
+
+        respuesta2.classList.remove("input-error");
+
+        return true;
+    }
+
+    // BLUR
+    pregunta.addEventListener(
+        "blur",
+        validarPregunta
+    );
+
+    respuesta1.addEventListener(
+        "blur",
+        validarRespuesta1
+    );
+
+    respuesta2.addEventListener(
+        "blur",
+        validarRespuesta2
+    );
+
+    // SUBMIT
+    formExamen.addEventListener("submit", (e) => {
+
+        const ok =
+            validarPregunta() &&
+            validarRespuesta1() &&
+            validarRespuesta2();
+
+        if (!ok) e.preventDefault();
+
+    });
+
+}

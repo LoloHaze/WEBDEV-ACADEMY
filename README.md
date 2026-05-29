@@ -1,71 +1,109 @@
-![PHP](https://img.shields.io/badge/PHP-8-777BB4?logo=php&logoColor=white)
+````md
+![PHP](https://img.shields.io/badge/PHP-8.2-777BB4?logo=php&logoColor=white)
 ![MySQL](https://img.shields.io/badge/MySQL-Database-4479A1?logo=mysql&logoColor=white)
 ![HTML5](https://img.shields.io/badge/HTML5-Markup-E34F26?logo=html5&logoColor=white)
-![CSS3](https://img.shields.io/badge/CSS3-Styles-1572B6?logo=css3&logoColor=white)
+![CSS3](https://img.shields.io/badge/CSS3-Responsive-1572B6?logo=css3&logoColor=white)
 ![JavaScript](https://img.shields.io/badge/JavaScript-ES6-F7DF1E?logo=javascript&logoColor=black)
-![Status](https://img.shields.io/badge/Status-In%20Development-yellow)
+![Responsive](https://img.shields.io/badge/Responsive-Mobile%20Ready-0ea5e9)
+![Architecture](https://img.shields.io/badge/Architecture-Modular-purple)
+![Status](https://img.shields.io/badge/Status-Completed-success)
 
 # 🚀 WebDev Academy
 
-Plataforma de formación online desarrollada en **PHP y MySQL**, que permite a los usuarios inscribirse en cursos, completar lecciones en vídeo, realizar valoraciones y obtener un certificado automáticamente al finalizar.
+Plataforma e-learning desarrollada en **PHP y MySQL**, inspirada en plataformas modernas como **Udemy**, enfocada en la formación online, el seguimiento del progreso y una experiencia de usuario moderna e interactiva.
 
-Proyecto desarrollado como trabajo práctico del ciclo **Desarrollo de Aplicaciones Web (DAW)**.
+Proyecto desarrollado como plataforma full-stack dentro del ciclo **Desarrollo de Aplicaciones Web (DAW)**.
 
 ---
 
-## 📌 Descripción
+# ✨ Características principales
 
-WebDev Academy simula el funcionamiento básico de plataformas e-learning como Udemy.
+- 🔐 Sistema completo de autenticación y roles
+- 🎓 Plataforma de cursos estilo Udemy
+- 📚 Sistema de lecciones con reproductor integrado
+- 📈 Seguimiento de progreso en tiempo real
+- ⭐ Valoraciones y comentarios
+- 🧠 Exámenes finales por curso
+- 🏆 Generación automática de certificados PDF
+- 👨‍💼 Panel administrativo completo
+- 🔍 Buscador, filtros y ordenación avanzada
+- 📱 Diseño responsive moderno
+- ⚡ Arquitectura modular escalable
+- 🛡️ Gestión segura mediante sesiones y estados
+- 🖼️ Gestión de imágenes de perfil y cursos
+
+---
+
+# 📌 Descripción
+
+WebDev Academy simula el funcionamiento de una plataforma real de aprendizaje online.
 
 La aplicación permite:
 
-- Registro e inicio de sesión de usuarios
+- Registro e inicio de sesión
+- Gestión de usuarios y roles
 - Solicitud de inscripción a cursos
-- Gestión de solicitudes por parte del administrador
+- Gestión administrativa de solicitudes
 - Seguimiento del progreso por lección
-- Obtención automática de certificado al completar el curso
-- Sistema de valoraciones con estrellas y comentarios
-- Panel de administración completo
+- Realización de exámenes finales
+- Descarga automática de certificados PDF
+- Valoraciones mediante estrellas y comentarios
+- Dashboard personalizado para alumnos
+- Gestión modular de cursos y lecciones
 
-El sistema está diseñado utilizando gestión por estados en lugar de eliminaciones físicas, garantizando coherencia y trazabilidad en la base de datos.
+El sistema utiliza una arquitectura basada en estados para evitar eliminaciones físicas innecesarias y mejorar la integridad de los datos.
 
 ---
 
-## 🛠 Tecnologías utilizadas
+# 🛠 Tecnologías utilizadas
+
+## Backend
 
 - PHP 8 (mysqli)
 - MySQL
+- Prepared Statements
+- Gestión de sesiones
+
+## Frontend
+
 - HTML5
 - CSS3
-- JavaScript básico
-- XAMPP (entorno local)
+- JavaScript ES6
+- Diseño responsive
+
+## Herramientas
+
+- XAMPP
 - Git & GitHub
+- FPDF (certificados PDF)
 
 ---
 
-## ✨ Funcionalidades
+# ✨ Funcionalidades
 
-### 👤 Usuarios
+## 👤 Usuarios
 
 - Registro y autenticación
-- Gestión de perfil con imagen
-- Roles diferenciados (usuario y administrador)
-- Control de acceso mediante sesiones
+- Gestión de perfil con avatar
+- Roles diferenciados:
+  - Usuario
+  - Administrador
+- Protección de rutas privadas
 - Dashboard personal (`misCursos.php`)
 - Visualización del progreso por curso
-- Examen final al completar el curso
-- Descarga de certificado al aprobar el examen
+- Examen final por curso
+- Descarga automática de certificados
 
 ---
 
-### 🎓 Cursos
+## 🎓 Cursos
 
-- CRUD completo de cursos (admin)
-- Activación / desactivación de cursos
-- Cursos gratuitos y de pago (estructura preparada)
+- CRUD completo de cursos
+- Activación y desactivación de cursos
+- Cursos gratuitos y estructura preparada para cursos premium
 - Buscador por nombre
-- Filtro por precio
-- Orden por:
+- Filtros dinámicos
+- Ordenación por:
   - ⭐ Mejor valorados
   - 🔥 Más inscritos
   - 🆕 Más recientes
@@ -73,11 +111,13 @@ El sistema está diseñado utilizando gestión por estados en lugar de eliminaci
 
 ---
 
-### 📚 Lecciones
+## 📚 Lecciones
 
-- Visualización tipo plataforma e-learning (sidebar + reproductor estilo Udemy)
-- Lista lateral con todas las lecciones del curso
-- Indicador visual de lecciones completadas
+- Vista tipo plataforma e-learning
+- Sidebar interactiva
+- Reproductor de vídeo integrado
+- Lista lateral de lecciones
+- Indicador visual de progreso
 - Sistema toggle:
   - Marcar como completada
   - Marcar como no completada
@@ -85,108 +125,145 @@ El sistema está diseñado utilizando gestión por estados en lugar de eliminaci
 
 ---
 
-### 📊 Progreso y certificación
+## 📊 Progreso y certificación
 
 - Seguimiento individual por usuario
 - Barra de progreso dinámica
-- Generación automática de certificado cuando se alcanza el 100%
+- Cálculo automático del porcentaje completado
+- Generación automática de certificados PDF
 - Acceso directo al certificado desde el dashboard
 
 ---
 
-### ⭐ Sistema de valoraciones
+## ⭐ Sistema de valoraciones
 
-- Valoración de cursos (1–5 estrellas)
+- Valoraciones de 1–5 estrellas
 - Comentarios asociados
-- Edición y eliminación por parte del usuario
-- Gestión de valoraciones desde el panel de administración
+- Edición y eliminación de valoraciones
+- Media automática por curso
+- Gestión desde panel administrativo
 
 ---
 
-## 🛠 Panel de administración
+# 🛠 Panel de administración
 
-- Gestión completa de cursos
+Sistema administrativo completo para la gestión total de la plataforma:
+
+- Gestión de usuarios
+- Gestión de cursos
 - Gestión de lecciones
-- Gestión de inscripciones:
+- Gestión de valoraciones
+- Gestión de inscripciones
+- Moderación mediante estados:
   - Pendiente
   - Aprobado
   - Rechazado
-- Reversión de estados sin eliminación física
-- Gestión de valoraciones
-- Gestión de usuarios
 
 ---
 
-## 🧠 Arquitectura del proyecto
-
-```
-/public        → Área de usuario
-/admin         → Área de administración
-/includes      → Conexión y lógica común
-/uploads       → Imágenes de perfiles y cursos
-```
-
-Separación clara entre:
-
-- Vista general del curso (`curso.php`)
-- Vista de consumo de contenido (`leccion.php`)
-- Panel administrativo independiente
-
----
-
-## 🔐 Gestión de estados
-
-El sistema evita el uso de `DELETE` en entidades críticas como inscripciones, utilizando en su lugar estados:
-
-- pendiente
-- aprobado
-- rechazado
-
-Esto mejora la consistencia y permite revertir acciones sin pérdida de datos.
-
----
-
-## 🌍 Deployment (Próximamente)
-
-Actualmente el proyecto se ejecuta en entorno local (XAMPP).
-
-Está previsto su despliegue en un dominio real una vez finalizado el desarrollo y realizadas las optimizaciones finales de seguridad y rendimiento.
-
----
-
-## ▶ Instalación
-
-1. Clonar el repositorio:
+# 🧠 Arquitectura del proyecto
 
 ```bash
-git clone https://github.com/tu_usuario/webdevacademy.git
-```
+/public
+│── index.php
+│── curso.php
+│── leccion.php
+│── login.php
+│── registro.php
+│── perfil.php
 
-2. Importar la base de datos en MySQL.
-3. Configurar credenciales en:
+/admin
+│── panel.php
+│── gestionCursos.php
+│── gestionUsuarios.php
+│── gestionInscripciones.php
 
-```
-/includes/bd.php
-```
+/includes
+│── bd.php
+│── funciones.php
+│── proteccion.php
 
-4. Ejecutar en entorno local (XAMPP).
+/uploads
+│── perfiles/
+│── cursos/
+````
+
+Separación modular entre:
+
+* Área pública
+* Área administrativa
+* Sistema de autenticación
+* Lógica reutilizable
+* Gestión multimedia
 
 ---
 
-## 📈 Posibles mejoras futuras
+# 🔐 Seguridad implementada
 
-- Sistema de notificaciones
-- Guardado automático de última lección vista
-- Mejora visual con framework CSS
-- Sistema de pagos real
-- Estadísticas avanzadas en panel admin
-- Optimización de consultas SQL
-- Protección contra CSRF
+* Prepared Statements
+* Validación y sanitización de datos
+* Hash seguro de contraseñas (`password_hash`)
+* Protección mediante sesiones
+* Control de acceso por roles
+* Gestión segura mediante estados
 
 ---
 
-## 👨‍💻 Autor
+# 📱 Diseño y experiencia de usuario
 
-Nombre: *[Manuel Rabal]*  
-Ciclo: Desarrollo de Aplicaciones Web (DAW)  
-Año: 2026  
+La interfaz está inspirada en plataformas modernas SaaS y e-learning:
+
+* Diseño responsive
+* UI oscura moderna
+* Cards dinámicas
+* Sidebar interactiva
+* Barras de progreso
+* Feedback visual
+* Sistema visual de estrellas
+
+---
+
+```md
+# 🌍 Deployment
+
+La plataforma se encuentra desplegada y funcionando en producción mediante hosting en IONOS.
+
+El proyecto ha sido adaptado para entorno real, incluyendo:
+
+- Configuración de rutas y estructura pública
+- Gestión de archivos y uploads
+- Configuración de base de datos en producción
+- Adaptación de includes y paths para servidor
+- Optimización para hosting compartido
+- Configuración de dominio y despliegue web
+
+El despliegue se realizó utilizando:
+
+- Hosting Linux + PHP en IONOS
+- MySQL en producción
+- Git/GitHub para control de versiones
+```
+
+
+# 📈 Mejoras futuras
+
+* 💳 Sistema de pagos real
+* 📩 Notificaciones
+* 🧠 Recomendaciones inteligentes
+* 📊 Estadísticas avanzadas
+* 🔒 Protección CSRF
+* ⚡ Optimización SQL
+* 🌐 API REST
+* 🤖 Integración IA para aprendizaje personalizado
+
+---
+
+# 👨‍💻 Autor
+
+**Manuel Rabal Bueno**
+Desarrollo de Aplicaciones Web (DAW) — 2026
+
+Proyecto desarrollado como plataforma full-stack orientada a portfolio profesional y simulación de una plataforma real de formación online.
+
+```
+```

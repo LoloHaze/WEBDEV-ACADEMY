@@ -53,7 +53,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // CREAR SESIÓN
             crearSesionUsuario($usuario);
 
-            header("Location: index.php");
+            // REDIRECCIÓN INTELIGENTE
+            if (isset($_GET['redirect']) && strpos($_GET['redirect'], '.php') !== false) {
+                header("Location: " . $_GET['redirect']);
+            } else {
+                header("Location: index.php");
+            }
             exit;
 
         } else {
